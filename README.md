@@ -22,3 +22,12 @@ This is my attempt to make Amazon Games useful for Linux users that want to play
 
 # Contributing
 
+I'm always open for contributors
+
+## Setting up dev environment:
+- Clone the repo `git clone https://github.com/imLinguin/nile`
+- CD into the directory `cd nile`
+- Setup virtual environment `python3 -m venv env`
+- Install dependencies `pip3 install -r requirenments.txt`
+- Export PYTHONPATH variable `export PYTHONPATH=.`
+- Run nile `python3 nile/cli.py`
