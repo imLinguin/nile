@@ -18,3 +18,7 @@ Linux native Amazon Games client, based on [this research](https://github.com/La
 
 # Purpose
 This is my attempt to make Amazon Games useful for Linux users that want to play titles obtained thanks to [Prime](https://prime.amazon.com) membership.
+
+
+# Contributing
+

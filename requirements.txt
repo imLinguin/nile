@@ -1,0 +1,5 @@
+requests==2.27.1
+PyQt5==5.15.6
+PyQtWebEngine==5.15.5
+pywebview==3.6.2
+QtPy==2.0.1
