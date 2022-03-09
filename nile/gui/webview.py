@@ -7,7 +7,7 @@ class LoginWindow():
 
     def show(self, handler):
         self.window.events.loaded += handler
-        webview.start(self.window, user_agent="AGSLauncher/1.0.0")
+        webview.start(self.window, user_agent="Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36")
 
     def get_url(self):
         return self.window.get_current_url()

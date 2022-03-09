@@ -1,1 +1,2 @@
 MARKETPLACEID='ATVPDKIKX0DER'
+AMAZON_API="https://api.amazon.com"

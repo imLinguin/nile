@@ -1,19 +1,21 @@
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse, parse_qs
 import nile.constants as constants
 from gui import webview
 import logging
 import hashlib
+import json
 import secrets
 import base64
 import uuid
 
 
 class AuthenticationManager:
-    def __init__(self):
+    def __init__(self, session):
         self.logger = logging.getLogger("AUTH_MANAGER")
         self.challenge = ""
-        self.verifier = ""
+        self.verifier = bytes()
         self.device_id = ""
+        self.session_manager = session
 
     def generate_code_verifier(self) -> bytes:
         self.logger.debug("Generating code_verifier")
@@ -31,6 +33,10 @@ class AuthenticationManager:
     def generate_device_id(self) -> str:
         self.device_id = uuid.uuid4().hex.upper()
         return self.device_id
+
+    def generate_device_serial(self) -> str:
+        serial = uuid.uuid1().hex
+        return serial
 
     def get_auth_url(self, deviceID: str, challenge: bytes):
         base_url = "https://amazon.com/ap/signin?"
@@ -56,21 +62,23 @@ class AuthenticationManager:
         return base_url + urlencode(arguments)
 
     def register_device(self, code):
+        self.logger.info(f"Registerring a device. ID: {self.device_id}")
+        serial = self.generate_device_serial()
         data = {
             "auth_data": {
                 "authorization_code": code,
                 "client_domain": "DeviceLegacy",
                 "client_id": self.device_id,
                 "code_algorithm": "SHA-256",
-                "code_verifier": self.verifier,
-                "use_global_authentication": false,
+                "code_verifier": self.verifier.decode("utf-8"),
+                "use_global_authentication": False,
             },
             "registration_data": {
                 "app_name": "AGSLauncher for Windows",
                 "app_version": "1.0.0",
                 "device_model": "Windows",
-                "device_name": null,
-                "device_serial": self.device_id,
+                "device_name": None,
+                "device_serial": serial,
                 "device_type": "A2UMVHOX7UP4V7",
                 "domain": "Device",
                 "os_version": "10.0.19044.0",
@@ -79,6 +87,17 @@ class AuthenticationManager:
             "requested_token_type": ["bearer", "mac_dms"],
             "user_context_map": {},
         }
+        print(json.dumps(data))
+        response = self.session_manager.session.post(
+            f"{constants.AMAZON_API}/auth/register", json=data
+        )
+        if not response.ok:
+            self.logger.error("Failed to register a device", response.content)
+            return
+
+        res_json = response.json()
+        print(res_json)
+        self.logger.info("Succesfully registered a device")
 
     def login(self):
         code_verifier = self.generate_code_verifier()
@@ -95,4 +114,8 @@ class AuthenticationManager:
             self.logger.info("Got authorization code")
             self.loginWebView.stop()
 
-            print(page_url)
+            # Parse auth code
+            parsed = urlparse(page_url)
+            code = parse_qs(parsed.query)["openid.oa2.authorization_code"][0]
+
+            self.register_device(code)
