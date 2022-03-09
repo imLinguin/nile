@@ -15,6 +15,7 @@ class AuthenticationManager:
         self.challenge = ""
         self.verifier = bytes()
         self.device_id = ""
+        self.serial = None
         self.session_manager = session
 
     def generate_code_verifier(self) -> bytes:
@@ -30,15 +31,19 @@ class AuthenticationManager:
         hash = hashlib.sha256(code_verifier)
         return base64.urlsafe_b64encode(hash.digest()).rstrip(b"=")
 
-    def generate_device_id(self) -> str:
-        self.device_id = uuid.uuid4().hex.upper()
-        return self.device_id
-
     def generate_device_serial(self) -> str:
-        serial = uuid.uuid1().hex
+        serial = uuid.uuid1().hex.upper()
+        self.serial = serial
         return serial
 
-    def get_auth_url(self, deviceID: str, challenge: bytes):
+    def generate_client_id(self, serial) -> str:
+        serialEx = f'{serial}#A2UMVHOX7UP4V7';
+        clientId = serialEx.encode('ascii')
+        clientIdHex = clientId.hex()
+        self.client_id = clientIdHex
+        return clientIdHex
+
+    def get_auth_url(self, client_id: str, challenge: bytes):
         base_url = "https://amazon.com/ap/signin?"
 
         arguments = {
@@ -50,7 +55,7 @@ class AuthenticationManager:
             "openid.ns.oa2": "http://www.amazon.com/ap/ext/oauth/2",
             "openid.oa2.response_type": "code",
             "openid.oa2.code_challenge_method": "S256",
-            "openid.oa2.client_id": f"device:{deviceID}",
+            "openid.oa2.client_id": f"device:{client_id}",
             "language": "en_US",
             "marketPlaceId": constants.MARKETPLACEID,
             "openid.return_to": "https://www.amazon.com",
@@ -62,13 +67,12 @@ class AuthenticationManager:
         return base_url + urlencode(arguments)
 
     def register_device(self, code):
-        self.logger.info(f"Registerring a device. ID: {self.device_id}")
-        serial = self.generate_device_serial()
+        self.logger.info(f"Registerring a device. ID: {self.client_id}")
         data = {
             "auth_data": {
                 "authorization_code": code,
                 "client_domain": "DeviceLegacy",
-                "client_id": self.device_id,
+                "client_id": self.client_id,
                 "code_algorithm": "SHA-256",
                 "code_verifier": self.verifier.decode("utf-8"),
                 "use_global_authentication": False,
@@ -78,7 +82,7 @@ class AuthenticationManager:
                 "app_version": "1.0.0",
                 "device_model": "Windows",
                 "device_name": None,
-                "device_serial": serial,
+                "device_serial": self.serial,
                 "device_type": "A2UMVHOX7UP4V7",
                 "domain": "Device",
                 "os_version": "10.0.19044.0",
@@ -87,12 +91,12 @@ class AuthenticationManager:
             "requested_token_type": ["bearer", "mac_dms"],
             "user_context_map": {},
         }
-        print(json.dumps(data))
         response = self.session_manager.session.post(
             f"{constants.AMAZON_API}/auth/register", json=data
         )
         if not response.ok:
-            self.logger.error("Failed to register a device", response.content)
+            self.logger.error("Failed to register a device")
+            print(response.content)
             return
 
         res_json = response.json()
@@ -103,7 +107,11 @@ class AuthenticationManager:
         code_verifier = self.generate_code_verifier()
         challenge = self.generate_challange(code_verifier)
 
-        url = self.get_auth_url(self.generate_device_id(), challenge)
+
+        serial = self.generate_device_serial()
+        client_id = self.generate_client_id(serial)
+
+        url = self.get_auth_url(client_id, challenge)
         self.loginWebView = webview.LoginWindow(url)
 
         self.loginWebView.show(self.handle_page_load)
@@ -116,6 +124,6 @@ class AuthenticationManager:
 
             # Parse auth code
             parsed = urlparse(page_url)
-            code = parse_qs(parsed.query)["openid.oa2.authorization_code"][0]
-
+            query = parse_qs(parsed.query)
+            code = query["openid.oa2.authorization_code"][0]
             self.register_device(code)

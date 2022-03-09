@@ -8,10 +8,10 @@ from nile.gui import webview
 class CLI:
     def __init__(self, session_manager):
         self.session = session_manager
+        self.auth_manager = authorization.AuthenticationManager(self.session)
 
     def handle_auth(self):
-        manager = authorization.AuthenticationManager(self.session)
-        manager.login()
+        self.auth_manager.login()
 
 
 def main():
@@ -25,7 +25,7 @@ def main():
     logger = logging.getLogger("CLI")
 
     # Silent pywebview errors
-    # logging.getLogger('pywebview').setLevel(logging.CRITICAL)
+    logging.getLogger('pywebview').setLevel(logging.CRITICAL)
     session_manager = session.APIHandler(None)
     cli = CLI(session_manager)
 
@@ -36,10 +36,19 @@ def main():
     elif command == "test":
         manager = authorization.AuthenticationManager(session_manager)
         
-        manager.generate_device_id()
-        manager.generate_challange(manager.generate_code_verifier())
-        manager.generate_device_serial()
-        # manager.register_device('')
+        device_id = manager.generate_device_id()
+        verifier = manager.generate_code_verifier()
+        challange = manager.generate_challange(verifier)
+        
+        serial = manager.generate_device_serial()
+        client_id = manager.generate_client_id(serial)
+
+        print(device_id, type(device_id))
+        print(verifier, type(verifier))
+        print(challange, type(challange))
+        print(serial, type(serial))
+        print(client_id, type(client_id))
+            # manager.register_device('')
     return 0
 
 
