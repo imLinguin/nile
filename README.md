@@ -15,10 +15,12 @@
 # Nile
 Linux native Amazon Games client, based on [this research](https://github.com/Lariaa/GameLauncherResearch/wiki/Amazon-Games)
 
+Nile aims to be CLI and GUI tool for managing and playing games from Amazon. 
+
 Nile is not ready for use yet. I barerly scratched the authentication flow.
 
 # Purpose
-This is my attempt to make Amazon Games useful for Linux users that want to play titles obtained thanks to [Prime](https://prime.amazon.com) membership.
+This is my attempt to make Amazon Games useful for Linux users, who want to play titles obtained thanks to [Prime](https://prime.amazon.com) membership.
 
 
 # Contributing

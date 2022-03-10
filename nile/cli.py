@@ -1,17 +1,38 @@
 import sys
 import logging
 from nile.arguments import get_arguments
+from nile.utils.config import Config
 from nile.api import authorization, session
 from nile.gui import webview
 
 
 class CLI:
-    def __init__(self, session_manager):
+    def __init__(
+        self, session_manager, config_manager, logger, arguments, unknown_arguments
+    ):
+        self.config = config_manager
         self.session = session_manager
-        self.auth_manager = authorization.AuthenticationManager(self.session)
+        self.auth_manager = authorization.AuthenticationManager(
+            self.session, self.config
+        )
+        self.arguments = arguments
+        self.logger = logger
+        self.unknown_arguments = unknown_arguments
 
     def handle_auth(self):
-        self.auth_manager.login()
+        if self.arguments.login:
+            if not self.auth_manager.is_logged_in():
+                self.auth_manager.login()
+                return
+            else:
+                self.logger.error("You are already logged in")
+                return
+        elif self.arguments.logout:
+            self.logger.info("Not implemented yet")
+            return
+        self.logger.error("Specify auth action, use --help")
+    def test(self):
+        print(self.auth_manager.refresh_token())
 
 
 def main():
@@ -25,30 +46,17 @@ def main():
     logger = logging.getLogger("CLI")
 
     # Silent pywebview errors
-    logging.getLogger('pywebview').setLevel(logging.CRITICAL)
-    session_manager = session.APIHandler(None)
-    cli = CLI(session_manager)
+    logging.getLogger("pywebview").setLevel(logging.CRITICAL)
+    config_manager = Config()
+    session_manager = session.APIHandler(config_manager)
+    cli = CLI(session_manager, config_manager, logger, arguments, unknown_arguments)
 
     command = arguments.command
 
     if command == "auth":
         cli.handle_auth()
     elif command == "test":
-        manager = authorization.AuthenticationManager(session_manager)
-        
-        device_id = manager.generate_device_id()
-        verifier = manager.generate_code_verifier()
-        challange = manager.generate_challange(verifier)
-        
-        serial = manager.generate_device_serial()
-        client_id = manager.generate_client_id(serial)
-
-        print(device_id, type(device_id))
-        print(verifier, type(verifier))
-        print(challange, type(challange))
-        print(serial, type(serial))
-        print(client_id, type(client_id))
-            # manager.register_device('')
+        cli.test()
     return 0
 
 

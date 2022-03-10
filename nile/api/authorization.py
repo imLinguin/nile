@@ -4,19 +4,21 @@ from gui import webview
 import logging
 import hashlib
 import json
+import time
 import secrets
 import base64
 import uuid
 
 
 class AuthenticationManager:
-    def __init__(self, session):
+    def __init__(self, session, conifg_manager):
         self.logger = logging.getLogger("AUTH_MANAGER")
         self.challenge = ""
         self.verifier = bytes()
         self.device_id = ""
         self.serial = None
         self.session_manager = session
+        self.config = conifg_manager
 
     def generate_code_verifier(self) -> bytes:
         self.logger.debug("Generating code_verifier")
@@ -32,13 +34,15 @@ class AuthenticationManager:
         return base64.urlsafe_b64encode(hash.digest()).rstrip(b"=")
 
     def generate_device_serial(self) -> str:
+        self.logger.debug("Generating serial")
         serial = uuid.uuid1().hex.upper()
         self.serial = serial
         return serial
 
     def generate_client_id(self, serial) -> str:
-        serialEx = f'{serial}#A2UMVHOX7UP4V7';
-        clientId = serialEx.encode('ascii')
+        self.logger.debug("Generating client_id")
+        serialEx = f"{serial}#A2UMVHOX7UP4V7"
+        clientId = serialEx.encode("ascii")
         clientIdHex = clientId.hex()
         self.client_id = clientIdHex
         return clientIdHex
@@ -100,20 +104,62 @@ class AuthenticationManager:
             return
 
         res_json = response.json()
-        print(res_json)
         self.logger.info("Succesfully registered a device")
+        if self.logger.level > logging.DEBUG:
+            print(res_json)
+        config_data = res_json["response"]["success"]
+        config_data["NILE"] = {"token_obtain_time": time.time()}
+
+        self.config.write("user", config_data)
+
+        self.logger.info("Written data to the config")
+
+    def refresh_token(self):
+        url = f"{constants.AMAZON_API}/auth/token"
+        self.logger.info("Refreshing token")
+        user_conf_content = self.config.get("user")
+        refresh_token = user_conf_content["tokens"]["bearer"]["refresh_token"]
+        request_data = {
+            "source_token": refresh_token,
+            "source_token_type": "refresh_token",
+            "requested_token_type": "access_token",
+            "app_name": "AGSLauncher for Windows",
+            "app_version": "1.0.0",
+        }
+        response = self.session_manager.session.post(url, json=request_data)
+
+        if not response.ok:
+            self.logger.error("Failed to refresh the token")
+            return None
+
+        res_json = response.json()
+
+        user_conf_content = self.config.get("user")
+        user_conf_content["tokens"]["bearer"]["access_token"] = res_json["access_token"]
+        user_conf_content["tokens"]["bearer"]["expires_in"] = res_json["expires_in"]
+        user_conf_content["NILE"]["token_obtain_time"] = time.time()
+        self.config.write("user", user_conf_content)
+
+    def is_token_expired(self):
+        token_obtain_time, expires_in = self.config.get(
+            "user", ["NILE//token_obtain_time", "tokens//bearer//expires_in"]
+        )
+        return time.time() > token_obtain_time + int(expires_in)
+
+    def is_logged_in(self) -> bool:
+        tokens = self.config.get("user", "tokens")
+        return bool(tokens)
 
     def login(self):
         code_verifier = self.generate_code_verifier()
         challenge = self.generate_challange(code_verifier)
-
 
         serial = self.generate_device_serial()
         client_id = self.generate_client_id(serial)
 
         url = self.get_auth_url(client_id, challenge)
         self.loginWebView = webview.LoginWindow(url)
-
+        self.logger.info("Spawning login window")
         self.loginWebView.show(self.handle_page_load)
 
     def handle_page_load(self):
