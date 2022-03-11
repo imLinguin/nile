@@ -11,14 +11,14 @@ import uuid
 
 
 class AuthenticationManager:
-    def __init__(self, session, conifg_manager):
+    def __init__(self, session, config_manager):
         self.logger = logging.getLogger("AUTH_MANAGER")
         self.challenge = ""
         self.verifier = bytes()
         self.device_id = ""
         self.serial = None
         self.session_manager = session
-        self.config = conifg_manager
+        self.config = config_manager
 
     def generate_code_verifier(self) -> bytes:
         self.logger.debug("Generating code_verifier")
@@ -147,6 +147,7 @@ class AuthenticationManager:
         return time.time() > token_obtain_time + int(expires_in)
 
     def is_logged_in(self) -> bool:
+        self.logger.info("Checking stored credentials")
         tokens = self.config.get("user", "tokens")
         return bool(tokens)
 
@@ -163,7 +164,7 @@ class AuthenticationManager:
         self.loginWebView.show(self.handle_page_load)
 
     def handle_page_load(self):
-        page_url = self.loginWebView.get_url()
+        page_url = self.loginWebView.window.url().url()
         if page_url.find("openid.oa2.authorization_code") > 0:
             self.logger.info("Got authorization code")
             self.loginWebView.stop()
@@ -173,3 +174,23 @@ class AuthenticationManager:
             query = parse_qs(parsed.query)
             code = query["openid.oa2.authorization_code"][0]
             self.register_device(code)
+
+    def logout(self):
+        if not self.is_logged_in():
+            self.logger.error("You are not logged in")
+            return
+        token = self.config.get('user', 'tokens//bearer//access_token')
+        response = self.session_manager.session.post(
+            f"{constants.AMAZON_API}/auth/deregister",
+            headers={"Authorization": f"bearer {token}"},
+            json={
+                "request_metadata": {
+                    "app_name": "AGSLauncher for Windows",
+                    "app_version": "1.0.0",
+                }
+            },
+        )
+
+        if response.ok:
+            self.logger.info("Successfully deregistered a device")
+            self.config.write('user', {})

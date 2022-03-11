@@ -31,6 +31,6 @@ I'm always open for contributors
 - Clone the repo `git clone https://github.com/imLinguin/nile`
 - CD into the directory `cd nile`
 - Setup virtual environment `python3 -m venv env`
-- Install dependencies `pip3 install -r requirenments.txt`
+- Install dependencies `pip3 install -r requirements.txt`
 - Export PYTHONPATH variable `export PYTHONPATH=.`
 - Run nile `python3 nile/cli.py`

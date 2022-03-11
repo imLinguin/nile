@@ -63,5 +63,4 @@ class Config:
                 iterator = iterator[key]
 
             return iterator
-
         return parsed.get(keys[0])

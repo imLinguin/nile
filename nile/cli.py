@@ -1,5 +1,7 @@
 import sys
 import logging
+from PyQt5.Qt import QCoreApplication
+from PyQt5.QtWidgets import QApplication
 from nile.arguments import get_arguments
 from nile.utils.config import Config
 from nile.api import authorization, session
@@ -23,19 +25,21 @@ class CLI:
         if self.arguments.login:
             if not self.auth_manager.is_logged_in():
                 self.auth_manager.login()
-                return
+                return True
             else:
                 self.logger.error("You are already logged in")
-                return
+                return False
         elif self.arguments.logout:
-            self.logger.info("Not implemented yet")
-            return
+            self.auth_manager.logout()
+            return False
         self.logger.error("Specify auth action, use --help")
     def test(self):
-        print(self.auth_manager.refresh_token())
+        print("TEST")
+        # print(self.auth_manager.refresh_token())
 
 
 def main():
+    qApp = QApplication(sys.argv)
     arguments, unknown_arguments = get_arguments()
 
     debug_mode = "-d" in unknown_arguments or "--debug" in arguments
@@ -45,8 +49,6 @@ def main():
     )
     logger = logging.getLogger("CLI")
 
-    # Silent pywebview errors
-    logging.getLogger("pywebview").setLevel(logging.CRITICAL)
     config_manager = Config()
     session_manager = session.APIHandler(config_manager)
     cli = CLI(session_manager, config_manager, logger, arguments, unknown_arguments)
@@ -54,11 +56,13 @@ def main():
     command = arguments.command
 
     if command == "auth":
-        cli.handle_auth()
+        # If spawned a gui method use qApplication exec to wait
+        if cli.handle_auth():
+            return qApp.exec()
     elif command == "test":
         cli.test()
+    
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())
