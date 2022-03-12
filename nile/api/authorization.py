@@ -146,6 +146,9 @@ class AuthenticationManager:
         )
         return time.time() > token_obtain_time + int(expires_in)
 
+    def get_authorization_header(self) -> str:
+        return f'bearer {self.config.get("user", "tokens//bearer//access_token")}'
+
     def is_logged_in(self) -> bool:
         self.logger.info("Checking stored credentials")
         tokens = self.config.get("user", "tokens")
@@ -179,6 +182,8 @@ class AuthenticationManager:
         if not self.is_logged_in():
             self.logger.error("You are not logged in")
             return
+        if self.is_token_expired():
+            self.refresh_token()
         token = self.config.get('user', 'tokens//bearer//access_token')
         response = self.session_manager.session.post(
             f"{constants.AMAZON_API}/auth/deregister",

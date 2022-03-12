@@ -4,7 +4,7 @@ from PyQt5.Qt import QCoreApplication
 from PyQt5.QtWidgets import QApplication
 from nile.arguments import get_arguments
 from nile.utils.config import Config
-from nile.api import authorization, session
+from nile.api import authorization, session, library
 from nile.gui import webview
 
 
@@ -22,6 +22,7 @@ class CLI:
         self.unknown_arguments = unknown_arguments
 
     def handle_auth(self):
+        
         if self.arguments.login:
             if not self.auth_manager.is_logged_in():
                 self.auth_manager.login()
@@ -33,6 +34,22 @@ class CLI:
             self.auth_manager.logout()
             return False
         self.logger.error("Specify auth action, use --help")
+
+    def handle_library(self):
+        self.library_manager = library.Library(self.config, self.session)
+
+        cmd = self.arguments.sub_command
+
+        if cmd == "list":
+            print("LIsting here")
+        elif cmd == "sync":
+            if not self.auth_manager.is_logged_in():
+                self.logger.error("User not logged in")
+                sys.exit(1)
+            if self.auth_manager.is_token_expired():
+                self.auth_manager.refresh_token()
+            self.library_manager.sync()
+
     def test(self):
         print("TEST")
         # print(self.auth_manager.refresh_token())
@@ -55,14 +72,22 @@ def main():
 
     command = arguments.command
 
+    # Always use return qApp.exec()
+    # If you spawn gui stuff
+    # When running in CLI this can be ignored
+
     if command == "auth":
         # If spawned a gui method use qApplication exec to wait
         if cli.handle_auth():
             return qApp.exec()
+
+    elif command == "library":
+        cli.handle_library()
     elif command == "test":
         cli.test()
-    
+
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

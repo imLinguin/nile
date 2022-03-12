@@ -12,14 +12,13 @@ class LoginWindow:
         self.window.setWindowTitle("Login")
         self.window.setFixedWidth(450)
         self.window.setFixedHeight(750)
-        self.window.load(QUrl(self.page_url))
         self.window.page().profile().setHttpUserAgent("Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36")
+        self.window.load(QUrl(self.page_url))
 
     def show(self, handler):
         if handler:
             self.window.urlChanged.connect(handler)
         self.window.show()
-        # webview.start(user_agent="Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36")
 
     def stop(self):
         self.window.hide()
