@@ -35,13 +35,27 @@ class CLI:
             return False
         self.logger.error("Specify auth action, use --help")
 
+    def sort_by_title(self, element):
+        return element["product"]["title"]
+
+
     def handle_library(self):
         self.library_manager = library.Library(self.config, self.session)
 
         cmd = self.arguments.sub_command
 
         if cmd == "list":
-            print("LIsting here")
+            games_list=""
+            games = self.config.get('library')
+            games.sort(key=self.sort_by_title)
+            for game in games:
+                games_list+=f'{game["product"]["title"]} GENRES: {game["product"]["productDetail"]["details"]["genres"]}\n'
+
+
+            games_list+=f"\n*** TOTAL {len(games)} ***\n"
+            print(games_list)
+
+
         elif cmd == "sync":
             if not self.auth_manager.is_logged_in():
                 self.logger.error("User not logged in")
