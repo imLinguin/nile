@@ -1,3 +1,4 @@
 requests==2.27.1
 PyQt5==5.15.6
 PyQtWebEngine==5.15.5
+protobuf==3.19.4

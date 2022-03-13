@@ -27,6 +27,8 @@ This is my attempt to make Amazon Games useful for Linux users, who want to play
 
 I'm always open for contributors
 
+black is used for code formatting
+
 ## Setting up dev environment:
 - Clone the repo `git clone https://github.com/imLinguin/nile`
 - CD into the directory `cd nile`

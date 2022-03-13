@@ -1,6 +1,5 @@
 import sys
 import logging
-from PyQt5.Qt import QCoreApplication
 from PyQt5.QtWidgets import QApplication
 from nile.arguments import get_arguments
 from nile.utils.config import Config
@@ -17,12 +16,15 @@ class CLI:
         self.auth_manager = authorization.AuthenticationManager(
             self.session, self.config
         )
+        self.library_manager = library.Library(self.config, self.session)
         self.arguments = arguments
         self.logger = logger
         self.unknown_arguments = unknown_arguments
+        if self.auth_manager.is_token_expired():
+            self.auth_manager.refresh_token()
+
 
     def handle_auth(self):
-        
         if self.arguments.login:
             if not self.auth_manager.is_logged_in():
                 self.auth_manager.login()
@@ -38,35 +40,27 @@ class CLI:
     def sort_by_title(self, element):
         return element["product"]["title"]
 
-
     def handle_library(self):
-        self.library_manager = library.Library(self.config, self.session)
-
         cmd = self.arguments.sub_command
 
         if cmd == "list":
-            games_list=""
-            games = self.config.get('library')
+            games_list = ""
+            games = self.config.get("library")
             games.sort(key=self.sort_by_title)
             for game in games:
-                games_list+=f'{game["product"]["title"]} GENRES: {game["product"]["productDetail"]["details"]["genres"]}\n'
+                games_list += f'{game["product"]["title"]} GENRES: {game["product"]["productDetail"]["details"]["genres"]}\n'
 
-
-            games_list+=f"\n*** TOTAL {len(games)} ***\n"
+            games_list += f"\n*** TOTAL {len(games)} ***\n"
             print(games_list)
-
 
         elif cmd == "sync":
             if not self.auth_manager.is_logged_in():
                 self.logger.error("User not logged in")
                 sys.exit(1)
-            if self.auth_manager.is_token_expired():
-                self.auth_manager.refresh_token()
             self.library_manager.sync()
 
     def test(self):
         print("TEST")
-        # print(self.auth_manager.refresh_token())
 
 
 def main():

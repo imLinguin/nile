@@ -182,8 +182,6 @@ class AuthenticationManager:
         if not self.is_logged_in():
             self.logger.error("You are not logged in")
             return
-        if self.is_token_expired():
-            self.refresh_token()
         token = self.config.get('user', 'tokens//bearer//access_token')
         response = self.session_manager.session.post(
             f"{constants.AMAZON_API}/auth/deregister",
