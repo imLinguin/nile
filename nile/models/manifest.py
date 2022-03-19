@@ -86,3 +86,39 @@ class Manifest:
             return content
         else:
             raise ValueError("Unknown compression algorithm!")
+
+
+class ManifestComparison():
+    
+    def __init__(self):
+        self.new = []
+        self.removed = []
+        self.updated = []
+
+
+    @classmethod
+    def compare(cls, manifest, old_manifest=None):
+        comparison = cls()
+
+        if old_manifest:
+            old_files = dict()
+            for f in old_manifest.packages[0].files:
+                old_files[f.path] = f
+
+            for f in manifest.packages[0].files:
+                if f.path not in old_files:
+                    comparison.new.append(f)
+                    continue
+
+                if f.hash.value != old_files[f.path].hash.value:
+                    comparison.updated.append((old_files[f.path], f))
+                # delete files that are in old_files and new manifest from this dict
+                del old_files[f.path]
+
+            # all that remains are files that were removed!
+            comparison.removed = old_files.values()
+        else:
+            # In this case there are just new files
+            comparison.new = [f for f in manifest.packages[0].files]
+        
+        return comparison

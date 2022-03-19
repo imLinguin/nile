@@ -88,3 +88,29 @@ class Library:
         response_json = response.json()
 
         return response_json
+
+    def get_patches(self, id, version, file_list):
+        token = self.config.get("user", "tokens//bearer//access_token")
+
+        request_data = {
+            "Operation": "GetPatches",
+            "versionId": version,
+            "fileHashes": file_list,
+            "deltaEncodings": ["FUEL_PATCH", "NONE"],
+            "adgGoodId": id,
+        }
+
+        response = self.request_sds(
+            "com.amazonaws.gearbox.softwaredistribution.service.model.SoftwareDistributionService.GetPatches",
+            token,
+            request_data,
+        )
+
+        if not response.ok:
+            self.logger.error("There was an error getting patches")
+            self.logger.debug(response.content)
+            return
+
+        response_json = response.json()
+
+        return response_json['patches']

@@ -1,11 +1,16 @@
+#!/usr/bin/env python3
+
 import sys
 import logging
 from PyQt5.QtWidgets import QApplication
 from nile.arguments import get_arguments
+from nile.downloading import manager
 from nile.utils.config import Config
+from nile.utils.search import calculate_distance
 from nile.api import authorization, session, library
 from nile.gui import webview
-
+from nile.models import manifest
+from nile import constants,version, codename
 
 class CLI:
     def __init__(
@@ -22,7 +27,6 @@ class CLI:
         self.unknown_arguments = unknown_arguments
         if self.auth_manager.is_token_expired():
             self.auth_manager.refresh_token()
-
 
     def handle_auth(self):
         if self.arguments.login:
@@ -48,7 +52,7 @@ class CLI:
             games = self.config.get("library")
             games.sort(key=self.sort_by_title)
             for game in games:
-                games_list += f'{game["product"]["title"]} GENRES: {game["product"]["productDetail"]["details"]["genres"]}\n'
+                games_list += f'\033[1;32m{game["product"]["title"]} \033[1;0mGENRES: {game["product"]["productDetail"]["details"]["genres"]}\n'
 
             games_list += f"\n*** TOTAL {len(games)} ***\n"
             print(games_list)
@@ -59,6 +63,32 @@ class CLI:
                 sys.exit(1)
             self.library_manager.sync()
 
+    def handle_install(self):
+        games = self.config.get("library")
+        games.sort(key=self.sort_by_title)
+        matching_games = []
+        self.logger.info(f"Searching for {self.arguments.title}")
+        for game in games:
+            if (
+                calculate_distance(
+                    game["product"]["title"].lower(), self.arguments.title.lower()
+                )
+                >= constants.FUZZY_SEARCH_RATIO
+            ):
+                matching_games.append(game)
+
+        self.logger.debug(f"Matched query with: {[matching_games[i]['product']['title'] for i in range(len(matching_games))]}")
+
+        if len(matching_games) > 1:
+            self.logger.error("Matched more than one game! Interactive picker is coming soon")
+            return
+        if len(matching_games) == 0:
+            self.logger.error("Couldn't find what you are looking for")
+            return
+        self.logger.info(f"Found: {matching_games[0]['product']['title']}")
+        self.download_manager = manager.DownloadManager(self.config, self.library_manager, self.session, matching_games[0])
+        self.download_manager.download()
+
     def test(self):
         print("TEST")
 
@@ -66,7 +96,9 @@ class CLI:
 def main():
     qApp = QApplication(sys.argv)
     arguments, unknown_arguments = get_arguments()
-
+    if arguments.version:
+        print(version, codename)
+        return 0
     debug_mode = "-d" in unknown_arguments or "--debug" in arguments
     logging_level = logging.DEBUG if debug_mode else logging.INFO
     logging.basicConfig(
@@ -93,7 +125,8 @@ def main():
         cli.handle_library()
     elif command == "test":
         cli.test()
-
+    elif command == "install":
+        cli.handle_install()
     return 0
 
 

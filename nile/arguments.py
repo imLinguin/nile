@@ -2,6 +2,12 @@ def get_arguments():
     import argparse
 
     parser = argparse.ArgumentParser(description="Unofficial Amazon Games client")
+    parser.add_argument(
+        "--version",
+        dest="version",
+        action="store_true",
+        help="Display nile version",
+    )
     sub_parsers = parser.add_subparsers(dest="command")
 
     auth_parser = sub_parsers.add_parser("auth", help="Authorization related things")
@@ -16,9 +22,15 @@ def get_arguments():
     library_parser.add_argument("sub_command", choices=["list", "sync"])
 
     install_parser = sub_parsers.add_parser("install", help="Install a game")
-    install_parser.add_argument("title", help="Specify a title of the game to be installed")
+    install_parser.add_argument(
+        "title", help="Specify a title of the game to be installed"
+    )
     install_parser.add_argument("--max-workers", help="Specify max threads to be used")
-    install_parser.add_argument("--base-path", help="Specify base installation path e.g /home/USERNAME/Games/nile")
+    install_parser.add_argument(
+        "--base-path",
+        help="Specify base installation path e.g /home/USERNAME/Games/nile It'll append save filename to that path",
+    )
+    install_parser.add_argument("--path", help="Specify exact install location")
 
     test_parser = sub_parsers.add_parser("test")
 
