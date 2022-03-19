@@ -36,3 +36,8 @@ black is used for code formatting
 - Install dependencies `pip3 install -r requirements.txt`
 - Export PYTHONPATH variable `export PYTHONPATH=.`
 - Run nile `python3 nile/cli.py`
+
+
+# Prior work
+
+This is based on Rodney's work here: https://github.com/derrod/twl.py

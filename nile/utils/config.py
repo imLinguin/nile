@@ -5,8 +5,13 @@ import nile.constants as constants
 
 
 class Config:
+    """
+    Handles writing and reading from config with automatic in memory caching
+    TODO: Make memory caching opt out in some cases
+    """
     def __init__(self):
         self.logger = logging.getLogger("CONFIG")
+        self.cache = {}
 
     def _join_path_name(self, name: str) -> str:
         return os.path.join(constants.CONFIG_PATH, f"{name}.json")
@@ -25,6 +30,7 @@ class Config:
         """
         self.check_if_config_dir_exists()
         file_path = self._join_path_name(store)
+        self.cache.update({store: data})
         parsed = json.dumps(data)
         stream = open(file_path, "w")
 
@@ -39,10 +45,14 @@ class Config:
         """
         file_path = self._join_path_name(store)
         if os.path.exists(file_path) and os.path.isfile(file_path):
-            stream = open(file_path, "r")
-            data = stream.read()
+            if not self.cache.get(store):
+                stream = open(file_path, "r")
+                data = stream.read()
 
-            parsed = json.loads(data)
+                parsed = json.loads(data)
+                self.cache.update({store: parsed})
+            else:
+                parsed = self.cache[store]
             if not key:
                 return parsed
             if type(key) is str:
@@ -58,7 +68,7 @@ class Config:
 
     def _get_value_based_on_keys(self, parsed, keys):
         if len(keys) > 1:
-            iterator = parsed
+            iterator = parsed.copy()
             for key in keys:
                 iterator = iterator[key]
 

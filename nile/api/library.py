@@ -36,7 +36,7 @@ class Library:
             "user",
             [
                 "tokens//bearer//access_token",
-                "extenstions//device_info//device_serial_number",
+                "extensions//device_info//device_serial_number",
             ],
         )
         request_data = {
