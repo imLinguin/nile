@@ -22,10 +22,11 @@ class LaunchInstruction:
         json_data = json.loads(raw_data)
         stream.close()
         instruction.version = json_data["SchemaVersion"]
-        instruction.command = os.path.join(game_path,json_data["Main"]["Command"])
+        instruction.command = os.path.join(game_path, json_data["Main"]["Command"])
         instruction.arguments = json_data["Main"]["Args"]
         instruction.arguments.extend(unknown_arguments)
         return instruction
+
 
 class Launcher:
     def __init__(self, config_manager, arguments, unknown_arguments):
@@ -75,26 +76,31 @@ class Launcher:
             self.logger.error("Unable to launch a game: fuel.json doesn't exist")
             return
 
-        instruction = LaunchInstruction.parse(game_path, fuel_path, self.unknown_arguments)
+        instruction = LaunchInstruction.parse(
+            game_path, fuel_path, self.unknown_arguments
+        )
 
         command = list()
         environment = os.environ.copy()
+        if sys.platform == "win32":
+            command.append(instruction.command)
+            command.extend(instruction.arguments)
+        else:
+            if self.wine_prefix and not self.dont_use_wine:
+                environment.update({"WINEPREFIX": self.wine_prefix})
+                command.append(self.wine_bin)
+                command.append(instruction.command)
+                command.extend(instruction.arguments)
+            elif self.bottle and self._get_bottles_bin() and self.dont_use_wine:
+                command = self.create_bottles_command(
+                    instruction.command, arguments=instruction.arguments
+                )
+            elif self.wrapper and self.dont_use_wine:
+                splited_wrapper = shlex.split(self.wrapper)
+                command.extend(splitted_wrapper)
+                command.append(instruction.command)
+                command.extend(instruction.arguments)
 
-        if self.wine_prefix and not self.dont_use_wine:
-            environment.update({"WINEPREFIX": self.wine_prefix})
-            command.append(self.wine_bin)
-            command.append(instruction.command)
-            command.extend(instruction.arguments)
-        elif self.bottle and self._get_bottles_bin() and self.dont_use_wine:
-            command = self.create_bottles_command(
-                instruction.command, arguments=instruction.arguments
-            )
-        elif self.wrapper and self.dont_use_wine:
-            splited_wrapper = shlex.split(self.wrapper)
-            command.extend(splitted_wrapper)
-            command.append(instruction.command)
-            command.extend(instruction.arguments)
-    
         process = subprocess.Popen(command, cwd=game_path)
 
         return process.wait()
