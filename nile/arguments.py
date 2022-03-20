@@ -33,10 +33,28 @@ def get_arguments():
         dest="base_path",
         help="Specify base installation path e.g /home/USERNAME/Games/nile It'll append save filename to that path",
     )
-    install_parser.add_argument("--path", dest="exact_path", help="Specify exact install location")
+    install_parser.add_argument(
+        "--path", dest="exact_path", help="Specify exact install location"
+    )
 
     check_for_updates_parser = sub_parsers.add_parser("list-updates")
-    check_for_updates_parser.add_argument("--json", action="store_true", help="Output data in json format")
+    check_for_updates_parser.add_argument(
+        "--json", action="store_true", help="Output data in json format"
+    )
+
+    launch_parser = sub_parsers.add_parser("launch", help="Launch installed games")
+    launch_parser.add_argument("title")
+    launch_parser.add_argument(
+        "--bottle", help="Specify bottle to use (requires Bottles)"
+    )
+    launch_parser.add_argument("--wine-prefix", dest="wine_prefix", help="Specify wineprefix to be used")
+    launch_parser.add_argument("--wine", help="Specify wine binary")
+    launch_parser.add_argument(
+        "--no-wine", dest="dont_use_wine", action="store_true", help="Don't use wine (useful when specifying custom wrapper)"
+    )
+    launch_parser.add_argument(
+        "--wrapper", help="Wrapper to bue used when launching a game"
+    )
     test_parser = sub_parsers.add_parser("test")
 
     return parser.parse_known_args()

@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QApplication
 from nile.arguments import get_arguments
 from nile.downloading import manager
 from nile.utils.config import Config
+from nile.utils.launch import Launcher
 from nile.utils.search import calculate_distance
 from nile.api import authorization, session, library
 from nile.gui import webview
@@ -140,6 +141,47 @@ class CLI:
             if game["id"] in updateable:
                 print(game["product"]["title"])
         print(f"NUMBER OF GAMES: {len(updateable)}")
+
+    def handle_launch(self):
+        games = self.config.get("library")
+        matching_games = []
+        self.logger.info(f"Searching for {self.arguments.title}")
+        for game in games:
+            distance = calculate_distance(
+                game["product"]["title"].lower(), self.arguments.title.lower()
+            )
+            if distance >= constants.FUZZY_SEARCH_RATIO:
+                game["NILE_fuzzy_search_dst"] = distance
+                matching_games.append(game)
+
+        matching_games.sort(key=self.sort_by_search_ratio)
+
+        if len(matching_games) == 0:
+            self.logger.error("No games match")
+            return
+        game = matching_games[0]
+
+        self.logger.debug("Checking if game is installed")
+        installed_games = self.config.get("installed")
+
+        if not installed_games:
+            self.logger.error("No game is installed")
+            return
+
+        found = None
+        for installed_game in installed_games:
+            if installed_game["id"] == game["id"]:
+                found = installed_game
+                break
+        
+        if not found:
+            self.logger.error("Game is not installed")
+            return
+        
+        launcher = Launcher(self.config, self.arguments, self.unknown_arguments)
+
+        launcher.start(found["path"])
+
     def test(self):
         print("TEST")
 
@@ -180,6 +222,8 @@ def main():
         cli.handle_install()
     elif command == "list-updates":
         cli.list_updates()
+    elif command == "launch":
+        cli.handle_launch()
     return 0
 
 
