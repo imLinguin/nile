@@ -32,7 +32,7 @@ def check_available_space(size, path) -> bool:
 
 def calculate_checksum(hashing_function, path):
     with open(path, 'rb') as f:
-        calculate = function()
+        calculate = hashing_function()
         while True:
             chunk = f.read(16 * 1024)
             if not chunk:

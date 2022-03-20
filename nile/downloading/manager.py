@@ -101,6 +101,7 @@ class DownloadManager:
         self.thpool = ThreadPoolExecutor(max_workers=cpu_count())
         for f in patchmanifest.files:
             worker = DownloadWorker(f, game_location, self.session)
+            # worker.execute()
             self.threads.append(self.thpool.submit(worker.execute))
 
         while True:

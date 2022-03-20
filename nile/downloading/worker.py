@@ -19,13 +19,12 @@ class DownloadWorker:
         if os.path.exists(file_path):
             if self.verify_downloaded_file(file_path):
                 return
-        # TODO: Patching
         self.get_file(file_path)
         if not self.verify_downloaded_file(file_path):
             print(f"Checksum error for {file_path}")
 
     def verify_downloaded_file(self, path) -> bool:
-        return self.data.target_hash == calculate_checksum(hashlib.sha256, path)
+        return self.data.target_hash == calculate_checksum(get_hashing_function(self.data.target_hash_type), path)
 
     def get_file(self, path):
         with open(path + ".patch", "ab") as f:

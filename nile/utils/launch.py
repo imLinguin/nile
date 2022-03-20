@@ -46,19 +46,18 @@ class Launcher:
         os_path = shutil.which("bottles")
         flatpak_path = shutil.which("flatpak")
         if os_path:
-            return os_path
+            return [os_path]
         elif flatpak_path:
             process = subprocess.run(["flatpak", "info", "com.usebottles.bottles"])
 
             if process.returncode != 1:
-                return f"{flatpak_path} run com.usebottles.bottles"
+                return [flatpak_path, "run", "com.usebottles.bottles"]
         return None
 
     def create_bottles_command(self, exe, arguments=[]):
-        command = [self._get_bottles_bin(), "-b", self.bottle, "-e", exe]
+        command = self._get_bottles_bin() + ["-b", self.bottle, "-e", exe]
         if len(arguments) > 0:
             command.extend(["-a", arguments])
-
         return command
 
     def start(self, game_path):
@@ -100,7 +99,6 @@ class Launcher:
                 command.extend(splitted_wrapper)
                 command.append(instruction.command)
                 command.extend(instruction.arguments)
-
         process = subprocess.Popen(command, cwd=game_path)
 
         return process.wait()
