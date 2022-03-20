@@ -24,19 +24,26 @@ class Config:
         if not os.path.exists(constants.CONFIG_PATH):
             os.makedirs(constants.CONFIG_PATH)
 
-    def write(self, store: str, data: any):
+    def write(self, store: str, data: any, raw=False):
         """
         Stringifies data to json and overrides file contents
         """
         self.check_if_config_dir_exists()
+        directory, filename = os.path.split(self._join_path_name(store))
+        os.makedirs(directory, exist_ok=True)
         file_path = self._join_path_name(store)
         self.cache.update({store: data})
-        parsed = json.dumps(data)
-        stream = open(file_path, "w")
+        mode = "w"
+        if raw:
+            parsed = data
+            mode+="b"
+        else:
+            parsed = json.dumps(data)
+        stream = open(file_path, mode)
 
         stream.write(parsed)
 
-    def get(self, store: str, key: str or list = None) -> any or None:
+    def get(self, store: str, key: str or list = None, raw=False) -> any or None:
         """
         Get value of provided key from store
         Double slash separated keys can access object values
@@ -46,9 +53,12 @@ class Config:
         file_path = self._join_path_name(store)
         if os.path.exists(file_path) and os.path.isfile(file_path):
             if not self.cache.get(store):
+                if raw:
+                    stream = open(file_path, "rb")
+                    data = stream.read()
+                    return data
                 stream = open(file_path, "r")
                 data = stream.read()
-
                 parsed = json.loads(data)
                 self.cache.update({store: parsed})
             else:

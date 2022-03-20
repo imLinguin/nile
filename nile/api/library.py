@@ -114,3 +114,38 @@ class Library:
         response_json = response.json()
 
         return response_json['patches']
+
+
+    def get_versions(self, game_ids):
+        token = self.config.get("user", "tokens//bearer//access_token")
+
+        request_data = {
+            "adgProductIds": game_ids,
+            "Operation": "GetVersions"
+        }
+
+        response = self.request_sds(
+            "com.amazonaws.gearbox.softwaredistribution.service.model.SoftwareDistributionService.GetVersions",
+            token,
+            request_data,
+        )
+
+        if not response.ok:
+            self.logger.error("There was an error getting versions")
+            self.logger.debug(response.content)
+            return
+
+        response_json = response.json()
+
+        return response_json["versions"]
+
+
+    def get_installed_game_info(self, id):
+        installed_array = self.config.get("installed")
+        if not installed_array:
+            return dict()
+        for game in installed_array:
+            if game["id"] == id:
+                return game
+
+        return dict()

@@ -2,6 +2,7 @@
 
 import sys
 import logging
+import json
 from PyQt5.QtWidgets import QApplication
 from nile.arguments import get_arguments
 from nile.downloading import manager
@@ -10,7 +11,8 @@ from nile.utils.search import calculate_distance
 from nile.api import authorization, session, library
 from nile.gui import webview
 from nile.models import manifest
-from nile import constants,version, codename
+from nile import constants, version, codename
+
 
 class CLI:
     def __init__(
@@ -44,6 +46,9 @@ class CLI:
     def sort_by_title(self, element):
         return element["product"]["title"]
 
+    def sort_by_search_ratio(self, element):
+        return element["NILE_fuzzy_search_dst"]
+
     def handle_library(self):
         cmd = self.arguments.sub_command
 
@@ -69,26 +74,72 @@ class CLI:
         matching_games = []
         self.logger.info(f"Searching for {self.arguments.title}")
         for game in games:
-            if (
-                calculate_distance(
-                    game["product"]["title"].lower(), self.arguments.title.lower()
-                )
-                >= constants.FUZZY_SEARCH_RATIO
-            ):
+            distance = calculate_distance(
+                game["product"]["title"].lower(), self.arguments.title.lower()
+            )
+            if distance >= constants.FUZZY_SEARCH_RATIO:
+                game["NILE_fuzzy_search_dst"] = distance
                 matching_games.append(game)
 
-        self.logger.debug(f"Matched query with: {[matching_games[i]['product']['title'] for i in range(len(matching_games))]}")
+        matching_games.sort(key=self.sort_by_search_ratio)
+        self.logger.debug(
+            f"Matched query with: {[matching_games[i]['product']['title'] for i in range(len(matching_games))]}"
+        )
 
         if len(matching_games) > 1:
-            self.logger.error("Matched more than one game! Interactive picker is coming soon")
-            return
+            self.logger.warning(
+                "Matched more than one game! Interactive picker is coming soon, using using most accurate one"
+            )
         if len(matching_games) == 0:
             self.logger.error("Couldn't find what you are looking for")
             return
         self.logger.info(f"Found: {matching_games[0]['product']['title']}")
-        self.download_manager = manager.DownloadManager(self.config, self.library_manager, self.session, matching_games[0])
-        self.download_manager.download()
+        self.download_manager = manager.DownloadManager(
+            self.config, self.library_manager, self.session, matching_games[0]
+        )
+        self.download_manager.download(
+            force_verifying=bool(self.arguments.command == "verify"),
+            base_install_path=self.arguments.base_path,
+            install_path=self.arguments.exact_path,
+        )
+        self.logger.info("Download complete")
 
+    
+    def list_updates(self):
+        installed_array = self.config.get("installed")
+
+        if not installed_array:
+            self.logger.error("No games installed")
+            return
+
+        # Prepare array of game ids
+        game_ids = dict()
+        for game in installed_array:
+            game_ids.update({game["id"]:game})
+        self.logger.debug(f"Checking for updates for {list(game_ids.keys())}, count: {len(game_ids)}")
+        versions = self.library_manager.get_versions(list(game_ids.keys()))
+
+        updateable = list()
+
+        for version in versions:
+            if version["versionId"] != game_ids[version["adgProductId"]]["version"]:
+                updateable.append(version["adgProductId"])
+        self.logger.debug(f"Updateable games: {updateable}")
+        if self.arguments.json:
+            print(json.dumps(updateable))
+            return
+
+        if len(updateable) == 0:
+            self.logger.info("No updates available")
+            return
+        games = self.config.get("library")
+        games.sort(key=self.sort_by_title)
+
+        print("Games with updates:")
+        for game in games:
+            if game["id"] in updateable:
+                print(game["product"]["title"])
+        print(f"NUMBER OF GAMES: {len(updateable)}")
     def test(self):
         print("TEST")
 
@@ -125,8 +176,10 @@ def main():
         cli.handle_library()
     elif command == "test":
         cli.test()
-    elif command == "install":
+    elif command in ["install", "verify", "update"]:
         cli.handle_install()
+    elif command == "list-updates":
+        cli.list_updates()
     return 0
 
 

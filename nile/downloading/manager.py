@@ -29,6 +29,7 @@ class DownloadManager:
         r_manifest = manifest.Manifest()
         self.logger.debug("Parsing manifest data")
         r_manifest.parse(response.content)
+        self.protobuff_manifest = response.content
         return r_manifest
 
     def get_patchmanifest(self, comparison: manifest.ManifestComparison):
@@ -45,25 +46,43 @@ class DownloadManager:
 
         return patch_manifest.PatchManifest.build_patch_manifest(comparison, patches)
 
-    def download(self, base_install_path="", install_path=""):
+    def download(self, force_verifying=False, base_install_path="", install_path=""):
         game_location = base_install_path
         if not base_install_path:
             game_location = install_path
+        else:
+            game_location = os.path.join(
+                base_install_path,
+                dl_utils.save_directory_name(self.game["product"]["title"]),
+            )
         if not base_install_path and not install_path:
             game_location = os.path.join(
                 constants.DEFAULT_INSTALL_PATH,
                 dl_utils.save_directory_name(self.game["product"]["title"]),
             )
+        saved_location = self.library_manager.get_installed_game_info(
+            self.game["id"]
+        ).get("path")
+        if saved_location:
+            game_location = saved_location
 
+        self.install_path = game_location
         self.manifest = self.get_manifest()
 
         self.logger.debug(f"Number of packages: {len(self.manifest.packages)}")
+        old_manifest_pb = self.config.get(f"manifests/{self.game['id']}", raw=True)
+        old_manifest = None
 
-        comparison = manifest.ManifestComparison.compare(self.manifest)
+        if old_manifest_pb and not force_verifying:
+            old_manifest = manifest.Manifest()
+            old_manifest.parse(old_manifest_pb)
+        comparison = manifest.ManifestComparison.compare(self.manifest, old_manifest)
 
         patchmanifest = self.get_patchmanifest(comparison)
         self.logger.debug(f"Number of files {len(patchmanifest.files)}")
-
+        if len(patchmanifest.files) == 0:
+            self.logger.info("Game is up to date")
+            return
         total_size = sum(f.download_size for f in patchmanifest.files)
         readable_size = dl_utils.get_readable_size(total_size)
         self.logger.info(
@@ -93,3 +112,33 @@ class DownloadManager:
             if is_done:
                 break
             sleep(0.1)
+        self.finish()
+
+    def finish(self):
+        # Save manifest to the file
+
+        self.config.write(
+            f"manifests/{self.game['id']}", self.protobuff_manifest, raw=True
+        )
+
+        # Save data to installed.json file
+        installed_array = self.config.get("installed")
+
+        if not installed_array:
+            installed_array = list()
+
+        installed_game_data = dict(
+            id=self.game["id"], version=self.version, path=self.install_path
+        )
+        updated = False
+        # Swap existing entry in case of updating etc..
+        for i, game in enumerate(installed_array):
+            if game["id"] == self.game["id"]:
+                installed_array[i] = installed_game_data
+                updated = True
+                break
+
+        if not updated:
+            installed_array.append(installed_game_data)
+
+        self.config.write("installed", installed_array)

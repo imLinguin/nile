@@ -1,5 +1,6 @@
 import os
 import shutil
+import hashlib
 from nile.constants import ILLEGAL_FNAME_CHARS
 
 
@@ -39,3 +40,9 @@ def calculate_checksum(hashing_function, path):
             calculate.update(chunk)
 
         return calculate.hexdigest()
+
+def get_hashing_function(h_type):
+    if h_type.lower() == "sha256":
+        return hashlib.sha256
+    elif h_type.lower() == "shake128":
+        return hashlib.shake_128
