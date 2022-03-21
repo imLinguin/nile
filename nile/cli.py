@@ -163,13 +163,12 @@ class CLI:
                 matching_games.append(game)
 
         matching_games.sort(key=self.sort_by_search_ratio)
-
         if len(matching_games) == 0:
             self.logger.error("No games match")
             return
         game = matching_games[0]
 
-        self.logger.debug("Checking if game is installed")
+        self.logger.debug(f"Checking if game {game['product']['title']} id: {game['id']} is installed")
         installed_games = self.config.get("installed")
 
         if not installed_games:
