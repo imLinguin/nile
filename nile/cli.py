@@ -28,7 +28,7 @@ class CLI:
         self.arguments = arguments
         self.logger = logger
         self.unknown_arguments = unknown_arguments
-        if self.auth_manager.is_token_expired():
+        if self.auth_manager.is_logged_in() and self.auth_manager.is_token_expired():
             self.auth_manager.refresh_token()
 
     def handle_auth(self):
@@ -56,11 +56,19 @@ class CLI:
         if cmd == "list":
             games_list = ""
             games = self.config.get("library")
+            installed = self.config.get("installed")
+            installed_dict = dict()
+            if installed:
+                for game in installed:
+                    installed_dict[game["id"]] = game
             games.sort(key=self.sort_by_title)
+            displayed_count = 0
             for game in games:
+                if self.arguments.installed and not installed_dict.get(game["id"]):
+                    continue
                 games_list += f'\033[1;32m{game["product"]["title"]} \033[1;0mGENRES: {game["product"]["productDetail"]["details"]["genres"]}\n'
-
-            games_list += f"\n*** TOTAL {len(games)} ***\n"
+                displayed_count+=1
+            games_list += f"\n*** TOTAL {displayed_count} ***\n"
             print(games_list)
 
         elif cmd == "sync":

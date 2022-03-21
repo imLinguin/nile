@@ -144,6 +144,8 @@ class AuthenticationManager:
         token_obtain_time, expires_in = self.config.get(
             "user", ["NILE//token_obtain_time", "tokens//bearer//expires_in"]
         )
+        if not token_obtain_time or not expires_in:
+            return False
         return time.time() > token_obtain_time + int(expires_in)
 
     def get_authorization_header(self) -> str:

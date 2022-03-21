@@ -74,6 +74,9 @@ class Config:
                     keys = option.split("//")
                     array.append(self._get_value_based_on_keys(parsed, keys))
                 return array
+
+        if type(key) is list:
+            return [None for i in key]
         return None
 
     def _get_value_based_on_keys(self, parsed, keys):

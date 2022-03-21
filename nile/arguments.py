@@ -20,7 +20,7 @@ def get_arguments():
         "library", help="Your games library is in this place"
     )
     library_parser.add_argument("sub_command", choices=["list", "sync"])
-
+    library_parser.add_argument("--installed", "-i", action="store_true", help="List only installed games")
     install_parser = sub_parsers.add_parser(
         "install", aliases=["update", "verify"], help="Install a game"
     )
@@ -45,7 +45,7 @@ def get_arguments():
     launch_parser = sub_parsers.add_parser("launch", help="Launch installed games")
     launch_parser.add_argument("title")
     launch_parser.add_argument(
-        "--bottle", help="Specify bottle to use (requires Bottles)"
+        "--bottle" , "-b", help="Specify bottle to use (requires Bottles)"
     )
     launch_parser.add_argument("--wine-prefix", dest="wine_prefix", help="Specify wineprefix to be used")
     launch_parser.add_argument("--wine", help="Specify wine binary")
