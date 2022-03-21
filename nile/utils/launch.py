@@ -99,6 +99,6 @@ class Launcher:
                 command.extend(splitted_wrapper)
                 command.append(instruction.command)
                 command.extend(instruction.arguments)
-        process = subprocess.Popen(command, cwd=game_path)
+        process = subprocess.Popen(command, cwd=game_path, env=environment)
 
         return process.wait()
