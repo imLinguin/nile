@@ -27,6 +27,9 @@ class DownloadWorker:
         return self.data.target_hash == calculate_checksum(get_hashing_function(self.data.target_hash_type), path)
 
     def get_file(self, path):
+        if os.path.exists(path + ".patch"):
+            os.remove(path+".patch")
+
         with open(path + ".patch", "ab") as f:
             response = self.session.get(
                 self.data.urls[0], stream=True, allow_redirects=True
@@ -46,11 +49,11 @@ class DownloadWorker:
             patch_sum = calculate_checksum(
                 get_hashing_function(self.data.patch_hash_type), path + ".patch"
             )
-            if not self.data.patch_hash == patch_sum:
+            if self.data.patch_hash != patch_sum:
                 return self.get_file(path)
             # Patch the file here
             patcher = Patcher(
-                open(path, "rb"), open(path + ".patch", "rb"), open(path + ".new"), "wb"
+                open(path, "rb"), open(path + ".patch", "rb"), open(path + ".new", "wb")
             )
 
             patcher.run()
