@@ -25,7 +25,7 @@ def get_arguments():
         "install", aliases=["update", "verify"], help="Install a game"
     )
     install_parser.add_argument(
-        "title", help="Specify a title of the game to be installed"
+        "id", help="Specify a ID of the game to be installed"
     )
     install_parser.add_argument("--max-workers", help="Specify max threads to be used")
     install_parser.add_argument(
@@ -43,7 +43,7 @@ def get_arguments():
     )
 
     launch_parser = sub_parsers.add_parser("launch", help="Launch installed games")
-    launch_parser.add_argument("title")
+    launch_parser.add_argument("id")
     launch_parser.add_argument(
         "--bottle" , "-b", help="Specify bottle to use (requires Bottles)"
     )

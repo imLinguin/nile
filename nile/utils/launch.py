@@ -39,6 +39,7 @@ class Launcher:
         self.logger = logging.getLogger("LAUNCHER")
         self.unknown_arguments = unknown_arguments
 
+        self.bottles_bin = self._get_bottles_bin()
     def _get_installed_data(self):
         return self.config.get("installed")
 
@@ -48,7 +49,7 @@ class Launcher:
         if os_path:
             return [os_path]
         elif flatpak_path:
-            process = subprocess.run(["flatpak", "info", "com.usebottles.bottles"])
+            process = subprocess.run(["flatpak", "info", "com.usebottles.bottles"], stdout=subprocess.DEVNULL)
 
             if process.returncode != 1:
                 return [flatpak_path, "run", "com.usebottles.bottles"]
@@ -57,7 +58,7 @@ class Launcher:
     def create_bottles_command(self, exe, arguments=[]):
         command = self._get_bottles_bin() + ["-b", self.bottle, "-e", exe]
         if len(arguments) > 0:
-            command.extend(["-a", arguments])
+            command.extend(["-a"] + arguments)
         return command
 
     def start(self, game_path):
@@ -90,7 +91,7 @@ class Launcher:
                 command.append(self.wine_bin)
                 command.append(instruction.command)
                 command.extend(instruction.arguments)
-            elif self.bottle and self._get_bottles_bin() and self.dont_use_wine:
+            elif self.bottle and self.bottles_bin:
                 command = self.create_bottles_command(
                     instruction.command, arguments=instruction.arguments
                 )
@@ -99,6 +100,7 @@ class Launcher:
                 command.extend(splitted_wrapper)
                 command.append(instruction.command)
                 command.extend(instruction.arguments)
+        self.logger.info("Launching")
         process = subprocess.Popen(command, cwd=game_path, env=environment)
 
         return process.wait()

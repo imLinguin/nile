@@ -47,9 +47,6 @@ class CLI:
     def sort_by_title(self, element):
         return element["product"]["title"]
 
-    def sort_by_search_ratio(self, element):
-        return element["NILE_fuzzy_search_dst"]
-
     def handle_library(self):
         cmd = self.arguments.sub_command
 
@@ -66,8 +63,8 @@ class CLI:
             for game in games:
                 if self.arguments.installed and not installed_dict.get(game["id"]):
                     continue
-                games_list += f'\033[1;32m{game["product"]["title"]} \033[1;0mGENRES: {game["product"]["productDetail"]["details"]["genres"]}\n'
-                displayed_count+=1
+                games_list += f'{"(INSTALLED) " if installed_dict.get(game["id"]) and not self.arguments.installed else ""}{game["product"]["title"]} ID: {game["id"]} GENRES: {game["product"]["productDetail"]["details"]["genres"]}\n'
+                displayed_count += 1
             games_list += f"\n*** TOTAL {displayed_count} ***\n"
             print(games_list)
 
@@ -80,31 +77,17 @@ class CLI:
     def handle_install(self):
         games = self.config.get("library")
         games.sort(key=self.sort_by_title)
-        matching_games = []
-        self.logger.info(f"Searching for {self.arguments.title}")
+        matching_game = None
         for game in games:
-            distance = calculate_distance(
-                game["product"]["title"].lower(), self.arguments.title.lower()
-            )
-            if distance >= constants.FUZZY_SEARCH_RATIO:
-                game["NILE_fuzzy_search_dst"] = distance
-                matching_games.append(game)
-
-        matching_games.sort(key=self.sort_by_search_ratio)
-        self.logger.debug(
-            f"Matched query with: {[matching_games[i]['product']['title'] for i in range(len(matching_games))]}"
-        )
-
-        if len(matching_games) > 1:
-            self.logger.warning(
-                "Matched more than one game! Interactive picker is coming soon, using using most accurate one"
-            )
-        if len(matching_games) == 0:
+            if game["id"] == self.arguments.id:
+                matching_game = game
+                break
+        if not matching_game:
             self.logger.error("Couldn't find what you are looking for")
             return
-        self.logger.info(f"Found: {matching_games[0]['product']['title']}")
+        self.logger.info(f"Found: {matching_game['product']['title']}")
         self.download_manager = manager.DownloadManager(
-            self.config, self.library_manager, self.session, matching_games[0]
+            self.config, self.library_manager, self.session, matching_game
         )
         self.download_manager.download(
             force_verifying=bool(self.arguments.command == "verify"),
@@ -113,7 +96,6 @@ class CLI:
         )
         self.logger.info("Download complete")
 
-    
     def list_updates(self):
         installed_array = self.config.get("installed")
 
@@ -124,8 +106,10 @@ class CLI:
         # Prepare array of game ids
         game_ids = dict()
         for game in installed_array:
-            game_ids.update({game["id"]:game})
-        self.logger.debug(f"Checking for updates for {list(game_ids.keys())}, count: {len(game_ids)}")
+            game_ids.update({game["id"]: game})
+        self.logger.debug(
+            f"Checking for updates for {list(game_ids.keys())}, count: {len(game_ids)}"
+        )
         versions = self.library_manager.get_versions(list(game_ids.keys()))
 
         updateable = list()
@@ -152,23 +136,20 @@ class CLI:
 
     def handle_launch(self):
         games = self.config.get("library")
-        matching_games = []
-        self.logger.info(f"Searching for {self.arguments.title}")
+        matching_game = None
+        self.logger.info(f"Searching for {self.arguments.id}")
         for game in games:
-            distance = calculate_distance(
-                game["product"]["title"].lower(), self.arguments.title.lower()
-            )
-            if distance >= constants.FUZZY_SEARCH_RATIO:
-                game["NILE_fuzzy_search_dst"] = distance
-                matching_games.append(game)
-
-        matching_games.sort(key=self.sort_by_search_ratio)
-        if len(matching_games) == 0:
-            self.logger.error("No games match")
+            if game["id"] == self.arguments.id:
+                matching_game = game
+                break
+        if not matching_game:
+            self.logger.error("No game match")
             return
-        game = matching_games[0]
+        self.logger.debug(f"Found {matching_game['product']['title']}")
 
-        self.logger.debug(f"Checking if game {game['product']['title']} id: {game['id']} is installed")
+        self.logger.debug(
+            f"Checking if game {game['product']['title']} id: {matching_game['id']} is installed"
+        )
         installed_games = self.config.get("installed")
 
         if not installed_games:
@@ -177,14 +158,14 @@ class CLI:
 
         found = None
         for installed_game in installed_games:
-            if installed_game["id"] == game["id"]:
+            if installed_game["id"] == matching_game["id"]:
                 found = installed_game
                 break
-        
+
         if not found:
             self.logger.error("Game is not installed")
             return
-        
+
         launcher = Launcher(self.config, self.arguments, self.unknown_arguments)
 
         launcher.start(found["path"])
@@ -199,7 +180,13 @@ def main():
     if arguments.version:
         print(version, codename)
         return 0
-    debug_mode = "-d" in unknown_arguments or "--debug" in arguments
+    debug_mode = "-d" in unknown_arguments or "--debug" in unknown_arguments
+    if debug_mode:
+        if "-d" in unknown_arguments:
+            unknown_arguments.remove("-d")
+        elif "--debug" in unknown_arguments:
+            unknown_arguments.remove("--debug")
+
     logging_level = logging.DEBUG if debug_mode else logging.INFO
     logging.basicConfig(
         level=logging_level, format="%(levelname)s [%(name)s]:\t %(message)s"

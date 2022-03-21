@@ -6,7 +6,7 @@ AMAZON_API = "https://api.amazon.com"
 AMAZON_SDS = "https://sds.amazon.com"
 AMAZON_GAMING_GRAPHQL = "https://gaming.amazon.com/graphql"
 
-FUZZY_SEARCH_RATIO = 0.5
+FUZZY_SEARCH_RATIO = 0.7
 
 DEFAULT_INSTALL_PATH = os.path.join(
     os.getenv("HOME", os.path.expanduser("~")), "Games", "nile"

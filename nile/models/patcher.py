@@ -5,7 +5,7 @@ import zstandard as zstd
 
 from enum import Enum
 
-logger = logging.getLogger('twl')
+logger = logging.getLogger('PATCHER')
 
 
 class Instructions(Enum):
