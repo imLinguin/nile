@@ -6,6 +6,7 @@ from time import sleep
 import nile.utils.download as dl_utils
 from nile.models import manifest, hash_pairs, patch_manifest
 from nile.downloading.worker import DownloadWorker
+# from nile.models.progressbar import ProgressBar
 from nile import constants
 
 
@@ -17,6 +18,9 @@ class DownloadManager:
         self.game = game
         self.logger = logging.getLogger("DOWNLOAD")
         self.logger.debug("Initialized Download Manager")
+
+        self.manifest = None
+        self.old_manifest = None
         self.threads = []
 
     def get_manifest(self):
@@ -46,6 +50,22 @@ class DownloadManager:
 
         return patch_manifest.PatchManifest.build_patch_manifest(comparison, patches)
 
+    def get_installed_version(self):
+        installed_games = self.config.get("installed")
+        if installed_games:
+            for game in installed_games:
+                if self.game["id"] == game["id"]:
+                    return game["version"]
+        return None
+
+    def load_installed_manifest(self):
+        old_manifest_pb = self.config.get(f"manifests/{self.game['id']}", raw=True)
+        old_manifest = None
+        if old_manifest_pb:
+            old_manifest = manifest.Manifest()
+            old_manifest.parse(old_manifest_pb)
+        return old_manifest
+
     def download(self, force_verifying=False, base_install_path="", install_path=""):
         game_location = base_install_path
         if not base_install_path:
@@ -67,16 +87,22 @@ class DownloadManager:
             game_location = saved_location
 
         self.install_path = game_location
-        self.manifest = self.get_manifest()
+        if not force_verifying:
+            self.manifest = self.get_manifest()
+            self.old_manifest = self.load_installed_manifest()
+        else:
+            self.logger.debug("Loading manifest from the disk")
+            self.version = self.get_installed_version()
+            self.manifest = self.load_installed_manifest()
 
+        if not self.manifest:
+            self.logger.error("Unable to load manifest")
+            return
         self.logger.debug(f"Number of packages: {len(self.manifest.packages)}")
-        old_manifest_pb = self.config.get(f"manifests/{self.game['id']}", raw=True)
-        old_manifest = None
 
-        if old_manifest_pb and not force_verifying:
-            old_manifest = manifest.Manifest()
-            old_manifest.parse(old_manifest_pb)
-        comparison = manifest.ManifestComparison.compare(self.manifest, old_manifest)
+        comparison = manifest.ManifestComparison.compare(
+            self.manifest, self.old_manifest
+        )
 
         patchmanifest = self.get_patchmanifest(comparison)
         self.logger.debug(f"Number of files {len(patchmanifest.files)}")
@@ -92,6 +118,8 @@ class DownloadManager:
         if not dl_utils.check_available_space(total_size, game_location):
             self.logger.error("Not enough space available")
             return
+
+        # self.progressbar = ProgressBar(total_size)
 
         for directory in patchmanifest.dirs:
             os.makedirs(
@@ -112,8 +140,11 @@ class DownloadManager:
                     break
             if is_done:
                 break
-            sleep(0.1)
-        self.finish()
+            # self.progressbar.print()
+            sleep(0.5)
+
+        if not force_verifying:
+            self.finish()
 
     def finish(self):
         # Save manifest to the file
