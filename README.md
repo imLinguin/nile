@@ -28,6 +28,23 @@ Nile aims to be CLI and GUI tool for managing and playing games from Amazon.
 # Purpose
 This is my attempt to make Amazon Games useful for Linux users, who want to play titles obtained thanks to [Prime](https://prime.amazon.com) membership.
 
+# Dependencies
+## Arch, Manjaro etc..
+`sudo pacman -Sy pyqt5 python-pycryptodome python-zstandard python-requests`
+## Ubuntu
+`sudo apt install python3-pyqt5 python3-pycryptodome python3-requests python-zstd`
+## With pip
+> Do this after cloning the repo and cd into the directory
+
+`pip3 install -r requirements.txt`
+
+# Installation
+Currently app is not packaged in any way so here are a few steps to download it:
+
+- Clone repo using git or download the ZIP `git clone https://github.com/imLinguin/nile`
+- CD into the directory `cd nile`
+- Login `./bin/nile auth --login`
+- Have fun
 
 # Contributing
 
@@ -39,9 +56,8 @@ black is used for code formatting
 - Clone the repo `git clone https://github.com/imLinguin/nile`
 - CD into the directory `cd nile`
 - Setup virtual environment `python3 -m venv env`
-- Install dependencies `pip3 install -r requirements.txt`
-- Export PYTHONPATH variable `export PYTHONPATH=.`
-- Run nile `python3 nile/cli.py`
+- Install [dependencies](#dependencies)
+- Run nile `./bin/nile`
 
 
 # Prior work

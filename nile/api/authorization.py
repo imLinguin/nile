@@ -1,6 +1,6 @@
 from urllib.parse import urlencode, urlparse, parse_qs
 import nile.constants as constants
-from gui import webview
+from nile.gui import webview
 import logging
 import hashlib
 import json
@@ -11,7 +11,7 @@ import uuid
 
 
 class AuthenticationManager:
-    def __init__(self, session, config_manager):
+    def __init__(self, session, config_manager, library_manager):
         self.logger = logging.getLogger("AUTH_MANAGER")
         self.challenge = ""
         self.verifier = bytes()
@@ -19,6 +19,7 @@ class AuthenticationManager:
         self.serial = None
         self.session_manager = session
         self.config = config_manager
+        self.library_manager = library_manager
 
     def generate_code_verifier(self) -> bytes:
         self.logger.debug("Generating code_verifier")
@@ -179,12 +180,13 @@ class AuthenticationManager:
             query = parse_qs(parsed.query)
             code = query["openid.oa2.authorization_code"][0]
             self.register_device(code)
+            self.library_manager.sync()
 
     def logout(self):
         if not self.is_logged_in():
             self.logger.error("You are not logged in")
             return
-        token = self.config.get('user', 'tokens//bearer//access_token')
+        token = self.config.get("user", "tokens//bearer//access_token")
         response = self.session_manager.session.post(
             f"{constants.AMAZON_API}/auth/deregister",
             headers={"Authorization": f"bearer {token}"},
@@ -198,4 +200,4 @@ class AuthenticationManager:
 
         if response.ok:
             self.logger.info("Successfully deregistered a device")
-            self.config.write('user', {})
+            self.config.write("user", {})

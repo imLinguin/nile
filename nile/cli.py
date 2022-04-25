@@ -21,10 +21,10 @@ class CLI:
     ):
         self.config = config_manager
         self.session = session_manager
-        self.auth_manager = authorization.AuthenticationManager(
-            self.session, self.config
-        )
         self.library_manager = library.Library(self.config, self.session)
+        self.auth_manager = authorization.AuthenticationManager(
+            self.session, self.config, self.library_manager
+        )
         self.arguments = arguments
         self.logger = logger
         self.unknown_arguments = unknown_arguments
