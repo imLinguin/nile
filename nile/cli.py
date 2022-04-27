@@ -176,7 +176,7 @@ class CLI:
 
 def main():
     qApp = QApplication(sys.argv)
-    arguments, unknown_arguments = get_arguments()
+    (arguments, unknown_arguments), parser = get_arguments()
     if arguments.version:
         print(version, codename)
         return 0
@@ -218,6 +218,12 @@ def main():
         cli.list_updates()
     elif command == "launch":
         cli.handle_launch()
+    else:
+        print(
+            "You didn't provide any argument, GUI will be there someday, for now here is help"
+        )
+        parser.print_help()
+
     return 0
 
 

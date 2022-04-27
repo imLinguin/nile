@@ -20,13 +20,13 @@ def get_arguments():
         "library", help="Your games library is in this place"
     )
     library_parser.add_argument("sub_command", choices=["list", "sync"])
-    library_parser.add_argument("--installed", "-i", action="store_true", help="List only installed games")
+    library_parser.add_argument(
+        "--installed", "-i", action="store_true", help="List only installed games"
+    )
     install_parser = sub_parsers.add_parser(
         "install", aliases=["update", "verify"], help="Install a game"
     )
-    install_parser.add_argument(
-        "id", help="Specify a ID of the game to be installed"
-    )
+    install_parser.add_argument("id", help="Specify a ID of the game to be installed")
     install_parser.add_argument("--max-workers", help="Specify max threads to be used")
     install_parser.add_argument(
         "--base-path",
@@ -45,16 +45,21 @@ def get_arguments():
     launch_parser = sub_parsers.add_parser("launch", help="Launch installed games")
     launch_parser.add_argument("id")
     launch_parser.add_argument(
-        "--bottle" , "-b", help="Specify bottle to use (requires Bottles)"
+        "--bottle", "-b", help="Specify bottle to use (requires Bottles)"
     )
-    launch_parser.add_argument("--wine-prefix", dest="wine_prefix", help="Specify wineprefix to be used")
+    launch_parser.add_argument(
+        "--wine-prefix", dest="wine_prefix", help="Specify wineprefix to be used"
+    )
     launch_parser.add_argument("--wine", help="Specify wine binary")
     launch_parser.add_argument(
-        "--no-wine", dest="dont_use_wine", action="store_true", help="Don't use wine (useful when specifying custom wrapper)"
+        "--no-wine",
+        dest="dont_use_wine",
+        action="store_true",
+        help="Don't use wine (useful when specifying custom wrapper)",
     )
     launch_parser.add_argument(
         "--wrapper", help="Wrapper to bue used when launching a game"
     )
     test_parser = sub_parsers.add_parser("test")
 
-    return parser.parse_known_args()
+    return parser.parse_known_args(), parser

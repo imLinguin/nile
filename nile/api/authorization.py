@@ -153,7 +153,7 @@ class AuthenticationManager:
         return f'bearer {self.config.get("user", "tokens//bearer//access_token")}'
 
     def is_logged_in(self) -> bool:
-        self.logger.info("Checking stored credentials")
+        self.logger.debug("Checking stored credentials")
         tokens = self.config.get("user", "tokens")
         return bool(tokens)
 
