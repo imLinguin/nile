@@ -35,11 +35,14 @@ class Launcher:
         self.wrapper = arguments.wrapper
         self.wine_prefix = arguments.wine_prefix
         self.wine_bin = arguments.wine
+        if not self.wine_bin:
+            self.wine_bin = shutil.which("wine")
         self.dont_use_wine = arguments.dont_use_wine
         self.logger = logging.getLogger("LAUNCHER")
         self.unknown_arguments = unknown_arguments
 
         self.bottles_bin = self._get_bottles_bin()
+
     def _get_installed_data(self):
         return self.config.get("installed")
 
@@ -49,7 +52,9 @@ class Launcher:
         if os_path:
             return [os_path]
         elif flatpak_path:
-            process = subprocess.run(["flatpak", "info", "com.usebottles.bottles"], stdout=subprocess.DEVNULL)
+            process = subprocess.run(
+                ["flatpak", "info", "com.usebottles.bottles"], stdout=subprocess.DEVNULL
+            )
 
             if process.returncode != 1:
                 return [flatpak_path, "run", "com.usebottles.bottles"]

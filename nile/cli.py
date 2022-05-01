@@ -9,6 +9,7 @@ from nile.downloading import manager
 from nile.utils.config import Config
 from nile.utils.launch import Launcher
 from nile.utils.search import calculate_distance
+from nile.utils.uninstall import Uninstaller
 from nile.api import authorization, session, library
 from nile.gui import webview
 from nile.models import manifest
@@ -170,6 +171,10 @@ class CLI:
 
         launcher.start(found["path"])
 
+    def handle_uninstall(self):
+        uninstaller = Uninstaller(self.config, self.arguments)
+        uninstaller.uninstall()
+
     def test(self):
         print("TEST")
 
@@ -218,6 +223,8 @@ def main():
         cli.list_updates()
     elif command == "launch":
         cli.handle_launch()
+    elif command == "uninstall":
+        cli.handle_uninstall()
     else:
         print(
             "You didn't provide any argument, GUI will be there someday, for now here is help"

@@ -60,6 +60,12 @@ def get_arguments():
     launch_parser.add_argument(
         "--wrapper", help="Wrapper to bue used when launching a game"
     )
+
+    uninstall_parser = sub_parsers.add_parser(
+        "uninstall", help="Uninstall game - deletes game files specified in manifest"
+    )
+    uninstall_parser.add_argument("id", help="Game id")
+
     test_parser = sub_parsers.add_parser("test")
 
     return parser.parse_known_args(), parser
