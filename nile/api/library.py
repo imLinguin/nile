@@ -29,6 +29,20 @@ class Library:
 
         return response
 
+    def _get_sync_request_data(self, serial, nextToken=None):
+        request_data = {
+            "Operation": "GetEntitlementsV2",
+            "clientId": "Sonic",
+            "syncPoint": None,
+            "nextToken": nextToken,
+            "maxResults": 50,
+            "productIdFilter": None,
+            "keyId": "d5dc8b8b-86c8-4fc4-ae93-18c0def5314d",
+            "hardwareHash": hashlib.sha256(serial.encode()).hexdigest().upper(),
+        }
+
+        return request_data
+
     def sync(self):
         self.logger.info("Synchronizing library")
 
@@ -39,29 +53,31 @@ class Library:
                 "extensions//device_info//device_serial_number",
             ],
         )
-        request_data = {
-            "Operation": "GetEntitlementsV2",
-            "clientId": "Sonic",
-            "syncPoint": None,
-            "nextToken": None,
-            "maxResults": 50,
-            "productIdFilter": None,
-            "keyId": "d5dc8b8b-86c8-4fc4-ae93-18c0def5314d",
-            "hardwareHash": hashlib.sha256(serial.encode()).hexdigest().upper(),
-        }
+        games = list()
+        nextToken = None
+        while True:
+            request_data = self._get_sync_request_data(serial, nextToken)
 
-        response = self.request_sds(
-            "com.amazonaws.gearbox.softwaredistribution.service.model.SoftwareDistributionService.GetEntitlementsV2",
-            token,
-            request_data,
-        )
+            response = self.request_sds(
+                "com.amazonaws.gearbox.softwaredistribution.service.model.SoftwareDistributionService.GetEntitlementsV2",
+                token,
+                request_data,
+            )
+            json_data = response.json()
+            games.extend(json_data["entitlements"])
+
+            if not "nextToken" in json_data:
+                break
+            else:
+                self.logger.info("Got next token in response, making next request")
+                nextToken = json_data["nextToken"]
 
         if not response.ok:
             self.logger.error("There was an error syncing library")
             self.logger.debug(response.content)
             return
 
-        self.config.write("library", response.json()["entitlements"])
+        self.config.write("library", games)
         self.logger.info("Successfully synced the library")
 
     def get_game_manifest(self, id: str):
@@ -113,16 +129,12 @@ class Library:
 
         response_json = response.json()
 
-        return response_json['patches']
-
+        return response_json["patches"]
 
     def get_versions(self, game_ids):
         token = self.config.get("user", "tokens//bearer//access_token")
 
-        request_data = {
-            "adgProductIds": game_ids,
-            "Operation": "GetVersions"
-        }
+        request_data = {"adgProductIds": game_ids, "Operation": "GetVersions"}
 
         response = self.request_sds(
             "com.amazonaws.gearbox.softwaredistribution.service.model.SoftwareDistributionService.GetVersions",
@@ -138,7 +150,6 @@ class Library:
         response_json = response.json()
 
         return response_json["versions"]
-
 
     def get_installed_game_info(self, id):
         installed_array = self.config.get("installed")
