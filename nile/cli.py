@@ -64,7 +64,12 @@ class CLI:
             for game in games:
                 if self.arguments.installed and not installed_dict.get(game["id"]):
                     continue
-                games_list += f'{"(INSTALLED) " if installed_dict.get(game["id"]) and not self.arguments.installed else ""}{game["product"]["title"]} ID: {game["id"]} GENRES: {game["product"]["productDetail"]["details"]["genres"]}\n'
+                genres = (
+                    (f'GENRES: {game["product"]["productDetail"]["details"]["genres"]}')
+                    if game["product"]["productDetail"]["details"].get("genres")
+                    else ""
+                )
+                games_list += f'{"(INSTALLED) " if installed_dict.get(game["id"]) and not self.arguments.installed else ""}{game["product"]["title"]} ID: {game["id"]} {genres}\n'
                 displayed_count += 1
             games_list += f"\n*** TOTAL {displayed_count} ***\n"
             print(games_list)
