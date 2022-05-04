@@ -30,6 +30,7 @@ class Uninstaller:
             os.remove(os.path.join(installed_info["path"], f.path.replace("\\", "/")))
 
         self.config.write("installed", installed_games)
+        self.config.remove(f"manifests/{game_id}")
         self.logger.info("Game removed successfully")
 
     def load_installed_manifest(self, game_id):

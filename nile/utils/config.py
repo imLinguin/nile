@@ -9,6 +9,7 @@ class Config:
     Handles writing and reading from config with automatic in memory caching
     TODO: Make memory caching opt out in some cases
     """
+
     def __init__(self):
         self.logger = logging.getLogger("CONFIG")
         self.cache = {}
@@ -24,6 +25,14 @@ class Config:
         if not os.path.exists(constants.CONFIG_PATH):
             os.makedirs(constants.CONFIG_PATH)
 
+    def remove(self, store):
+        """
+        Remove file
+        """
+        path = self._join_path_name(store)
+        if os.path.exists(path):
+            os.remove(path)
+
     def write(self, store: str, data: any, raw=False):
         """
         Stringifies data to json and overrides file contents
@@ -36,7 +45,7 @@ class Config:
         mode = "w"
         if raw:
             parsed = data
-            mode+="b"
+            mode += "b"
         else:
             parsed = json.dumps(data)
         stream = open(file_path, mode)
