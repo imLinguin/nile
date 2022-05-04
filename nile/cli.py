@@ -69,7 +69,11 @@ class CLI:
                     if game["product"]["productDetail"]["details"].get("genres")
                     else ""
                 )
-                games_list += f'{"(INSTALLED) " if installed_dict.get(game["id"]) and not self.arguments.installed else ""}{game["product"]["title"]} ID: {game["id"]} {genres}\n'
+                if not constants.SUPPORTS_COLORS:
+                    games_list += f'{"(INSTALLED) " if installed_dict.get(game["id"]) and not self.arguments.installed else ""}{game["product"]["title"]} ID: {game["id"]} {genres}\n'
+                else:
+                    games_list += f'{constants.SHCOLORS["green"]}{"(INSTALLED) " if installed_dict.get(game["id"]) and not self.arguments.installed else ""}{constants.SHCOLORS["clear"]}{game["product"]["title"]} {constants.SHCOLORS["red"]}ID: {game["id"]}{constants.SHCOLORS["clear"]} {genres}\n'
+
                 displayed_count += 1
             games_list += f"\n*** TOTAL {displayed_count} ***\n"
             print(games_list)

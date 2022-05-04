@@ -16,8 +16,8 @@ class Library:
         headers = {
             "X-Amz-Target": target,
             "x-amzn-token": token,
-            "User-Agent": "com.amazon.agslauncher.win/2.1.6485.3",
-            "UserAgent": "com.amazon.agslauncher.win/2.1.6485.3",
+            "User-Agent": "com.amazon.agslauncher.win/2.1.7437.6",
+            "UserAgent": "com.amazon.agslauncher.win/2.1.7437.6",
             "Content-Type": "application/json",
             "Content-Encoding": "amz-1.0",
         }
@@ -72,12 +72,16 @@ class Library:
                 self.logger.info("Got next token in response, making next request")
                 nextToken = json_data["nextToken"]
 
-        if not response.ok:
-            self.logger.error("There was an error syncing library")
-            self.logger.debug(response.content)
-            return
+            if not response.ok:
+                self.logger.error("There was an error syncing library")
+                self.logger.debug(response.content)
+                return
+        # Remove duplicates
+        games_dict = dict()
+        for game in games:
+            games_dict[game["product"]["id"]] = game
 
-        self.config.write("library", games)
+        self.config.write("library", list(games_dict.values()))
         self.logger.info("Successfully synced the library")
 
     def get_game_manifest(self, id: str):
