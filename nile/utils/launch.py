@@ -47,17 +47,23 @@ class Launcher:
         return self.config.get("installed")
 
     def _get_bottles_bin(self):
-        os_path = shutil.which("bottles")
+        os_path = shutil.which("bottles-cli")
         flatpak_path = shutil.which("flatpak")
         if os_path:
-            return [os_path]
+            return [os_path, "run"]
         elif flatpak_path:
             process = subprocess.run(
                 ["flatpak", "info", "com.usebottles.bottles"], stdout=subprocess.DEVNULL
             )
 
             if process.returncode != 1:
-                return [flatpak_path, "run", "com.usebottles.bottles"]
+                return [
+                    flatpak_path,
+                    "run",
+                    "--command=bottles-cli",
+                    "com.usebottles.bottles",
+                    "run",
+                ]
         return None
 
     def create_bottles_command(self, exe, arguments=[]):
@@ -91,8 +97,9 @@ class Launcher:
             command.append(instruction.command)
             command.extend(instruction.arguments)
         else:
-            if self.wine_prefix and not self.dont_use_wine:
-                environment.update({"WINEPREFIX": self.wine_prefix})
+            if not self.dont_use_wine and not self.bottle:
+                if self.wine_prefix:
+                    environment.update({"WINEPREFIX": self.wine_prefix})
                 command.append(self.wine_bin)
                 command.append(instruction.command)
                 command.extend(instruction.arguments)

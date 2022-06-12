@@ -21,6 +21,7 @@ Nile aims to be CLI and GUI tool for managing and playing games from Amazon.
 - Login to Amazon Account
 - Download games
 - Play games (with Wine/Proton on Linux)
+- Play games using [Bottles](https://usebottles.com) (`--bottle` parameter)
 
 ## Might not work
 - Online games, that use `FuelPump` (I don't have any game like that to test)
