@@ -66,6 +66,4 @@ def get_arguments():
     )
     uninstall_parser.add_argument("id", help="Game id")
 
-    test_parser = sub_parsers.add_parser("test")
-
     return parser.parse_known_args(), parser

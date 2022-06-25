@@ -46,7 +46,11 @@ class CLI:
         self.logger.error("Specify auth action, use --help")
 
     def sort_by_title(self, element):
-        return element["product"]["title"]
+        return (
+            element["product"].get("title")
+            if element["product"].get("title") is not None
+            else ""
+        )
 
     def handle_library(self):
         cmd = self.arguments.sub_command
@@ -70,9 +74,9 @@ class CLI:
                     else ""
                 )
                 if not constants.SUPPORTS_COLORS:
-                    games_list += f'{"(INSTALLED) " if installed_dict.get(game["id"]) and not self.arguments.installed else ""}{game["product"]["title"]} ID: {game["id"]} {genres}\n'
+                    games_list += f'{"(INSTALLED) " if installed_dict.get(game["id"]) and not self.arguments.installed else ""}{game["product"].get("title")} ID: {game["id"]} {genres}\n'
                 else:
-                    games_list += f'{constants.SHCOLORS["green"]}{"(INSTALLED) " if installed_dict.get(game["id"]) and not self.arguments.installed else ""}{constants.SHCOLORS["clear"]}{game["product"]["title"]} {constants.SHCOLORS["red"]}ID: {game["id"]}{constants.SHCOLORS["clear"]} {genres}\n'
+                    games_list += f'{constants.SHCOLORS["green"]}{"(INSTALLED) " if installed_dict.get(game["id"]) and not self.arguments.installed else ""}{constants.SHCOLORS["clear"]}{game["product"].get("title")} {constants.SHCOLORS["red"]}ID: {game["id"]}{constants.SHCOLORS["clear"]} {genres}\n'
 
                 displayed_count += 1
             games_list += f"\n*** TOTAL {displayed_count} ***\n"
@@ -143,7 +147,7 @@ class CLI:
 
         print("Games with updates:")
         for game in games:
-            if game["id"] in updateable:
+            if game["product"]["id"] in updateable:
                 print(game["product"]["title"])
         print(f"NUMBER OF GAMES: {len(updateable)}")
 
@@ -187,9 +191,6 @@ class CLI:
         uninstaller = Uninstaller(self.config, self.arguments)
         uninstaller.uninstall()
 
-    def test(self):
-        print("TEST")
-
 
 def main():
     qApp = QApplication(sys.argv)
@@ -227,8 +228,6 @@ def main():
 
     elif command == "library":
         cli.handle_library()
-    elif command == "test":
-        cli.test()
     elif command in ["install", "verify", "update"]:
         cli.handle_install()
     elif command == "list-updates":
