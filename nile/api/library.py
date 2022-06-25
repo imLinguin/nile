@@ -79,7 +79,8 @@ class Library:
         # Remove duplicates
         games_dict = dict()
         for game in games:
-            games_dict[game["product"]["id"]] = game
+            if not games_dict.get(game["product"]["id"]):
+                games_dict[game["product"]["id"]] = game
 
         self.config.write("library", list(games_dict.values()))
         self.logger.info("Successfully synced the library")

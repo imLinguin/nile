@@ -108,6 +108,7 @@ class CLI:
 
     def list_updates(self):
         installed_array = self.config.get("installed")
+        games = self.config.get("library")
 
         if not installed_array:
             self.logger.error("No games installed")
@@ -115,8 +116,10 @@ class CLI:
 
         # Prepare array of game ids
         game_ids = dict()
-        for game in installed_array:
-            game_ids.update({game["id"]: game})
+        for game in games:
+            for installed_game in installed_array:
+                if game["id"] == installed_game["id"]:
+                    game_ids.update({game["product"]["id"]: installed_game})
         self.logger.debug(
             f"Checking for updates for {list(game_ids.keys())}, count: {len(game_ids)}"
         )
@@ -135,7 +138,7 @@ class CLI:
         if len(updateable) == 0:
             self.logger.info("No updates available")
             return
-        games = self.config.get("library")
+
         games.sort(key=self.sort_by_title)
 
         print("Games with updates:")
