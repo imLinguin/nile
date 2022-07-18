@@ -33,9 +33,10 @@ This is my attempt to make Amazon Games useful for Linux users, who want to play
 ## Arch, Manjaro etc..
 `sudo pacman -Sy pyqt5 python-pycryptodome python-zstandard python-requests`
 ## Ubuntu
-`sudo apt install python3-pyqt5 python3-pycryptodome python3-requests python-zstd`
+`sudo apt install python3-pyqt5 python3-pycryptodome python3-requests python3-zstd`
 ## With pip
 > Do this after cloning the repo and cd into the directory
+> Do not install if you installed dependencies through your package manager
 
 `pip3 install -r requirements.txt`
 
