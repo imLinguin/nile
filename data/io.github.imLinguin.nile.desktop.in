@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=nile
+Exec=nile
+Icon=io.github.imLinguin.nile
+Terminal=false
+Type=Application
+Categories=GTK;
+StartupNotify=true

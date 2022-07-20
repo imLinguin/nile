@@ -1,23 +1,29 @@
 # import webview
-from PyQt5.Qt import QUrl
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineProfile, QWebEnginePage
+from gi.repository import WebKit2, Adw
 
 
 class LoginWindow:
-    def __init__(self, url):
-        # self.window = webview.create_window("Login", url=url, height=720, width=450)
+    def __init__(self, url, **kwargs):
         self.page_url = url
-        self.window = QWebEngineView()
-        self.window.setWindowTitle("Login")
-        self.window.setFixedWidth(450)
-        self.window.setFixedHeight(750)
-        self.window.page().profile().setHttpUserAgent("Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36")
-        self.window.load(QUrl(self.page_url))
+        self.window = Adw.ApplicationWindow(title="Login", **kwargs)
+        self.window.set_default_size(450, 750)
+        self.webview = WebKit2.WebView()
+
+        settings = self.webview.get_settings()
+
+        settings.set_user_agent(
+            "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"
+        )
+
+        self.webview.set_settings(settings)
+
+        self.webview.load_uri(self.page_url)
+
+        self.window.set_content(self.webview)
 
     def show(self, handler):
         if handler:
-            self.window.urlChanged.connect(handler)
+            self.webview.do_load_changed = handler
         self.window.show()
 
     def stop(self):

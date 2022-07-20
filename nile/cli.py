@@ -3,7 +3,6 @@
 import sys
 import logging
 import json
-from PyQt5.QtWidgets import QApplication
 from nile.arguments import get_arguments
 from nile.downloading import manager
 from nile.utils.config import Config
@@ -193,7 +192,6 @@ class CLI:
 
 
 def main():
-    qApp = QApplication(sys.argv)
     (arguments, unknown_arguments), parser = get_arguments()
     if arguments.version:
         print(version, codename)
@@ -217,14 +215,8 @@ def main():
 
     command = arguments.command
 
-    # Always use return qApp.exec()
-    # If you spawn gui stuff
-    # When running in CLI this can be ignored
-
     if command == "auth":
-        # If spawned a gui method use qApplication exec to wait
-        if cli.handle_auth():
-            return qApp.exec()
+        cli.handle_auth()
 
     elif command == "library":
         cli.handle_library()

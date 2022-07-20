@@ -1,0 +1,7 @@
+data/io.github.imLinguin.nile.desktop.in
+data/io.github.imLinguin.nile.appdata.xml.in
+data/io.github.imLinguin.nile.gschema.xml
+
+nile/main.py
+nile/gui/main_window.py
+nile/gui/webview.py
