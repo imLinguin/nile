@@ -8,8 +8,7 @@ gi.require_version("WebKit2", "5.0")
 
 from gi.repository import Gtk, Adw, Gio, GObject
 
-from nile.gui.main_window import MainWindow
-from nile.gui.webview import LoginWindow
+from nile.gui.windows.webview import LoginWindow
 
 
 class Nile(Adw.Application):
@@ -18,6 +17,7 @@ class Nile(Adw.Application):
             application_id="io.github.imLinguin.nile", register_session=True
         )
         self.headless = False
+        self.spawn_login = (False, "", None)
         self.window = None
 
     def do_startup(self):
@@ -25,7 +25,12 @@ class Nile(Adw.Application):
         self.__register_actions()
 
     def do_activate(self):
+        from nile.gui.windows.main_window import MainWindow
+
         if self.headless:
+            if self.spawn_login[0]:
+                self.webview = LoginWindow(self.spawn_login[1], application=self)
+                self.webview.show(self.spawn_login[2])
             return
         window = self.props.active_window
         if not window:

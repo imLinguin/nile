@@ -9,6 +9,8 @@ import secrets
 import base64
 import uuid
 
+from gi.repository import WebKit2
+
 
 class AuthenticationManager:
     def __init__(self, session, config_manager, library_manager):
@@ -165,22 +167,21 @@ class AuthenticationManager:
         client_id = self.generate_client_id(serial)
 
         url = self.get_auth_url(client_id, challenge)
-        self.loginWebView = webview.LoginWindow(url)
-        self.logger.info("Spawning login window")
-        self.loginWebView.show(self.handle_page_load)
 
-    def handle_page_load(self):
-        page_url = self.loginWebView.window.url().url()
+        return url, self.handle_page_load
+
+    def handle_page_load(self, webview, event):
+        if event != WebKit2.LoadEvent.REDIRECTED:
+            return False
+        page_url = webview.get_uri()
         if page_url.find("openid.oa2.authorization_code") > 0:
             self.logger.info("Got authorization code")
-            self.loginWebView.stop()
-
             # Parse auth code
             parsed = urlparse(page_url)
             query = parse_qs(parsed.query)
             code = query["openid.oa2.authorization_code"][0]
             self.register_device(code)
-            self.library_manager.sync()
+            return True
 
     def logout(self):
         if not self.is_logged_in():

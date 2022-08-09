@@ -1,13 +1,18 @@
 # import webview
-from gi.repository import WebKit2, Adw
+from gi.repository import WebKit2, Adw, Gtk
 
 
 class LoginWindow:
     def __init__(self, url, **kwargs):
         self.page_url = url
-        self.window = Adw.ApplicationWindow(title="Login", **kwargs)
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.window = Adw.Window(title="Login", modal=False, **kwargs)
         self.window.set_default_size(450, 750)
         self.webview = WebKit2.WebView()
+
+        self.webview.set_vexpand(True)
+        box.append(Adw.HeaderBar())
+        box.append(self.webview)
 
         settings = self.webview.get_settings()
 
@@ -18,14 +23,12 @@ class LoginWindow:
         self.webview.set_settings(settings)
 
         self.webview.load_uri(self.page_url)
-
-        self.window.set_content(self.webview)
+        self.window.set_content(box)
 
     def show(self, handler):
         if handler:
-            self.webview.do_load_changed = handler
+            self.webview.connect("load-changed", handler)
         self.window.show()
 
     def stop(self):
-        self.window.hide()
         self.window.close()

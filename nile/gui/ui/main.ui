@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0" />
-  <template class="NileWindow" parent="GtkApplicationWindow">
-    <property name="default-width">600</property>
-    <property name="default-height">300</property>
-    <child type="titlebar">
-      <object class="GtkHeaderBar" id="header_bar">
-        <child type="end">
-          <object class="GtkMenuButton">
-            <property name="icon-name">open-menu-symbolic</property>
-            <property name="menu-model">primary_menu</property>
+  <requires lib="libadwaita" version="1.1" />
+  <template class="NileWindow" parent="AdwApplicationWindow">
+    <property name="default-width">1200</property>
+    <property name="default-height">650</property>
+    <property name="icon-name">io.github.imLinguin.nile</property>
+    <property name="title">Nile</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="AdwHeaderBar">
+            <style>
+              <class name="flat"></class>
+            </style>
           </object>
         </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkLabel" id="label">
-        <property name="label">Hello, World!</property>
-        <attributes>
-          <attribute name="weight" value="bold" />
-          <attribute name="scale" value="2" />
-        </attributes>
+        <child>
+          <object class="AdwViewStack" id="main_stack">
+            <property name="vexpand">true</property>
+          </object>
+        </child>
       </object>
     </child>
   </template>

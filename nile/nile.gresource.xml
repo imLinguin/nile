@@ -2,6 +2,8 @@
 <gresources>
   <gresource prefix="/io/github/imLinguin/nile">
     <file>gui/ui/main.ui</file>
+    <file>gui/ui/library.ui</file>
+    <file>gui/ui/onboard.ui</file>
     <file>gui/ui/help-overlay.ui</file>
   </gresource>
 </gresources>

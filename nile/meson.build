@@ -25,6 +25,14 @@ configure_file(
   install_dir: get_option('bindir')
 )
 
+configure_file(
+  input: 'nile-cli.in',
+  output: 'nile-cli',
+  configuration: conf,
+  install: true,
+  install_dir: get_option('bindir')
+)
+
 
 subdir('api')
 subdir('downloading')
@@ -36,6 +44,7 @@ subdir('utils')
 nile_sources = [
   '__init__.py',
   'main.py',
+  'arguments.py',
   'constants.py'
 ]
 
