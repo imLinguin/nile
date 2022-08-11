@@ -15,6 +15,11 @@ DEFAULT_INSTALL_PATH = os.path.join(
 CONFIG_PATH = os.path.join(
     os.getenv("XDG_CONFIG_HOME", os.path.expanduser("~/.config")), "nile"
 )
+
+CACHE_PATH = os.path.join(
+    os.getenv("XDG_CACHE_HOME", os.path.expanduser("~/.cache")), "nile"
+)
+
 if sys.platform == "win32":
     CONFIG_PATH = os.path.join(os.getenv("APPDATA"), "nile")
     DEFAULT_INSTALL_PATH = os.path.join(os.getenv("USERPROFILE"), "nile")

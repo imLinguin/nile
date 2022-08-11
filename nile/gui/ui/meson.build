@@ -5,7 +5,9 @@ uipath = join_paths(pkgdatadir, 'nile/gui/ui')
 nile_sources = [
     'library.ui',
     'onboard.ui',
-    'help-overlay.ui'
+    'help-overlay.ui',
+    'loading.ui',
+    'style.css'
 ]
 
 

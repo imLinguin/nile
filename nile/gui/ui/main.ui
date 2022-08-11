@@ -8,18 +8,30 @@
     <property name="icon-name">io.github.imLinguin.nile</property>
     <property name="title">Nile</property>
     <child>
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
+      <object class="AdwToastOverlay" id="toasts">
         <child>
-          <object class="AdwHeaderBar">
-            <style>
-              <class name="flat"></class>
-            </style>
-          </object>
-        </child>
-        <child>
-          <object class="AdwViewStack" id="main_stack">
-            <property name="vexpand">true</property>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="AdwHeaderBar" id="header_bar">
+                <style>
+                  <class name="flat"></class>
+                </style>
+                <child type="start">
+                  <object class="GtkButton" id="search_button">
+                    <property name="visible">False</property>
+                    <property name="icon-name">search-symbolic</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkStack" id="main_stack">
+                <property name="vexpand">true</property>
+                <property name="transition-duration">300</property>
+                <property name="transition-type">slide-left-right</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>

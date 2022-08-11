@@ -6,6 +6,7 @@ from time import sleep
 import nile.utils.download as dl_utils
 from nile.models import manifest, hash_pairs, patch_manifest
 from nile.downloading.worker import DownloadWorker
+
 # from nile.models.progressbar import ProgressBar
 from nile import constants
 
@@ -160,7 +161,7 @@ class DownloadManager:
             installed_array = list()
 
         installed_game_data = dict(
-            id=self.game["id"], version=self.version, path=self.install_path
+            id=self.game["product"]["id"], version=self.version, path=self.install_path
         )
         updated = False
         # Swap existing entry in case of updating etc..

@@ -1,0 +1,20 @@
+.game-card {
+    border-radius: 4px;
+}
+.game-card-image {
+    transition: all 200ms ease-in-out;
+}
+
+.game-card-image:hover {
+    transform: scale(1.05) rotateX(-10deg);
+    box-shadow: 0 10px 10px 5px rgba(0, 0, 0, 0.4);
+}
+
+.game-card-shine {
+    transition: background 300ms ease-in;
+    background: linear-gradient(to right top, rgba(255,255,255,0) 70%,  rgba(255, 255, 255, 0.4));
+}
+
+.game-card-shine:hover {
+    background: linear-gradient(to right top, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.4));
+}

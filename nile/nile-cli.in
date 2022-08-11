@@ -42,7 +42,6 @@ from nile.arguments import get_arguments
 from nile.downloading import manager
 from nile.utils.config import Config
 from nile.utils.launch import Launcher
-from nile.utils.search import calculate_distance
 from nile.utils.uninstall import Uninstaller
 from nile.api import authorization, session, library
 from nile.gui import webview
@@ -114,9 +113,9 @@ class CLI:
                     else ""
                 )
                 if not constants.SUPPORTS_COLORS:
-                    games_list += f'{"(INSTALLED) " if installed_dict.get(game["id"]) and not self.arguments.installed else ""}{game["product"].get("title")} ID: {game["id"]} {genres}\n'
+                    games_list += f'{"(INSTALLED) " if installed_dict.get(game["product"]["id"]) and not self.arguments.installed else ""}{game["product"].get("title")} ID: {game["id"]} {genres}\n'
                 else:
-                    games_list += f'{constants.SHCOLORS["green"]}{"(INSTALLED) " if installed_dict.get(game["id"]) and not self.arguments.installed else ""}{constants.SHCOLORS["clear"]}{game["product"].get("title")} {constants.SHCOLORS["red"]}ID: {game["id"]}{constants.SHCOLORS["clear"]} {genres}\n'
+                    games_list += f'{constants.SHCOLORS["green"]}{"(INSTALLED) " if installed_dict.get(game["product"]["id"]) and not self.arguments.installed else ""}{constants.SHCOLORS["clear"]}{game["product"].get("title")} {constants.SHCOLORS["red"]}ID: {game["id"]}{constants.SHCOLORS["clear"]} {genres}\n'
 
                 displayed_count += 1
             games_list += f"\n*** TOTAL {displayed_count} ***\n"

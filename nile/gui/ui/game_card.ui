@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0" />
+  <template class="GameCard" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <property name="valign">start</property>
+    <property name="halign">center</property>
+    <property name="width-request">190</property>
+    <property name="height-request">253</property>
+    <property name="overflow">hidden</property>
+    <style>
+      <class name="card"></class>
+      <class name="game-card"></class>
+      <class name="game-card-image"></class>
+    </style>
+    <child>
+      <object class="GtkGestureClick" id="click_geasture"></object>
+    </child>
+    <child>
+      <object class="GtkOverlay">
+        <property name="vexpand">True</property>
+        <property name="hexpand">True</property>
+        <child type="overlay">
+          <object class="GtkPicture" id="card_image"></object>
+        </child>
+        <child type="overlay">
+          <object class="GtkBox">
+            <property name="vexpand">True</property>
+            <property name="hexpand">True</property>
+            <style>
+              <class name="game-card-shine"></class>
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

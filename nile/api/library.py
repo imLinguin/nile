@@ -2,6 +2,7 @@ from nile import constants
 from nile.proto import sds_proto2_pb2
 import logging
 import uuid
+import os
 import json
 import hashlib
 
@@ -84,6 +85,40 @@ class Library:
 
         self.config.write("library", list(games_dict.values()))
         self.logger.info("Successfully synced the library")
+        self.pull_games_tumbnails()
+
+    def get_game_image_fs_path(self, id):
+        return os.path.join(constants.CACHE_PATH, "images", id + ".jpg")
+
+    def pull_games_tumbnails(self):
+        games = self.config.get("library")
+        if not games:
+            return
+        for game in games:
+            file_path = self.get_game_image_fs_path(game["product"]["id"])
+            directory, _ = os.path.split(file_path)
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            if os.path.exists(file_path):
+                continue
+            url = game["product"]["productDetail"]["iconUrl"]
+            data = self.__fetch_thumbnail(url)
+            if not data:
+                data = self.__fetch_thumbnail(url)
+
+            if not data:
+                continue
+
+            file = open(file_path, "wb")
+            file.write(data)
+            file.flush()
+            file.close()
+
+    def __fetch_thumbnail(self, url):
+        response = self.session_manager.session.get(url)
+
+        if response.ok:
+            return response.content
 
     def get_game_manifest(self, id: str):
         token = self.config.get("user", "tokens//bearer//access_token")

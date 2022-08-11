@@ -5,7 +5,8 @@ viewspath = join_paths(pkgdatadir, 'nile/gui/views')
 
 nile_sources = [
     '__init__.py',
-    'library.py'
+    'library.py',
+    'loading.py'
 ]
 
 
