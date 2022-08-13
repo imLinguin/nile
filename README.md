@@ -17,6 +17,11 @@ Linux native Amazon Games client, based on [this research](https://github.com/La
 
 Nile aims to be CLI and GUI tool for managing and playing games from Amazon. 
 
+
+## ⚠️⚠️ GUI BRANCH ⚠️⚠️
+
+This branch is WIP. It will be available for download on flathub once ready. This branch relies on `org.gnome.Sdk/master`, since it contains WebKit, new Gtk and Libadwaita versions.
+
 ## Features
 - Login to Amazon Account
 - Download games

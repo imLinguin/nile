@@ -1,5 +1,4 @@
-requests==2.27.1
-protobuf==4.21.2
-pycryptodome==3.14.1
-zstandard==0.17.0
-pywebview==3.6.3
+requests
+protobuf
+pycryptodome
+zstandard
