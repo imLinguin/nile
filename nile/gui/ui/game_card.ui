@@ -14,7 +14,7 @@
       <class name="game-card-image"></class>
     </style>
     <child>
-      <object class="GtkGestureClick" id="click_geasture"></object>
+      <object class="GtkGestureClick" id="click_gesture"></object>
     </child>
     <child>
       <object class="GtkOverlay">

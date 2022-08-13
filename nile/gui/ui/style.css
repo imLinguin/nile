@@ -18,3 +18,18 @@
 .game-card-shine:hover {
     background: linear-gradient(to right top, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.4));
 }
+
+.game-details-gradient {
+    background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0, 0, 0, 0.5));
+}
+
+.game-page_section_header {
+    font-size: x-large;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+
+.padding {
+    padding: 15px;
+}

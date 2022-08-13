@@ -1,6 +1,6 @@
 import sys
+import logging
 import gi
-
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
@@ -15,6 +15,9 @@ class Nile(Adw.Application):
     def __init__(self):
         super().__init__(
             application_id="io.github.imLinguin.nile", register_session=True
+        )
+        logging.basicConfig(
+            level=logging.INFO, format="[%(levelname)s] %(name)s: %(message)s"
         )
         self.headless = False
         self.spawn_login = (False, "", None)

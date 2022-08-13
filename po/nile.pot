@@ -1,0 +1,110 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the nile package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: nile\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-08-13 13:38+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: data/io.github.imLinguin.nile.desktop.in:3
+msgid "Nile"
+msgstr ""
+
+#: data/io.github.imLinguin.nile.appdata.xml.in:7
+msgid "No description"
+msgstr ""
+
+#: nile/gui/windows/main_window.py:85
+msgid "Welcome back"
+msgstr ""
+
+#: nile/gui/ui/game_details.ui:71
+msgid "About the game"
+msgstr ""
+
+#: nile/gui/ui/game_details.ui:100
+msgid "Overview"
+msgstr ""
+
+#: nile/gui/ui/library.ui:17
+msgid "Search for games"
+msgstr ""
+
+#: nile/gui/ui/library.ui:71
+msgid "No Games Found"
+msgstr ""
+
+#: nile/gui/ui/library.ui:72
+msgid "Try another keyword"
+msgstr ""
+
+#: nile/gui/ui/loading.ui:9
+msgid "Synchronizing Library..."
+msgstr ""
+
+#: nile/gui/ui/main.ui:50
+msgid "_Preferences"
+msgstr ""
+
+#: nile/gui/ui/main.ui:54
+msgid "_Keyboard Shortcuts"
+msgstr ""
+
+#: nile/gui/ui/main.ui:58
+msgid "_About nile"
+msgstr ""
+
+#: nile/gui/ui/onboard.ui:37
+msgid "Welcome to Nile!"
+msgstr ""
+
+#: nile/gui/ui/onboard.ui:38
+msgid "Unofficial Amazon Games launcher."
+msgstr ""
+
+#: nile/gui/ui/onboard.ui:46
+msgid "Let's log you in"
+msgstr ""
+
+#: nile/gui/ui/onboard.ui:47
+msgid "Your email and password won't be stored"
+msgstr ""
+
+#: nile/gui/ui/onboard.ui:50
+msgid "Log in"
+msgstr ""
+
+#: nile/gui/ui/onboard.ui:65
+msgid "All set!"
+msgstr ""
+
+#: nile/gui/ui/onboard.ui:66
+msgid "Let's synchronize the library"
+msgstr ""
+
+#: nile/gui/ui/onboard.ui:74
+msgid "Synchronize"
+msgstr ""
+
+#: nile/gui/ui/onboard.ui:94
+msgid "Have fun!"
+msgstr ""
+
+#: nile/gui/ui/onboard.ui:98
+msgid "Show me my games"
+msgstr ""
+
+#: nile/gui/ui/onboard.ui:117
+msgid "Next"
+msgstr ""

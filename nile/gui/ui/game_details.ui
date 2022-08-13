@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0" />
+  <requires lib="libadwaita" version="1.0" />
+
+  <template class="GameDetails" parent="AdwBin">
+    <property name="hexpand">True</property>
+    <child>
+      <object class="GtkScrolledWindow">
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <child>
+          <object class="GtkBox">
+            <property name="vexpand">True</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkOverlay">
+                <child>
+                  <object class="GtkPicture" id="page_background">
+                    <property name="height-request">440</property>
+                    <property name="hexpand">True</property>
+                    <property name="content-fit">cover</property>
+                    <property name="valign">start</property>
+                  </object>
+                </child>
+                <child type="overlay">
+                  <object class="GtkBox">
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <style>
+                      <class name="game-details-gradient"></class>
+                    </style>
+                  </object>
+                </child>
+                <child type="overlay">
+                  <object class="GtkPicture" id="page_logo">
+                    <property name="can-shrink">False</property>
+                    <property name="halign">center</property>
+                    <property name="valign">end</property>
+                    <property name="margin-bottom">20</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+
+
+            <child>
+              <object class="GtkGrid">
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="margin-start">20</property>
+                <property name="margin-end">20</property>
+                <property name="margin-bottom">20</property>
+                <property name="margin-top">20</property>
+                <property name="column-spacing">10</property>
+                <property name="row-spacing">10</property>
+                <property name="row-homogeneous">False</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <style>
+                      <class name="card" />
+                      <class name="padding" />
+                    </style>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">1</property>
+                    </layout>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">About the game</property>
+                        <style>
+                          <class name="game-page_section_header" />
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="game_description">
+                        <property name="halign">start</property>
+                        <property name="wrap">True</property>
+                        <property name="selectable">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="hexpand">True</property>
+                    <style>
+                      <class name="card" />
+                      <class name="padding" />
+                    </style>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">1</property>
+                    </layout>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Overview</property>
+                        <style>
+                          <class name="game-page_section_header" />
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="overview_box">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">5</property>
+                        <child>
+                          <object class="AdwActionRow" id="genre_detail_entry">
+                            <property name="title" translatable="yes">Genre</property>
+                            <property name="subtitle">TEST</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwActionRow" id="developer_detail_entry">
+                            <property name="title" translatable="yes">Developer</property>
+                            <property name="subtitle">TEST</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwActionRow" id="publisher_detail_entry">
+                            <property name="title" translatable="yes">Publisher</property>
+                            <property name="subtitle">TEST</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkOverlay">
+                <child type="overlay">
+                  <object class="GtkButton" id="screenshot_previous_button">
+                    <property name="margin-start">12</property>
+                    <property name="icon-name">go-previous-symbolic</property>
+                    <property name="halign">start</property>
+                    <property name="valign">center</property>
+                    <property name="visible">False</property>
+                    <property name="tooltip-text" translatable="yes">Previous</property>
+                    <style>
+                      <class name="circular" />
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwCarousel" id="screenshots_carousel">
+                    <property name="hexpand">True</property>
+                    <property name="interactive">True</property>
+                    <property name="height-request">200</property>
+                    <property name="allow-long-swipes">True</property>
+                    <property name="spacing">10</property>
+                  </object>
+                </child>
+                <child type="overlay">
+                  <object class="GtkButton" id="screenshot_next_button">
+                    <property name="margin-end">12</property>
+                    <property name="icon-name">go-next-symbolic</property>
+                    <property name="halign">end</property>
+                    <property name="valign">center</property>
+                    <property name="tooltip-text" translatable="yes">Next</property>
+                    <style>
+                      <class name="circular" />
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

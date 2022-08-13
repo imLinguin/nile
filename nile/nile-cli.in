@@ -44,7 +44,6 @@ from nile.utils.config import Config
 from nile.utils.launch import Launcher
 from nile.utils.uninstall import Uninstaller
 from nile.api import authorization, session, library
-from nile.gui import webview
 from nile.models import manifest
 from nile import constants, version, codename
 from nile.main import Nile

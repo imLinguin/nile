@@ -102,9 +102,9 @@ class Library:
             if os.path.exists(file_path):
                 continue
             url = game["product"]["productDetail"]["iconUrl"]
-            data = self.__fetch_thumbnail(url)
+            data = self.fetch_thumbnail(url)
             if not data:
-                data = self.__fetch_thumbnail(url)
+                data = self.fetch_thumbnail(url)
 
             if not data:
                 continue
@@ -114,7 +114,7 @@ class Library:
             file.flush()
             file.close()
 
-    def __fetch_thumbnail(self, url):
+    def fetch_thumbnail(self, url):
         response = self.session_manager.session.get(url)
 
         if response.ok:

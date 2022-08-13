@@ -10,6 +10,7 @@ class OnBoard(Adw.Window):
     next_page_button = Gtk.Template.Child()
     sync_games_button = Gtk.Template.Child()
     sync_spinner = Gtk.Template.Child()
+    close_modal = Gtk.Template.Child()
 
     def __init__(self, main_window, **kwargs):
         super().__init__(**kwargs)
@@ -18,6 +19,7 @@ class OnBoard(Adw.Window):
         self.login_button.connect("clicked", main_window.open_login_page)
         self.next_page_button.connect("clicked", self.next_page)
         self.sync_games_button.connect("clicked", self.__sync_games)
+        self.close_modal.connect("clicked", self.__close)
         self.carousel.connect("page-changed", self.handle_page_change)
 
     def handle_page_change(
@@ -44,3 +46,7 @@ class OnBoard(Adw.Window):
         next_page = self.carousel.get_nth_page(index + 1)
         if next_page:
             self.carousel.scroll_to(next_page, True)
+
+    def __close(self, widget):
+        self.main_window.initialize()
+        self.destroy()

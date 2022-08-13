@@ -1,0 +1,114 @@
+# Polish translations for nile package.
+# Copyright (C) 2022 THE nile'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the nile package.
+# Automatically generated, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: nile\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-08-13 13:38+0200\n"
+"PO-Revision-Date: 2022-08-13 12:41+0200\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: pl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
+
+#: data/io.github.imLinguin.nile.desktop.in:3
+msgid "Nile"
+msgstr ""
+
+#: data/io.github.imLinguin.nile.appdata.xml.in:7
+msgid "No description"
+msgstr ""
+
+#: nile/gui/windows/main_window.py:85
+msgid "Welcome back"
+msgstr "Witaj ponownie"
+
+#: nile/gui/ui/game_details.ui:71
+msgid "About the game"
+msgstr "O grze"
+
+#: nile/gui/ui/game_details.ui:100
+msgid "Overview"
+msgstr "Szczegóły"
+
+#: nile/gui/ui/library.ui:17
+msgid "Search for games"
+msgstr "Szukaj gier"
+
+#: nile/gui/ui/library.ui:71
+msgid "No Games Found"
+msgstr "Nie Znaleziono Gier"
+
+#: nile/gui/ui/library.ui:72
+msgid "Try another keyword"
+msgstr "Spróbuj użyć innej frazy"
+
+#: nile/gui/ui/loading.ui:9
+msgid "Synchronizing Library..."
+msgstr "Synchronizowanie Biblioteki..."
+
+#: nile/gui/ui/main.ui:50
+msgid "_Preferences"
+msgstr ""
+
+#: nile/gui/ui/main.ui:54
+msgid "_Keyboard Shortcuts"
+msgstr ""
+
+#: nile/gui/ui/main.ui:58
+msgid "_About nile"
+msgstr ""
+
+#: nile/gui/ui/onboard.ui:37
+msgid "Welcome to Nile!"
+msgstr "Witaj w Nile!"
+
+#: nile/gui/ui/onboard.ui:38
+msgid "Unofficial Amazon Games launcher."
+msgstr "Nieoficjalny launcher Amazon Games"
+
+#: nile/gui/ui/onboard.ui:46
+msgid "Let's log you in"
+msgstr "Zaloguj się"
+
+#: nile/gui/ui/onboard.ui:47
+msgid "Your email and password won't be stored"
+msgstr "Twój email i hasło nie będą przechowywane"
+
+#: nile/gui/ui/onboard.ui:50
+msgid "Log in"
+msgstr "Zaloguj"
+
+#: nile/gui/ui/onboard.ui:65
+msgid "All set!"
+msgstr "Wszystko gotowe!"
+
+#: nile/gui/ui/onboard.ui:66
+msgid "Let's synchronize the library"
+msgstr "Zsynchronizujmy bibliotekę"
+
+#: nile/gui/ui/onboard.ui:74
+msgid "Synchronize"
+msgstr "Synchronizuj"
+
+#: nile/gui/ui/onboard.ui:94
+msgid "Have fun!"
+msgstr "Baw się dobrze!"
+
+#: nile/gui/ui/onboard.ui:98
+msgid "Show me my games"
+msgstr "Pokaż moje gry"
+
+#: nile/gui/ui/onboard.ui:117
+msgid "Next"
+msgstr "Dalej"
+
+#~ msgid "Description"
+#~ msgstr "Opis"

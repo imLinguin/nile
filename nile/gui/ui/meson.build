@@ -6,6 +6,8 @@ nile_sources = [
     'library.ui',
     'onboard.ui',
     'help-overlay.ui',
+    'game_details.ui',
+    'game_card.ui',
     'loading.ui',
     'style.css'
 ]

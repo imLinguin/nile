@@ -11,20 +11,28 @@ class Library(Adw.Bin):
     library_grid = Gtk.Template.Child()
     search_entry = Gtk.Template.Child()
     search_bar = Gtk.Template.Child()
+    no_results_found_page = Gtk.Template.Child()
+    results_stack = Gtk.Template.Child()
 
     def __init__(self, config_manager, library_manager, **kwargs):
         super().__init__(**kwargs)
         self.config_manager = config_manager
         self.library_manager = library_manager
-
+        self.search_bar.set_key_capture_widget(self)
         self.search_entry.connect("changed", self.__handle_search)
+        self.library_grid.connect("child-activated", self.__open_game_details)
         self.library_grid.set_sort_func(self.__sort_func)
+
+        self.grid_entries = []
 
     def render(self):
         games = self.config_manager.get("library")
         if not games:
             return
         self.available_genres = []
+
+        (self.grid_entries.remove(card) for card in self.grid_entries)
+
         for game in games:
             image_path = self.library_manager.get_game_image_fs_path(
                 game["product"]["id"]
@@ -32,6 +40,7 @@ class Library(Adw.Bin):
 
             card = GameCard(game, image_path)
             self.library_grid.append(card)
+            self.grid_entries.append(card)
 
             for genre in game["product"]["productDetail"]["details"]["genres"]:
                 if not genre in self.available_genres:
@@ -50,9 +59,14 @@ class Library(Adw.Bin):
         if not data:
             return True
 
-        return data.strip().lower() in title.lower() or self.__search_in_keywords(
+        shown = data.strip().lower() in title.lower() or self.__search_in_keywords(
             data.strip().lower(), keywords
         )
+
+        return shown
+
+    def __open_game_details(self, widget, target):
+        Gtk.Window.get_toplevels()[0].open_game_details(target.get_child().game)
 
     def __search_in_keywords(self, query, keywords):
         if not keywords:

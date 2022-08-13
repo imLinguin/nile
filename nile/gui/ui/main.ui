@@ -20,7 +20,13 @@
                 <child type="start">
                   <object class="GtkButton" id="search_button">
                     <property name="visible">False</property>
-                    <property name="icon-name">search-symbolic</property>
+                    <property name="icon-name">system-search-symbolic</property>
+                  </object>
+                </child>
+                <child type="start">
+                  <object class="GtkButton" id="back_button">
+                    <property name="visible">False</property>
+                    <property name="icon-name">go-previous-symbolic</property>
                   </object>
                 </child>
               </object>

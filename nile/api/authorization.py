@@ -1,6 +1,6 @@
 from urllib.parse import urlencode, urlparse, parse_qs
 import nile.constants as constants
-from nile.gui import webview
+from nile.gui.windows import webview
 import logging
 import hashlib
 import json

@@ -2,6 +2,19 @@ data/io.github.imLinguin.nile.desktop.in
 data/io.github.imLinguin.nile.appdata.xml.in
 data/io.github.imLinguin.nile.gschema.xml
 
-nile/main.py
-nile/gui/main_window.py
-nile/gui/webview.py
+nile/gui/views/game_details.py
+nile/gui/views/library.py
+nile/gui/views/loading.py
+
+nile/gui/widgets/game_card.py
+
+nile/gui/windows/main_window.py
+nile/gui/windows/webview.py
+
+
+nile/gui/ui/game_card.ui
+nile/gui/ui/game_details.ui
+nile/gui/ui/library.ui
+nile/gui/ui/loading.ui
+nile/gui/ui/main.ui
+nile/gui/ui/onboard.ui

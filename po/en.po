@@ -1,0 +1,113 @@
+# English translations for nile package.
+# Copyright (C) 2022 THE nile'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the nile package.
+# Automatically generated, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: nile\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-08-13 13:38+0200\n"
+"PO-Revision-Date: 2022-08-13 12:41+0200\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: data/io.github.imLinguin.nile.desktop.in:3
+msgid "Nile"
+msgstr "Nile"
+
+#: data/io.github.imLinguin.nile.appdata.xml.in:7
+msgid "No description"
+msgstr "No description"
+
+#: nile/gui/windows/main_window.py:85
+msgid "Welcome back"
+msgstr "Welcome back"
+
+#: nile/gui/ui/game_details.ui:71
+msgid "About the game"
+msgstr ""
+
+#: nile/gui/ui/game_details.ui:100
+msgid "Overview"
+msgstr "Overview"
+
+#: nile/gui/ui/library.ui:17
+msgid "Search for games"
+msgstr "Search for games"
+
+#: nile/gui/ui/library.ui:71
+msgid "No Games Found"
+msgstr "No Games Found"
+
+#: nile/gui/ui/library.ui:72
+msgid "Try another keyword"
+msgstr "Try another keyword"
+
+#: nile/gui/ui/loading.ui:9
+msgid "Synchronizing Library..."
+msgstr "Synchronizing Library..."
+
+#: nile/gui/ui/main.ui:50
+msgid "_Preferences"
+msgstr "_Preferences"
+
+#: nile/gui/ui/main.ui:54
+msgid "_Keyboard Shortcuts"
+msgstr "_Keyboard Shortcuts"
+
+#: nile/gui/ui/main.ui:58
+msgid "_About nile"
+msgstr "_About nile"
+
+#: nile/gui/ui/onboard.ui:37
+msgid "Welcome to Nile!"
+msgstr "Welcome to Nile!"
+
+#: nile/gui/ui/onboard.ui:38
+msgid "Unofficial Amazon Games launcher."
+msgstr "Unofficial Amazon Games launcher."
+
+#: nile/gui/ui/onboard.ui:46
+msgid "Let's log you in"
+msgstr "Let's log you in"
+
+#: nile/gui/ui/onboard.ui:47
+msgid "Your email and password won't be stored"
+msgstr "Your email and password won't be stored"
+
+#: nile/gui/ui/onboard.ui:50
+msgid "Log in"
+msgstr "Log in"
+
+#: nile/gui/ui/onboard.ui:65
+msgid "All set!"
+msgstr "All set!"
+
+#: nile/gui/ui/onboard.ui:66
+msgid "Let's synchronize the library"
+msgstr "Let's synchronize the library"
+
+#: nile/gui/ui/onboard.ui:74
+msgid "Synchronize"
+msgstr "Synchronize"
+
+#: nile/gui/ui/onboard.ui:94
+msgid "Have fun!"
+msgstr "Have fun!"
+
+#: nile/gui/ui/onboard.ui:98
+msgid "Show me my games"
+msgstr "Show me my games"
+
+#: nile/gui/ui/onboard.ui:117
+msgid "Next"
+msgstr "Next"
+
+#~ msgid "Description"
+#~ msgstr "Description"
