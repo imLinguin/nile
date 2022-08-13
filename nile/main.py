@@ -2,6 +2,8 @@ import sys
 import logging
 import gi
 import gettext
+import os
+import locale
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
@@ -11,8 +13,24 @@ from gi.repository import Gtk, Adw, Gio, GObject
 
 from nile.gui.windows.webview import LoginWindow
 
+share_dir = os.path.join(sys.prefix, 'share')
 
-gettext.bindtextdomain("nile")
+if getattr(sys, 'frozen', False):
+    base_dir = os.path.dirname(sys.executable)
+    share_dir = os.path.join(base_dir, 'share')
+elif sys.argv[0]:
+    exec_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
+    base_dir = os.path.dirname(exec_dir)
+    share_dir = os.path.join(base_dir, 'share')
+
+    if not os.path.exists(share_dir):
+        share_dir = base_dir
+
+locale_dir = os.path.join(share_dir, 'locale')
+
+locale.bindtextdomain("nile", locale_dir)
+locale.textdomain("nile")
+gettext.bindtextdomain("nile", locale_dir)
 gettext.textdomain("nile")
 
 

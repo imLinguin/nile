@@ -14,7 +14,7 @@ class Library(Adw.Bin):
     no_results_found_page = Gtk.Template.Child()
     results_stack = Gtk.Template.Child()
 
-    def __init__(self, config_manager, library_manager, **kwargs):
+    def __init__(self, config_manager, library_manager,**kwargs):
         super().__init__(**kwargs)
         self.config_manager = config_manager
         self.library_manager = library_manager

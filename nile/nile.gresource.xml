@@ -9,4 +9,12 @@
     <file>gui/ui/onboard.ui</file>
     <file alias="style.css">gui/ui/style.css</file>
   </gresource>
+  <gresource prefix="/io/github/imLinguin/nile/icons/scalable/actions/">
+    <file preprocess="xml-stripblanks" alias="build-alt-symbolic.svg">../data/icons/symbolic/scalable/actions/build-alt-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="funnel-outline-symbolic.svg">../data/icons/symbolic/scalable/actions/funnel-outline-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="profit-symbolic.svg">../data/icons/symbolic/scalable/actions/profit-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="theater-symbolic.svg">../data/icons/symbolic/scalable/actions/theater-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="month-symbolic.svg">../data/icons/symbolic/scalable/actions/month-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="gamepad-symbolic.svg">../data/icons/symbolic/scalable/actions/gamepad-symbolic.svg</file>
+  </gresource>
 </gresources>

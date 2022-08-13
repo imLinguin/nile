@@ -11,9 +11,11 @@ from nile.gui.views.game_details import GameDetails
 from nile.gui.windows.onboard import OnBoard
 from nile.gui.windows.webview import LoginWindow
 from nile.utils.config import Config
+
 from nile.api.library import Library as LibraryManager
 from nile.api.authorization import AuthenticationManager
 from nile.api.session import APIHandler
+from nile.api.graphql import GraphQLHandler
 
 
 @Gtk.Template(resource_path="/io/github/imLinguin/nile/gui/ui/main.ui")
@@ -28,6 +30,7 @@ class MainWindow(Adw.ApplicationWindow):
     def __init__(self, **kwargs):
         self.logger = logging.getLogger("MAIN_WINDOW")
         self.config_handler = Config()
+        self.graphql_handler = GraphQLHandler(self.config_handler)
         self.session_manager = APIHandler()
         self.library_manager = LibraryManager(self.config_handler, self.session_manager)
         self.authorization_handler = AuthenticationManager(
@@ -43,7 +46,7 @@ class MainWindow(Adw.ApplicationWindow):
 
         self.loading_view = LoadingPage()
         self.library_view = Library(self.config_handler, self.library_manager)
-        self.game_details_view = GameDetails(self.library_manager)
+        self.game_details_view = GameDetails(self.library_manager, self.graphql_handler)
 
         self.main_stack.add_named(name="loading", child=self.loading_view)
         self.main_stack.add_named(name="library", child=self.library_view)

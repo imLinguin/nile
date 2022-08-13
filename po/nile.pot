@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nile\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-13 17:25+0200\n"
+"POT-Creation-Date: 2022-08-13 23:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,35 +25,43 @@ msgstr ""
 msgid "No description"
 msgstr ""
 
-#: nile/gui/windows/main_window.py:82
+#: nile/gui/windows/main_window.py:85
 msgid "Welcome back"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:89
+#: nile/gui/ui/game_details.ui:105
 msgid "About the game"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:119
+#: nile/gui/ui/game_details.ui:132
 msgid "Overview"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:131
+#: nile/gui/ui/game_details.ui:144
 msgid "Genres"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:137
+#: nile/gui/ui/game_details.ui:151
 msgid "Developer"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:143
+#: nile/gui/ui/game_details.ui:158
 msgid "Publisher"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:162
+#: nile/gui/ui/game_details.ui:165
+msgid "Game modes"
+msgstr ""
+
+#: nile/gui/ui/game_details.ui:172
+msgid "Release date"
+msgstr ""
+
+#: nile/gui/ui/game_details.ui:194
 msgid "Previous"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:183 nile/gui/ui/onboard.ui:117
+#: nile/gui/ui/game_details.ui:215
 msgid "Next"
 msgstr ""
 
@@ -85,42 +93,42 @@ msgstr ""
 msgid "_About nile"
 msgstr ""
 
-#: nile/gui/ui/onboard.ui:37
+#: nile/gui/ui/onboard.ui:36
 msgid "Welcome to Nile!"
 msgstr ""
 
-#: nile/gui/ui/onboard.ui:38
+#: nile/gui/ui/onboard.ui:37
 msgid "Unofficial Amazon Games launcher."
 msgstr ""
 
-#: nile/gui/ui/onboard.ui:46
+#: nile/gui/ui/onboard.ui:45
 msgid "Let's log you in"
 msgstr ""
 
-#: nile/gui/ui/onboard.ui:47
+#: nile/gui/ui/onboard.ui:46
 msgid "Your email and password won't be stored"
 msgstr ""
 
-#: nile/gui/ui/onboard.ui:50
+#: nile/gui/ui/onboard.ui:49
 msgid "Log in"
 msgstr ""
 
-#: nile/gui/ui/onboard.ui:65
+#: nile/gui/ui/onboard.ui:64
 msgid "All set!"
 msgstr ""
 
-#: nile/gui/ui/onboard.ui:66
+#: nile/gui/ui/onboard.ui:65
 msgid "Let's synchronize the library"
 msgstr ""
 
-#: nile/gui/ui/onboard.ui:74
+#: nile/gui/ui/onboard.ui:73
 msgid "Synchronize"
 msgstr ""
 
-#: nile/gui/ui/onboard.ui:94
+#: nile/gui/ui/onboard.ui:93
 msgid "Have fun!"
 msgstr ""
 
-#: nile/gui/ui/onboard.ui:98
+#: nile/gui/ui/onboard.ui:97
 msgid "Show me my games"
 msgstr ""

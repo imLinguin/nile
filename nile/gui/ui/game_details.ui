@@ -61,41 +61,60 @@
                 </child>
 
                 <child>
-                  <object class="GtkGrid">
+                  <object class="GtkBox">
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
                     <property name="margin-start">20</property>
                     <property name="margin-end">20</property>
                     <property name="margin-bottom">20</property>
                     <property name="margin-top">20</property>
-                    <property name="column-spacing">10</property>
-                    <property name="row-spacing">10</property>
-                    <property name="row-homogeneous">False</property>
+                    <property name="spacing">10</property>
+                    <property name="orientation">horizontal</property>
                     <child>
                       <object class="GtkBox">
+                        <property name="hexpand">True</property>
                         <property name="orientation">vertical</property>
-                        <style>
-                          <class name="card" />
-                          <class name="padding" />
-                        </style>
-                        <layout>
-                          <property name="column">0</property>
-                          <property name="row">1</property>
-                        </layout>
+                        <property name="spacing">10</property>
                         <child>
-                          <object class="GtkLabel">
-                            <property name="halign">start</property>
-                            <property name="label" translatable="yes">About the game</property>
+                          <object class="GtkBox">
+                            <property name="orientation">horizontal</property>
                             <style>
-                              <class name="game-page_section_header" />
+                              <class name="card" />
+                              <class name="padding" />
                             </style>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="label">Install</property>
+                                <style>
+                                  <class name="suggested-action"/>
+                                </style>
+                              </object>
+                            </child>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="game_description">
-                            <property name="halign">start</property>
-                            <property name="wrap">True</property>
-                            <property name="selectable">True</property>
+                          <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <style>
+                              <class name="card" />
+                              <class name="padding" />
+                            </style>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="halign">start</property>
+                                <property name="label" translatable="yes">About the game</property>
+                                <style>
+                                  <class name="title-2" />
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="game_description">
+                                <property name="halign">start</property>
+                                <property name="wrap">True</property>
+                                <property name="selectable">True</property>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>
@@ -103,21 +122,16 @@
                     <child>
                       <object class="GtkBox">
                         <property name="orientation">vertical</property>
-                        <property name="hexpand">True</property>
                         <style>
                           <class name="card" />
                           <class name="padding" />
                         </style>
-                        <layout>
-                          <property name="column">1</property>
-                          <property name="row">1</property>
-                        </layout>
                         <child>
                           <object class="GtkLabel">
                             <property name="halign">start</property>
                             <property name="label" translatable="yes">Overview</property>
                             <style>
-                              <class name="game-page_section_header" />
+                              <class name="title-2" />
                             </style>
                           </object>
                         </child>
@@ -128,18 +142,35 @@
                             <child>
                               <object class="AdwActionRow" id="genre_detail_entry">
                                 <property name="title" translatable="yes">Genres</property>
+                                <property name="icon-name">theater-symbolic</property>
                                 <property name="subtitle">TEST</property>
                               </object>
                             </child>
                             <child>
                               <object class="AdwActionRow" id="developer_detail_entry">
                                 <property name="title" translatable="yes">Developer</property>
+                                <property name="icon-name">build-alt-symbolic</property>
                                 <property name="subtitle">TEST</property>
                               </object>
                             </child>
                             <child>
                               <object class="AdwActionRow" id="publisher_detail_entry">
                                 <property name="title" translatable="yes">Publisher</property>
+                                <property name="icon-name">profit-symbolic</property>
+                                <property name="subtitle">TEST</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwActionRow" id="gamemodes_detail_entry">
+                                <property name="title" translatable="yes">Game modes</property>
+                                <property name="icon-name">gamepad-symbolic</property>
+                                <property name="subtitle">TEST</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwActionRow" id="releasedate_detail_entry">
+                                <property name="title" translatable="yes">Release date</property>
+                                <property name="icon-name">month-symbolic</property>
                                 <property name="subtitle">TEST</property>
                               </object>
                             </child>

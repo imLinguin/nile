@@ -1,4 +1,5 @@
 import os
+import datetime
 from threading import Thread
 from gi.repository import Gtk, GdkPixbuf, GLib
 from nile.constants import *
@@ -20,10 +21,13 @@ class GameDetails(Gtk.Stack):
     genre_detail_entry = Gtk.Template.Child()
     developer_detail_entry = Gtk.Template.Child()
     publisher_detail_entry = Gtk.Template.Child()
+    gamemodes_detail_entry = Gtk.Template.Child()
+    releasedate_detail_entry = Gtk.Template.Child()
 
-    def __init__(self, library_manager, **kwargs):
+    def __init__(self, library_manager, graphql_handler, **kwargs):
         super().__init__(**kwargs)
         self.library_manager = library_manager
+        self.graphql_handler = graphql_handler
         self.screenshots = []
 
         self.screenshot_previous_button.connect("clicked", self.__previous_screnshot)
@@ -37,29 +41,56 @@ class GameDetails(Gtk.Stack):
         )
         print("Loading", game["product"]["title"])
         # Load images if possible
-        background_image_url = game["product"]["productDetail"]["details"].get(
-            "backgroundUrl1"
-        )
-        if not background_image_url:
-            background_image_url = game["product"]["productDetail"]["details"].get(
-                "backgroundUrl2"
-            )
+        # background_image_url = game["product"]["productDetail"]["details"].get(
+        #     "backgroundUrl1"
+        # )
+        # if not background_image_url:
+        #     background_image_url = game["product"]["productDetail"]["details"].get(
+        #         "backgroundUrl2"
+        #     )
 
+        # self.game_description.set_label(
+        #     game["product"]["productDetail"]["details"].get("shortDescription")
+        # )
+
+        # self.genre_detail_entry.set_subtitle(
+        #     ", ".join(game["product"]["productDetail"]["details"].get("genres"))
+        # )
+        # self.developer_detail_entry.set_subtitle(
+        #     game["product"]["productDetail"]["details"].get("developer")
+        # )
+        # self.publisher_detail_entry.set_subtitle(
+        #     game["product"]["productDetail"]["details"].get("publisher")
+        # )
+
+        # logo_url = game["product"]["productDetail"]["details"]["logoUrl"]
+
+
+        data = self.graphql_handler.get_game_details(game["product"]["id"])
+        self.game_data = data
         self.game_description.set_label(
-            game["product"]["productDetail"]["details"].get("shortDescription")
+            data["data"]["agaGames"][0]["description"]
         )
 
         self.genre_detail_entry.set_subtitle(
-            ", ".join(game["product"]["productDetail"]["details"].get("genres"))
+            ", ".join(data["data"]["agaGames"][0]["genres"])
         )
         self.developer_detail_entry.set_subtitle(
-            game["product"]["productDetail"]["details"].get("developer")
+            data["data"]["agaGames"][0]["developerName"]
         )
         self.publisher_detail_entry.set_subtitle(
-            game["product"]["productDetail"]["details"].get("publisher")
+            data["data"]["agaGames"][0]["publisher"]
+        )
+        self.gamemodes_detail_entry.set_subtitle(
+            ", ".join(data["data"]["agaGames"][0]["gameModes"])
         )
 
-        logo_url = game["product"]["productDetail"]["details"]["logoUrl"]
+        self.releasedate_detail_entry.set_subtitle(
+            datetime.datetime.fromisoformat(data["data"]["agaGames"][0]["releaseDate"][:-1]).strftime("%x")
+        )
+
+        background_image_url = data["data"]["agaGames"][0]["banner"]["defaultMedia"]["src1x"]
+        logo_url = data["data"]["agaGames"][0]["logoImage"]["defaultMedia"]["src1x"]
 
         background_image_path = self.__cache_image(background_image_url)
         logo_path = self.__cache_image(logo_url)
@@ -81,12 +112,10 @@ class GameDetails(Gtk.Stack):
             self.screenshots_carousel.scroll_to(previous_page, True)
 
     def __fetch_screenshots(self):
-        for image in self.game["product"]["productDetail"]["details"].get(
-            "screenshots"
-        ):
+        for image in self.game_data["data"]["agaGames"][0]["screenshots"]:
             element = Gtk.Picture()
             element.add_css_class("game-card")
-            element.set_filename(self.__cache_image(image))
+            element.set_filename(self.__cache_image(image["src1x"]))
             self.screenshots.append(element)
             self.screenshots_carousel.append(element)
 
