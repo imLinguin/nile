@@ -58,8 +58,6 @@ class MainWindow(Adw.ApplicationWindow):
         Thread(target=self.initialize).start()
         if not self.authorization_handler.is_logged_in():
             self.show_onboard()
-        else:
-            self.library_view.render()
 
     def initialize(self):
         if not self.authorization_handler.is_logged_in():
@@ -68,15 +66,12 @@ class MainWindow(Adw.ApplicationWindow):
         if self.authorization_handler.is_token_expired():
             self.authorization_handler.refresh_token()
 
-        thumbnails_fetch_thread = Thread(
-            target=self.library_manager.pull_games_tumbnails
-        )
-        thumbnails_fetch_thread.start()
-
         if self.config_handler.get("library"):
             self.library_manager.sync()
 
-        thumbnails_fetch_thread.join()
+        self.library_manager.pull_games_tumbnails()
+
+        self.library_view.render()
 
         if self.header_bar.has_css_class("flat"):
             self.header_bar.remove_css_class("flat")
@@ -134,8 +129,9 @@ class MainWindow(Adw.ApplicationWindow):
             self.onboard_window.next_page()
 
     def __open_library_page(self, widget):
+        self.game_details_view.set_visible_child_name("loading")
         self.main_stack.set_visible_child_name("library")
 
     def open_game_details(self, game):
         self.main_stack.set_visible_child_name("details")
-        self.game_details_view.load_details(game)
+        Thread(target=self.game_details_view.load_details, args=[game]).start()

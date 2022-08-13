@@ -1,6 +1,7 @@
 import sys
 import logging
 import gi
+import gettext
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
@@ -9,6 +10,10 @@ gi.require_version("WebKit2", "5.0")
 from gi.repository import Gtk, Adw, Gio, GObject
 
 from nile.gui.windows.webview import LoginWindow
+
+
+gettext.bindtextdomain("nile")
+gettext.textdomain("nile")
 
 
 class Nile(Adw.Application):

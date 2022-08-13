@@ -1,15 +1,17 @@
 import os
-from gi.repository import Adw, Gtk, GdkPixbuf
+from threading import Thread
+from gi.repository import Gtk, GdkPixbuf, GLib
 from nile.constants import *
 
 
 @Gtk.Template(resource_path="/io/github/imLinguin/nile/gui/ui/game_details.ui")
-class GameDetails(Adw.Bin):
+class GameDetails(Gtk.Stack):
     __gtype_name__ = "GameDetails"
     page_background = Gtk.Template.Child()
     page_logo = Gtk.Template.Child()
     game_description = Gtk.Template.Child()
     overview_box = Gtk.Template.Child()
+    scrolled_view = Gtk.Template.Child()
 
     screenshots_carousel = Gtk.Template.Child()
     screenshot_previous_button = Gtk.Template.Child()
@@ -30,6 +32,9 @@ class GameDetails(Adw.Bin):
 
     def load_details(self, game):
         self.game = game
+        self.scrolled_view.set_vadjustment(
+            self.scrolled_view.get_vadjustment().set_value(0)
+        )
         print("Loading", game["product"]["title"])
         # Load images if possible
         background_image_url = game["product"]["productDetail"]["details"].get(
@@ -64,20 +69,26 @@ class GameDetails(Adw.Bin):
 
         self.screenshots = []
 
-        for image in game["product"]["productDetail"]["details"].get("screenshots"):
-            element = Gtk.Picture()
-            element.set_filename(self.__cache_image(image))
-            self.screenshots.append(element)
-            self.screenshots_carousel.append(element)
-
         self.page_background.set_pixbuf(self.__load_pixbuf(background_image_path, True))
         self.page_logo.set_pixbuf(self.__load_pixbuf(logo_path))
+        self.set_visible_child_name("content")
+        Thread(target=self.__fetch_screenshots).start()
 
     def __previous_screnshot(self, widget):
         index = int(self.screenshots_carousel.get_position())
         previous_page = self.screenshots_carousel.get_nth_page(index - 1)
         if previous_page:
             self.screenshots_carousel.scroll_to(previous_page, True)
+
+    def __fetch_screenshots(self):
+        for image in self.game["product"]["productDetail"]["details"].get(
+            "screenshots"
+        ):
+            element = Gtk.Picture()
+            element.add_css_class("game-card")
+            element.set_filename(self.__cache_image(image))
+            self.screenshots.append(element)
+            self.screenshots_carousel.append(element)
 
     def __next_screnshot(self, widget):
         index = int(self.screenshots_carousel.get_position())

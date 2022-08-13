@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nile\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-13 13:38+0200\n"
+"POT-Creation-Date: 2022-08-13 17:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,16 +25,36 @@ msgstr ""
 msgid "No description"
 msgstr ""
 
-#: nile/gui/windows/main_window.py:85
+#: nile/gui/windows/main_window.py:82
 msgid "Welcome back"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:71
+#: nile/gui/ui/game_details.ui:89
 msgid "About the game"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:100
+#: nile/gui/ui/game_details.ui:119
 msgid "Overview"
+msgstr ""
+
+#: nile/gui/ui/game_details.ui:131
+msgid "Genres"
+msgstr ""
+
+#: nile/gui/ui/game_details.ui:137
+msgid "Developer"
+msgstr ""
+
+#: nile/gui/ui/game_details.ui:143
+msgid "Publisher"
+msgstr ""
+
+#: nile/gui/ui/game_details.ui:162
+msgid "Previous"
+msgstr ""
+
+#: nile/gui/ui/game_details.ui:183 nile/gui/ui/onboard.ui:117
+msgid "Next"
 msgstr ""
 
 #: nile/gui/ui/library.ui:17
@@ -103,8 +123,4 @@ msgstr ""
 
 #: nile/gui/ui/onboard.ui:98
 msgid "Show me my games"
-msgstr ""
-
-#: nile/gui/ui/onboard.ui:117
-msgid "Next"
 msgstr ""

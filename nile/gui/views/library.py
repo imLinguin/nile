@@ -31,7 +31,8 @@ class Library(Adw.Bin):
             return
         self.available_genres = []
 
-        (self.grid_entries.remove(card) for card in self.grid_entries)
+        for card in self.grid_entries:
+            self.library_grid.remove(card)
 
         for game in games:
             image_path = self.library_manager.get_game_image_fs_path(

@@ -1,4 +1,4 @@
-from gi.repository import Gtk
+from gi.repository import Gtk, GdkPixbuf
 
 
 @Gtk.Template(resource_path="/io/github/imLinguin/nile/gui/ui/game_card.ui")
@@ -12,7 +12,9 @@ class GameCard(Gtk.Box):
         self.game = game
         super().__init__(**kwargs)
 
-        self.card_image.set_filename(path)
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file(path)
+
+        self.card_image.set_pixbuf(pixbuf)
 
         self.click_gesture.connect("pressed", self.__handle_press)
 
