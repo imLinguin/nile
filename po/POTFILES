@@ -10,6 +10,7 @@ nile/gui/widgets/game_card.py
 
 nile/gui/windows/main_window.py
 nile/gui/windows/webview.py
+nile/gui/windows/install_game.py
 
 
 nile/gui/ui/game_card.ui
@@ -18,3 +19,4 @@ nile/gui/ui/library.ui
 nile/gui/ui/loading.ui
 nile/gui/ui/main.ui
 nile/gui/ui/onboard.ui
+nile/gui/ui/install_game.ui

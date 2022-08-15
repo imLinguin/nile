@@ -83,10 +83,11 @@
                               <class name="padding" />
                             </style>
                             <child>
-                              <object class="GtkButton">
+                              <object class="GtkButton" id="primary_button">
                                 <property name="label">Install</property>
                                 <style>
-                                  <class name="suggested-action"/>
+                                  <class name="suggested-action" />
+                                  <class name="pill" />
                                 </style>
                               </object>
                             </child>
@@ -174,6 +175,7 @@
                                 <property name="subtitle">TEST</property>
                               </object>
                             </child>
+                            <child></child>
                           </object>
                         </child>
                       </object>

@@ -36,6 +36,17 @@
                                 <property name="title" translatable="yes">Welcome to Nile!</property>
                                 <property name="description" translatable="yes">Unofficial Amazon Games launcher.</property>
                                 <property name="icon-name">io.github.imLinguin.nile</property>
+                                <property name="child">
+                                    <object class="GtkButton" id="next_page_button">
+                                        <property name="label" translatable="yes">Start</property>
+                                        <property name="margin-start">200</property>
+                                        <property name="margin-end">200</property>
+                                        <style>
+                                            <class name="suggested-action"></class>
+                                            <class name="pill"></class>
+                                        </style>
+                                    </object>
+                                </property>
                             </object>
                         </child>
                         <child>
@@ -91,7 +102,7 @@
                                 <property name="vexpand">True</property>
                                 <property name="hexpand">True</property>
                                 <property name="title" translatable="yes">Have fun!</property>
-                                <property name="icon-name">test-pass-symbolic</property>
+                                <property name="icon-name">selection-mode-symbolic</property>
                                 <property name="child">
                                     <object class="GtkButton" id="close_modal">
                                         <property name="label" translatable="yes">Show me my games</property>

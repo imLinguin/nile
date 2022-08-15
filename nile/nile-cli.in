@@ -27,9 +27,9 @@ import logging
 import json
 import gi
 
-VERSION = '@VERSION@'
-pkgdatadir = '@pkgdatadir@'
-localedir = '@localedir@'
+VERSION = "@VERSION@"
+pkgdatadir = "@pkgdatadir@"
+localedir = "@localedir@"
 
 sys.path.insert(1, pkgdatadir)
 signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -43,10 +43,12 @@ from nile.downloading import manager
 from nile.utils.config import Config
 from nile.utils.launch import Launcher
 from nile.utils.uninstall import Uninstaller
+from nile.utils import download as dl_utils
 from nile.api import authorization, session, library
 from nile.models import manifest
 from nile import constants, version, codename
 from nile.main import Nile
+
 
 class CLI:
     def __init__(
@@ -72,7 +74,7 @@ class CLI:
                 self.app.headless = True
                 self.app.spawn_login = (True, url, handler)
                 self.app.run()
-                
+
                 self.library_manager.sync()
                 return True
             else:
@@ -139,13 +141,32 @@ class CLI:
             return
         self.logger.info(f"Found: {matching_game['product']['title']}")
         self.download_manager = manager.DownloadManager(
-            self.config, self.library_manager, self.session, matching_game
+            self.config, self.library_manager, self.session
         )
-        self.download_manager.download(
+        comparison, game_location = self.download_manager.init_download(
+            matching_game,
             force_verifying=bool(self.arguments.command == "verify"),
             base_install_path=self.arguments.base_path,
             install_path=self.arguments.exact_path,
         )
+        if not comparison or not game_location:
+            self.logger.error("There was an error downloading the game")
+
+        patchmanifest = self.download_manager.get_patchmanifest(comparison)
+        self.logger.debug(f"Number of files {len(patchmanifest.files)}")
+        if len(patchmanifest.files) == 0:
+            self.logger.info("Game is up to date")
+            return
+        total_size = sum(f.download_size for f in patchmanifest.files)
+        readable_size = dl_utils.get_readable_size(total_size)
+        self.logger.info(
+            f"Download size: {round(readable_size[0],2)}{readable_size[1]}"
+        )
+        if not dl_utils.check_available_space(total_size, game_location):
+            self.logger.error("Not enough space available")
+            return
+        self.download_manager.download_from_patchmanifest(game_location, patchmanifest)
+
         self.logger.info("Download complete")
 
     def list_updates(self):

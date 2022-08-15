@@ -25,7 +25,7 @@ if sys.platform == "win32":
     DEFAULT_INSTALL_PATH = os.path.join(os.getenv("USERPROFILE"), "nile")
 
 
-ILLEGAL_FNAME_CHARS = ["?", ":", '"', "*", "<", ">", "|"]
+ILLEGAL_FNAME_CHARS = ["?", ":", '"', "*", "<", ">", "|", "/", "\\", "'"]
 
 SHCOLORS = {
     "clear": "\033[0m",

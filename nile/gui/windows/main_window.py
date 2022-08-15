@@ -16,6 +16,7 @@ from nile.api.library import Library as LibraryManager
 from nile.api.authorization import AuthenticationManager
 from nile.api.session import APIHandler
 from nile.api.graphql import GraphQLHandler
+from nile.downloading.manager import DownloadManager
 
 
 @Gtk.Template(resource_path="/io/github/imLinguin/nile/gui/ui/main.ui")
@@ -36,7 +37,12 @@ class MainWindow(Adw.ApplicationWindow):
         self.authorization_handler = AuthenticationManager(
             self.session_manager, self.config_handler, self.library_manager
         )
+        self.download_manager = DownloadManager(
+            self.config_handler, self.library_manager, self.session_manager
+        )
         super().__init__(**kwargs)
+
+        self.connect("close-request", self.__on_close_request)
         self.present()
         self.__start()
 
@@ -46,7 +52,13 @@ class MainWindow(Adw.ApplicationWindow):
 
         self.loading_view = LoadingPage()
         self.library_view = Library(self.config_handler, self.library_manager)
-        self.game_details_view = GameDetails(self.library_manager, self.graphql_handler)
+        self.game_details_view = GameDetails(
+            self,
+            self.library_manager,
+            self.config_handler,
+            self.graphql_handler,
+            self.download_manager,
+        )
 
         self.main_stack.add_named(name="loading", child=self.loading_view)
         self.main_stack.add_named(name="library", child=self.library_view)
@@ -107,6 +119,9 @@ class MainWindow(Adw.ApplicationWindow):
         self.logger.info("Synchonizing game library")
         sync_thread = Thread(target=self.__handle_library_sync)
         sync_thread.start()
+
+    def __on_close_request(self, widget):
+        return self.download_manager.installing[0]
 
     def __handle_library_sync(self):
         self.library_manager.sync()

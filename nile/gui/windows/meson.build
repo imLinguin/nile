@@ -7,6 +7,8 @@ nile_sources = [
     '__init__.py',
     'main_window.py',
     'onboard.py',
+    'install_game.py',
+    'filepicker.py',
     'webview.py'
 ]
 

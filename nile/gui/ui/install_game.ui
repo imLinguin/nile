@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0" />
+  <requires lib="libadwaita" version="1.1" />
+  <template class="GameInstallModal" parent="AdwWindow">
+    <property name="default-width">350</property>
+    <property name="destroy-with-parent">True</property>
+    <property name="modal">True</property>
+    <child>
+      <object class="GtkStack" id="stack_view">
+        <property name="transition-type">crossfade</property>
+        <property name="transition-duration">200</property>
+
+        <child>
+          <object class="GtkStackPage">
+            <property name="name">loading</property>
+            <property name="child">
+              <object class="GtkSpinner">
+                <property name="valign">center</property>
+                <property name="halign">center</property>
+                <property name="spinning">True</property>
+              </object>
+            </property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkStackPage">
+            <property name="name">content</property>
+            <property name="child">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="AdwHeaderBar" id="headerbar">
+                    <!-- <property name="show-end-title-buttons">False</property>
+                    <property name="show-start-title-buttons">False</property> -->
+                    <property name="decoration-layout"></property>
+                    <property name="title-widget">
+                      <object class="AdwWindowTitle" id="title">
+                        <property name="title">Install the game</property>
+                        <child>
+                          <object class="GtkShortcutController">
+                            <property name="scope">managed</property>
+                            <child>
+                              <object class="GtkShortcut">
+                                <property name="trigger">Escape</property>
+                                <property name="action">activate</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                    <child type="start">
+                      <object class="GtkButton" id="cancel_button">
+                        <property name="label" translatable="yes">Cancel</property>
+                      </object>
+                    </child>
+                    <child type="end">
+                      <object class="GtkButton" id="install_button">
+                        <property name="label" translatable="yes">Install</property>
+                        <property name="sensitive">False</property>
+                        <style>
+                          <class name="suggested-action" />
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title" translatable="yes">Installation settings</property>
+                    <property name="margin-start">10</property>
+                    <property name="margin-end">10</property>
+                    <property name="margin-top">10</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="header-suffix">
+                      <object class="GtkButton" id="install_location_select">
+                        <property name="icon-name">folder-open-symbolic</property>
+                        <style>
+                          <class name="flat" />
+                          <class name="circular" />
+                        </style>
+                      </object>
+                    </property>
+                    <child>
+                      <object class="AdwEntryRow" id="install_location">
+                        <property name="title" translatable="yes">Install location</property>
+                        <child>
+                          <object class="GtkImage" id="location_error_image">
+                            <property name="icon-name">dialog-warning-symbolic</property>
+                            <property name="visible">False</property>
+                            <property name="tooltip-text" translatable="yes">Location doesn't exist or is inaccessible from Flatpak</property>
+                            <style>
+                              <class name="error" />
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title" translatable="yes">Install Details</property>
+                    <property name="margin-start">10</property>
+                    <property name="margin-end">10</property>
+                    <property name="margin-top">10</property>
+                    <property name="margin-bottom">10</property>
+                    <child>
+                      <object class="AdwActionRow" id="install_size">
+                        <property name="title" translatable="yes">Install size</property>
+                        <property name="icon-name">folder-download-symbolic</property>
+                        <property name="subtitle">0.00 MB</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

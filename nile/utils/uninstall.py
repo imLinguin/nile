@@ -12,11 +12,17 @@ class Uninstaller:
 
     def uninstall(self):
         game_id = self.arguments.id
+        library = self.config.get("library")
         installed_games = self.config.get("installed")
+
+        for game_l in library:
+            if game_id == game_l["id"]:
+                game_product_id = game_l["product"]["id"]
+                break
 
         installed_info = None
         for i, game in enumerate(installed_games):
-            if game["id"] == game_id:
+            if game["id"] == game_product_id:
                 installed_info = game
                 installed_games.pop(i)
         if not installed_info:

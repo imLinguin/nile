@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nile\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-13 23:07+0200\n"
+"POT-Creation-Date: 2022-08-14 20:28+0200\n"
 "PO-Revision-Date: 2022-08-13 12:41+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -25,43 +25,59 @@ msgstr "Nile"
 msgid "No description"
 msgstr "No description"
 
-#: nile/gui/windows/main_window.py:85
+#: nile/gui/views/game_details.py:10 nile/gui/ui/install_game.ui:40
+msgid "Install"
+msgstr ""
+
+#: nile/gui/views/game_details.py:11
+msgid "Play"
+msgstr ""
+
+#: nile/gui/windows/main_window.py:95
 msgid "Welcome back"
 msgstr "Welcome back"
 
-#: nile/gui/ui/game_details.ui:105
+#: nile/gui/windows/install_game.py:34
+msgid "Select installation directory"
+msgstr ""
+
+#: nile/gui/windows/install_game.py:38
+msgid "Open"
+msgstr ""
+
+#: nile/gui/ui/game_details.ui:106
 msgid "About the game"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:132
+#: nile/gui/ui/game_details.ui:133
 msgid "Overview"
 msgstr "Overview"
 
-#: nile/gui/ui/game_details.ui:144
+#: nile/gui/ui/game_details.ui:145
 msgid "Genres"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:151
+#: nile/gui/ui/game_details.ui:152
 msgid "Developer"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:158
+#: nile/gui/ui/game_details.ui:159
 msgid "Publisher"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:165
+#: nile/gui/ui/game_details.ui:166
 msgid "Game modes"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:172
+#: nile/gui/ui/game_details.ui:173
 msgid "Release date"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:194
+#: nile/gui/ui/game_details.ui:196
 msgid "Previous"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:215
+#: nile/gui/ui/game_details.ui:217
 msgid "Next"
 msgstr "Next"
 
@@ -101,37 +117,57 @@ msgstr "Welcome to Nile!"
 msgid "Unofficial Amazon Games launcher."
 msgstr "Unofficial Amazon Games launcher."
 
-#: nile/gui/ui/onboard.ui:45
+#: nile/gui/ui/onboard.ui:41
+msgid "Start"
+msgstr ""
+
+#: nile/gui/ui/onboard.ui:56
 msgid "Let's log you in"
 msgstr "Let's log you in"
 
-#: nile/gui/ui/onboard.ui:46
+#: nile/gui/ui/onboard.ui:57
 msgid "Your email and password won't be stored"
 msgstr "Your email and password won't be stored"
 
-#: nile/gui/ui/onboard.ui:49
+#: nile/gui/ui/onboard.ui:60
 msgid "Log in"
 msgstr "Log in"
 
-#: nile/gui/ui/onboard.ui:64
+#: nile/gui/ui/onboard.ui:75
 msgid "All set!"
 msgstr "All set!"
 
-#: nile/gui/ui/onboard.ui:65
+#: nile/gui/ui/onboard.ui:76
 msgid "Let's synchronize the library"
 msgstr "Let's synchronize the library"
 
-#: nile/gui/ui/onboard.ui:73
+#: nile/gui/ui/onboard.ui:84
 msgid "Synchronize"
 msgstr "Synchronize"
 
-#: nile/gui/ui/onboard.ui:93
+#: nile/gui/ui/onboard.ui:104
 msgid "Have fun!"
 msgstr "Have fun!"
 
-#: nile/gui/ui/onboard.ui:97
+#: nile/gui/ui/onboard.ui:108
 msgid "Show me my games"
 msgstr "Show me my games"
+
+#: nile/gui/ui/install_game.ui:35
+msgid "Cancel"
+msgstr ""
+
+#: nile/gui/ui/install_game.ui:51
+msgid "Installation settings"
+msgstr ""
+
+#: nile/gui/ui/install_game.ui:67
+msgid "Install location"
+msgstr ""
+
+#: nile/gui/ui/install_game.ui:72
+msgid "Location doesn't exist or is inaccessible from Flatpak"
+msgstr ""
 
 #~ msgid "Description"
 #~ msgstr "Description"

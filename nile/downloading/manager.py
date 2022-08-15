@@ -1,5 +1,6 @@
 import logging
 import os
+import enum
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import cpu_count
 from time import sleep
@@ -11,18 +12,33 @@ from nile.downloading.worker import DownloadWorker
 from nile import constants
 
 
+class DownloadManagerEvent(enum.Enum):
+    INSTALL_BEGAN = 1
+    INSTALL_COMPLETED = 2
+    INSTALL_ERROR = 3
+    INSTALL_PROGRESS = 4
+
+
 class DownloadManager:
-    def __init__(self, config_manager, library_manager, session_manager, game):
+    def __init__(self, config_manager, library_manager, session_manager):
         self.config = config_manager
         self.library_manager = library_manager
         self.session = session_manager
-        self.game = game
         self.logger = logging.getLogger("DOWNLOAD")
         self.logger.debug("Initialized Download Manager")
 
         self.manifest = None
         self.old_manifest = None
         self.threads = []
+        self.listeners = []
+        self.installing = False, None
+
+    def listen(self, callback):
+        # Callbacks should accept 2 parameters, TYPE and MESSAGE
+        self.listeners.append(callback)
+
+    def remove_listener(self, callback):
+        self.listenrs.remove(callback)
 
     def get_manifest(self):
         game_manifest = self.library_manager.get_game_manifest(self.game["id"])
@@ -67,20 +83,30 @@ class DownloadManager:
             old_manifest.parse(old_manifest_pb)
         return old_manifest
 
-    def download(self, force_verifying=False, base_install_path="", install_path=""):
+    def init_download(
+        self,
+        game,
+        force_verifying=False,
+        base_install_path="",
+        install_path="",
+        path_folder_name_only=False,
+    ):
+        self.game = game
         game_location = base_install_path
         if not base_install_path:
             game_location = install_path
         else:
             game_location = os.path.join(
                 base_install_path,
-                dl_utils.save_directory_name(self.game["product"]["title"]),
+                dl_utils.safe_directory_name(self.game["product"]["title"]),
             )
         if not base_install_path and not install_path:
             game_location = os.path.join(
                 constants.DEFAULT_INSTALL_PATH,
-                dl_utils.save_directory_name(self.game["product"]["title"]),
+                dl_utils.safe_directory_name(self.game["product"]["title"]),
             )
+        if path_folder_name_only:
+            game_location = dl_utils.safe_directory_name(self.game["product"]["title"])
         saved_location = self.library_manager.get_installed_game_info(
             self.game["id"]
         ).get("path")
@@ -98,36 +124,28 @@ class DownloadManager:
 
         if not self.manifest:
             self.logger.error("Unable to load manifest")
-            return
+            return None, None
         self.logger.debug(f"Number of packages: {len(self.manifest.packages)}")
 
         comparison = manifest.ManifestComparison.compare(
             self.manifest, self.old_manifest
         )
 
-        patchmanifest = self.get_patchmanifest(comparison)
-        self.logger.debug(f"Number of files {len(patchmanifest.files)}")
-        if len(patchmanifest.files) == 0:
-            self.logger.info("Game is up to date")
-            return
-        total_size = sum(f.download_size for f in patchmanifest.files)
-        readable_size = dl_utils.get_readable_size(total_size)
-        self.logger.info(
-            f"Download size: {round(readable_size[0],2)}{readable_size[1]}"
-        )
-
-        if not dl_utils.check_available_space(total_size, game_location):
-            self.logger.error("Not enough space available")
-            return
-
+        return comparison, game_location
         # self.progressbar = ProgressBar(total_size)
 
+    def download_from_patchmanifest(
+        self, game_location, patchmanifest, force_verifying=False
+    ):
         for directory in patchmanifest.dirs:
             os.makedirs(
                 os.path.join(game_location, directory.replace("\\", os.sep)),
                 exist_ok=True,
             )
         self.thpool = ThreadPoolExecutor(max_workers=cpu_count())
+        self.installing = True, self.game["product"]["id"]
+        for callback in self.listeners:
+            callback(DownloadManagerEvent.INSTALL_BEGAN, True)
         for f in patchmanifest.files:
             worker = DownloadWorker(f, game_location, self.session)
             # worker.execute()
@@ -146,6 +164,7 @@ class DownloadManager:
 
         if not force_verifying:
             self.finish()
+        self.installing = False, None
 
     def finish(self):
         # Save manifest to the file
@@ -175,3 +194,14 @@ class DownloadManager:
             installed_array.append(installed_game_data)
 
         self.config.write("installed", installed_array)
+        for callback in self.listeners:
+            callback(DownloadManagerEvent.INSTALL_COMPLETED, True)
+        self.__cleanup()
+
+    def __cleanup(self):
+        self.protobuff_manifest = None
+        self.manifest = None
+        self.old_manifest = None
+        self.thpool = None
+        self.game = None
+        self.threads = []

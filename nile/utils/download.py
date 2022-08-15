@@ -14,7 +14,7 @@ def get_readable_size(size):
     return size, power_labels[n] + "B"
 
 
-def save_directory_name(title: str) -> str:
+def safe_directory_name(title: str) -> str:
     output = title
     for char in ILLEGAL_FNAME_CHARS:
         output = output.replace(char, "")
@@ -31,7 +31,7 @@ def check_available_space(size, path) -> bool:
 
 
 def calculate_checksum(hashing_function, path):
-    with open(path, 'rb') as f:
+    with open(path, "rb") as f:
         calculate = hashing_function()
         while True:
             chunk = f.read(16 * 1024)
@@ -40,6 +40,7 @@ def calculate_checksum(hashing_function, path):
             calculate.update(chunk)
 
         return calculate.hexdigest()
+
 
 def get_hashing_function(h_type):
     if h_type.lower() == "sha256":

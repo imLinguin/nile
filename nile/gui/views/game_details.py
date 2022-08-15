@@ -1,8 +1,15 @@
 import os
+from gettext import gettext as _
 import datetime
 from threading import Thread
 from gi.repository import Gtk, GdkPixbuf, GLib
 from nile.constants import *
+from nile.gui.windows.install_game import GameInstallModal
+from nile.downloading.manager import DownloadManagerEvent
+
+
+install_button_text = _("Install")
+play_button_text = _("Play")
 
 
 @Gtk.Template(resource_path="/io/github/imLinguin/nile/gui/ui/game_details.ui")
@@ -24,53 +31,54 @@ class GameDetails(Gtk.Stack):
     gamemodes_detail_entry = Gtk.Template.Child()
     releasedate_detail_entry = Gtk.Template.Child()
 
-    def __init__(self, library_manager, graphql_handler, **kwargs):
+    primary_button = Gtk.Template.Child()
+
+    def __init__(
+        self,
+        main_window,
+        library_manager,
+        config_manager,
+        graphql_handler,
+        download_manager,
+        **kwargs
+    ):
         super().__init__(**kwargs)
+        self.main_window = main_window
         self.library_manager = library_manager
         self.graphql_handler = graphql_handler
-        self.screenshots = []
+        self.config_manager = config_manager
+        self.download_manager = download_manager
 
+        self.download_manager.listen(self.__handle_download_manager_event)
+        self.screenshots = []
+        self.is_installed = False
         self.screenshot_previous_button.connect("clicked", self.__previous_screnshot)
         self.screenshot_next_button.connect("clicked", self.__next_screnshot)
+        self.primary_button.connect("clicked", self.run_primary_action)
         self.screenshots_carousel.connect("page-changed", self.__handle_page_change)
 
     def load_details(self, game):
         self.game = game
+        self.is_installed = False
+        self.get_installed()
+
+        self.primary_button.set_label(install_button_text)
+        game_product_id = self.game["product"]["id"]
+        for installed_game in self.installed:
+            if installed_game["id"] == game_product_id:
+                self.is_installed = True
+                self.primary_button.set_label(play_button_text)
+                break
+
         self.scrolled_view.set_vadjustment(
             self.scrolled_view.get_vadjustment().set_value(0)
         )
         print("Loading", game["product"]["title"])
         # Load images if possible
-        # background_image_url = game["product"]["productDetail"]["details"].get(
-        #     "backgroundUrl1"
-        # )
-        # if not background_image_url:
-        #     background_image_url = game["product"]["productDetail"]["details"].get(
-        #         "backgroundUrl2"
-        #     )
-
-        # self.game_description.set_label(
-        #     game["product"]["productDetail"]["details"].get("shortDescription")
-        # )
-
-        # self.genre_detail_entry.set_subtitle(
-        #     ", ".join(game["product"]["productDetail"]["details"].get("genres"))
-        # )
-        # self.developer_detail_entry.set_subtitle(
-        #     game["product"]["productDetail"]["details"].get("developer")
-        # )
-        # self.publisher_detail_entry.set_subtitle(
-        #     game["product"]["productDetail"]["details"].get("publisher")
-        # )
-
-        # logo_url = game["product"]["productDetail"]["details"]["logoUrl"]
-
 
         data = self.graphql_handler.get_game_details(game["product"]["id"])
         self.game_data = data
-        self.game_description.set_label(
-            data["data"]["agaGames"][0]["description"]
-        )
+        self.game_description.set_label(data["data"]["agaGames"][0]["description"])
 
         self.genre_detail_entry.set_subtitle(
             ", ".join(data["data"]["agaGames"][0]["genres"])
@@ -86,10 +94,14 @@ class GameDetails(Gtk.Stack):
         )
 
         self.releasedate_detail_entry.set_subtitle(
-            datetime.datetime.fromisoformat(data["data"]["agaGames"][0]["releaseDate"][:-1]).strftime("%x")
+            datetime.datetime.fromisoformat(
+                data["data"]["agaGames"][0]["releaseDate"][:-1]
+            ).strftime("%x")
         )
 
-        background_image_url = data["data"]["agaGames"][0]["banner"]["defaultMedia"]["src1x"]
+        background_image_url = data["data"]["agaGames"][0]["background"][
+            "defaultMedia"
+        ]["src1x"]
         logo_url = data["data"]["agaGames"][0]["logoImage"]["defaultMedia"]["src1x"]
 
         background_image_path = self.__cache_image(background_image_url)
@@ -104,6 +116,43 @@ class GameDetails(Gtk.Stack):
         self.page_logo.set_pixbuf(self.__load_pixbuf(logo_path))
         self.set_visible_child_name("content")
         Thread(target=self.__fetch_screenshots).start()
+
+    def get_installed(self):
+        self.installed = self.config_manager.get("installed")
+        if not self.installed:
+            self.installed = []
+
+    def run_primary_action(self, widget):
+        if not self.is_installed:
+            self.__spawn_download_window()
+
+    def __handle_download_manager_event(self, event_type, message):
+        print(event_type, message)
+        if event_type == DownloadManagerEvent.INSTALL_BEGAN:
+            self.primary_button.set_sensitive(False)
+        if event_type == DownloadManagerEvent.INSTALL_COMPLETED:
+            self.get_installed()
+            for installed_game in self.installed:
+                if installed_game["id"] == self.game["product"]["id"]:
+                    self.is_installed = True
+                    self.primary_button.set_label(play_button_text)
+                    break
+            self.primary_button.set_sensitive(True)
+        elif event_type == DownloadManagerEvent.INSTALL_PROGRESS:
+            print(message)
+
+    def init_download(self, path, patchmanifest):
+        self.primary_button.set_sensitive(False)
+
+        self.download_manager.download_from_patchmanifest(path, patchmanifest)
+
+        self.primary_button.set_sensitive(True)
+
+    def __spawn_download_window(self):
+        self.install_modal = GameInstallModal(
+            self.init_download, self.game, self.download_manager
+        )
+        self.install_modal.present()
 
     def __previous_screnshot(self, widget):
         index = int(self.screenshots_carousel.get_position())

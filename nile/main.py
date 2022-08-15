@@ -13,20 +13,20 @@ from gi.repository import Gtk, Adw, Gio, GObject
 
 from nile.gui.windows.webview import LoginWindow
 
-share_dir = os.path.join(sys.prefix, 'share')
+share_dir = os.path.join(sys.prefix, "share")
 
-if getattr(sys, 'frozen', False):
+if getattr(sys, "frozen", False):
     base_dir = os.path.dirname(sys.executable)
-    share_dir = os.path.join(base_dir, 'share')
+    share_dir = os.path.join(base_dir, "share")
 elif sys.argv[0]:
     exec_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
     base_dir = os.path.dirname(exec_dir)
-    share_dir = os.path.join(base_dir, 'share')
+    share_dir = os.path.join(base_dir, "share")
 
     if not os.path.exists(share_dir):
         share_dir = base_dir
 
-locale_dir = os.path.join(share_dir, 'locale')
+locale_dir = os.path.join(share_dir, "locale")
 
 locale.bindtextdomain("nile", locale_dir)
 locale.textdomain("nile")
@@ -71,7 +71,7 @@ class Nile(Adw.Application):
         return 0
 
     def __quit(self, x, y):
-        quit()
+        self.quit()
 
     def __register_actions(self):
 

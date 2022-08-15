@@ -13,7 +13,7 @@ class OnBoard(Adw.Window):
     close_modal = Gtk.Template.Child()
 
     def __init__(self, main_window, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(parent=main_window, **kwargs)
         self.main_window = main_window
 
         self.login_button.connect("clicked", main_window.open_login_page)

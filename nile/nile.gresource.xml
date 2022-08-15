@@ -7,6 +7,7 @@
     <file>gui/ui/game_details.ui</file>
     <file>gui/ui/loading.ui</file>
     <file>gui/ui/onboard.ui</file>
+    <file>gui/ui/install_game.ui</file>
     <file alias="style.css">gui/ui/style.css</file>
   </gresource>
   <gresource prefix="/io/github/imLinguin/nile/icons/scalable/actions/">
@@ -16,5 +17,7 @@
     <file preprocess="xml-stripblanks" alias="theater-symbolic.svg">../data/icons/symbolic/scalable/actions/theater-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="month-symbolic.svg">../data/icons/symbolic/scalable/actions/month-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="gamepad-symbolic.svg">../data/icons/symbolic/scalable/actions/gamepad-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="external-link-symbolic.svg">../data/icons/symbolic/scalable/actions/external-link-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="selection-mode-symbolic.svg">../data/icons/symbolic/scalable/actions/selection-mode-symbolic.svg</file>
   </gresource>
 </gresources>

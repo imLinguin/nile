@@ -2,7 +2,7 @@
     border-radius: 4px;
 }
 .game-card-image {
-    transition: all 200ms ease-in-out;
+    transition: all 200ms ease-out;
 }
 
 .game-card-image:hover {
