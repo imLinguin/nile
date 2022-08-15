@@ -91,6 +91,14 @@
                                 </style>
                               </object>
                             </child>
+                            <child>
+                              <object class="GtkProgressBar" id="install_progress">
+                                <property name="visible">False</property>
+                                <property name="show-text">True</property>
+                                <property name="margin-start">20</property>
+                                <property name="valign">center</property>
+                              </object>
+                            </child>
                           </object>
                         </child>
                         <child>

@@ -36,7 +36,7 @@
                     <property name="decoration-layout"></property>
                     <property name="title-widget">
                       <object class="AdwWindowTitle" id="title">
-                        <property name="title">Install the game</property>
+                        <property name="title" translatable="yes">Install the game</property>
                         <child>
                           <object class="GtkShortcutController">
                             <property name="scope">managed</property>

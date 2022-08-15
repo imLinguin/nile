@@ -6,6 +6,7 @@ from multiprocessing import cpu_count
 from time import sleep
 import nile.utils.download as dl_utils
 from nile.models import manifest, hash_pairs, patch_manifest
+from nile.models.progress import ProgressState
 from nile.downloading.worker import DownloadWorker
 
 # from nile.models.progressbar import ProgressBar
@@ -137,6 +138,9 @@ class DownloadManager:
     def download_from_patchmanifest(
         self, game_location, patchmanifest, force_verifying=False
     ):
+        total_size = sum(f.download_size for f in patchmanifest.files)
+        progress_state = ProgressState(total_size)
+        self.install_path = game_location
         for directory in patchmanifest.dirs:
             os.makedirs(
                 os.path.join(game_location, directory.replace("\\", os.sep)),
@@ -147,7 +151,9 @@ class DownloadManager:
         for callback in self.listeners:
             callback(DownloadManagerEvent.INSTALL_BEGAN, True)
         for f in patchmanifest.files:
-            worker = DownloadWorker(f, game_location, self.session)
+            worker = DownloadWorker(
+                f, game_location, self.session, progress_state.update
+            )
             # worker.execute()
             self.threads.append(self.thpool.submit(worker.execute))
 
@@ -160,7 +166,11 @@ class DownloadManager:
             if is_done:
                 break
             # self.progressbar.print()
-            sleep(0.5)
+            status_data = progress_state.calc()
+            for listener in self.listeners:
+                listener(DownloadManagerEvent.INSTALL_PROGRESS, status_data)
+
+            sleep(0.2)
 
         if not force_verifying:
             self.finish()

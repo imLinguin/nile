@@ -6,7 +6,8 @@ nile_sources = [
     'hash_pairs.py',
     'manifest.py',
     'patch_manifest.py',
-    'patcher.py'
+    'patcher.py',
+    'progress.py'
 ]
 
 

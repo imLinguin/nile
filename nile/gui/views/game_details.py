@@ -32,6 +32,7 @@ class GameDetails(Gtk.Stack):
     releasedate_detail_entry = Gtk.Template.Child()
 
     primary_button = Gtk.Template.Child()
+    install_progress = Gtk.Template.Child()
 
     def __init__(
         self,
@@ -63,6 +64,7 @@ class GameDetails(Gtk.Stack):
         self.get_installed()
 
         self.primary_button.set_label(install_button_text)
+        self.install_progress.set_visible(False)
         game_product_id = self.game["product"]["id"]
         for installed_game in self.installed:
             if installed_game["id"] == game_product_id:
@@ -127,10 +129,11 @@ class GameDetails(Gtk.Stack):
             self.__spawn_download_window()
 
     def __handle_download_manager_event(self, event_type, message):
-        print(event_type, message)
         if event_type == DownloadManagerEvent.INSTALL_BEGAN:
+            self.install_progress.set_visible(True)
             self.primary_button.set_sensitive(False)
         if event_type == DownloadManagerEvent.INSTALL_COMPLETED:
+            self.install_progress.set_visible(False)
             self.get_installed()
             for installed_game in self.installed:
                 if installed_game["id"] == self.game["product"]["id"]:
@@ -139,7 +142,9 @@ class GameDetails(Gtk.Stack):
                     break
             self.primary_button.set_sensitive(True)
         elif event_type == DownloadManagerEvent.INSTALL_PROGRESS:
-            print(message)
+            if self.download_manager.installing[1] == self.game["product"]["id"]:
+                self.install_progress.set_visible(True)
+                self.install_progress.set_fraction(message)
 
     def init_download(self, path, patchmanifest):
         self.primary_button.set_sensitive(False)

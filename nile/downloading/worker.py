@@ -7,10 +7,13 @@ from nile.models.patcher import Patcher
 
 
 class DownloadWorker:
-    def __init__(self, file_data, path, session_manager):
+    def __init__(self, file_data, path, session_manager, report_progress):
         self.data = file_data
         self.path = path
         self.session = session_manager.session
+        self.report_progress = report_progress
+
+        self.retried = False
 
     def execute(self):
         file_path = os.path.join(
@@ -22,13 +25,18 @@ class DownloadWorker:
         self.get_file(file_path)
         if not self.verify_downloaded_file(file_path):
             print(f"Checksum error for {file_path}")
+            if not self.retried:
+                self.retried = True
+                return self.execute()
 
     def verify_downloaded_file(self, path) -> bool:
-        return self.data.target_hash == calculate_checksum(get_hashing_function(self.data.target_hash_type), path)
+        return self.data.target_hash == calculate_checksum(
+            get_hashing_function(self.data.target_hash_type), path
+        )
 
     def get_file(self, path):
         if os.path.exists(path + ".patch"):
-            os.remove(path+".patch")
+            os.remove(path + ".patch")
 
         with open(path + ".patch", "ab") as f:
             response = self.session.get(
@@ -43,6 +51,7 @@ class DownloadWorker:
                     chunk_size=max(int(total / 1000), 1024 * 1024)
                 ):
                     f.write(data)
+                    self.report_progress(len(data))
             f.close()
 
         if self.data.patch_hash:
