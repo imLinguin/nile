@@ -13,14 +13,14 @@ play_button_text = _("Play")
 
 
 @Gtk.Template(resource_path="/io/github/imLinguin/nile/gui/ui/game_details.ui")
-class GameDetails(Gtk.Stack):
+class GameDetails(Gtk.Box):
     __gtype_name__ = "GameDetails"
     page_background = Gtk.Template.Child()
     page_logo = Gtk.Template.Child()
     game_description = Gtk.Template.Child()
     overview_box = Gtk.Template.Child()
     scrolled_view = Gtk.Template.Child()
-
+    stack = Gtk.Template.Child()
     screenshots_carousel = Gtk.Template.Child()
     screenshot_previous_button = Gtk.Template.Child()
     screenshot_next_button = Gtk.Template.Child()
@@ -33,6 +33,10 @@ class GameDetails(Gtk.Stack):
 
     primary_button = Gtk.Template.Child()
     install_progress = Gtk.Template.Child()
+
+    header_bar = Gtk.Template.Child()
+    page_title = Gtk.Template.Child()
+    back_button = Gtk.Template.Child()
 
     def __init__(
         self,
@@ -53,12 +57,15 @@ class GameDetails(Gtk.Stack):
         self.download_manager.listen(self.__handle_download_manager_event)
         self.screenshots = []
         self.is_installed = False
+        self.is_loading = False
         self.screenshot_previous_button.connect("clicked", self.__previous_screnshot)
         self.screenshot_next_button.connect("clicked", self.__next_screnshot)
         self.primary_button.connect("clicked", self.run_primary_action)
+        self.back_button.connect("clicked", self.main_window.open_library_page)
         self.screenshots_carousel.connect("page-changed", self.__handle_page_change)
 
     def load_details(self, game):
+        self.is_loading = True
         self.game = game
         self.is_installed = False
         self.get_installed()
@@ -75,11 +82,16 @@ class GameDetails(Gtk.Stack):
         self.scrolled_view.set_vadjustment(
             self.scrolled_view.get_vadjustment().set_value(0)
         )
-        print("Loading", game["product"]["title"])
+        title = game["product"].get("title")
+        self.page_title.set_subtitle(title)
+
         # Load images if possible
 
         data = self.graphql_handler.get_game_details(game["product"]["id"])
         self.game_data = data
+
+        title = data["data"]["agaGames"][0].get("title")
+        self.page_title.set_subtitle(title)
         self.game_description.set_label(data["data"]["agaGames"][0]["description"])
 
         self.genre_detail_entry.set_subtitle(
@@ -116,7 +128,8 @@ class GameDetails(Gtk.Stack):
 
         self.page_background.set_pixbuf(self.__load_pixbuf(background_image_path, True))
         self.page_logo.set_pixbuf(self.__load_pixbuf(logo_path))
-        self.set_visible_child_name("content")
+        self.stack.set_visible_child_name("content")
+        self.is_loading = False
         Thread(target=self.__fetch_screenshots).start()
 
     def get_installed(self):
@@ -133,6 +146,7 @@ class GameDetails(Gtk.Stack):
             self.install_progress.set_visible(True)
             self.primary_button.set_sensitive(False)
         if event_type == DownloadManagerEvent.INSTALL_COMPLETED:
+            Thread(target=self.main_window.library_grid.render).start()
             self.install_progress.set_visible(False)
             self.get_installed()
             for installed_game in self.installed:

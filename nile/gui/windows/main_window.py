@@ -24,8 +24,8 @@ class MainWindow(Adw.ApplicationWindow):
     __gtype_name__ = "NileWindow"
     main_stack = Gtk.Template.Child()
     header_bar = Gtk.Template.Child()
+    main_leaflet = Gtk.Template.Child()
     search_button = Gtk.Template.Child()
-    back_button = Gtk.Template.Child()
     toasts = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
@@ -62,13 +62,11 @@ class MainWindow(Adw.ApplicationWindow):
 
         self.main_stack.add_named(name="loading", child=self.loading_view)
         self.main_stack.add_named(name="library", child=self.library_view)
-        self.main_stack.add_named(name="details", child=self.game_details_view)
+
+        self.main_leaflet.append(self.game_details_view)
+        self.main_leaflet.connect("notify::visible-child", self.__handle_navigation)
         self.logger.info("Registered stack")
-        self.main_stack.connect(
-            "notify::visible-child", self.__handle_stack_page_change
-        )
         self.search_button.connect("clicked", self.library_view.open_search)
-        self.back_button.connect("clicked", self.__open_library_page)
 
         Thread(target=self.initialize).start()
         if not self.authorization_handler.is_logged_in():
@@ -134,11 +132,6 @@ class MainWindow(Adw.ApplicationWindow):
 
         return False
 
-    def __handle_stack_page_change(self, widget, child):
-        name = self.main_stack.get_visible_child_name()
-        self.search_button.set_visible(name == "library")
-        self.back_button.set_visible(name == "details")
-
     def __handle_login(self, handler, webview, event):
         res = handler(webview, event)
         if res and self.onboard_window:
@@ -146,10 +139,18 @@ class MainWindow(Adw.ApplicationWindow):
             self.onboard_window.present()
             self.onboard_window.next_page()
 
-    def __open_library_page(self, widget):
-        self.game_details_view.set_visible_child_name("loading")
-        self.main_stack.set_visible_child_name("library")
+    def __handle_navigation(self, widget, child):
+        visible_child = widget.get_visible_child()
+        if type(visible_child) == GameDetails:
+            if not self.game_details_view.is_loading:
+                self.game_details_view.stack.set_visible_child_name("content")
+        else:
+            self.game_details_view.stack.set_visible_child_name("loading")
+
+    def open_library_page(self, widget):
+        self.main_leaflet.navigate(Adw.NavigationDirection.BACK)
 
     def open_game_details(self, game):
-        self.main_stack.set_visible_child_name("details")
         Thread(target=self.game_details_view.load_details, args=[game]).start()
+        self.main_leaflet.set_visible_child(self.game_details_view)
+        self.main_leaflet.set_can_navigate_forward(True)

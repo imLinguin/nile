@@ -10,32 +10,35 @@
     <child>
       <object class="AdwToastOverlay" id="toasts">
         <child>
-          <object class="GtkBox">
-            <property name="orientation">vertical</property>
+          <object class="AdwLeaflet" id="main_leaflet">
+            <property name="vexpand">true</property>
+            <property name="can-unfold">False</property>
+            <property name="can-navigate-back">True</property>
+            <property name="can-navigate-forward">False</property>
             <child>
-              <object class="AdwHeaderBar" id="header_bar">
-                <style>
-                  <class name="flat"></class>
-                </style>
-                <child type="start">
-                  <object class="GtkButton" id="search_button">
-                    <property name="visible">False</property>
-                    <property name="icon-name">system-search-symbolic</property>
+              <object class="GtkBox">
+                <property name="vexpand">True</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="AdwHeaderBar" id="header_bar">
+                    <style>
+                      <class name="flat" />
+                    </style>
+                    <child type="start">
+                      <object class="GtkButton" id="search_button">
+                        <property name="visible">False</property>
+                        <property name="icon-name">system-search-symbolic</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
-                <child type="start">
-                  <object class="GtkButton" id="back_button">
-                    <property name="visible">False</property>
-                    <property name="icon-name">go-previous-symbolic</property>
+                <child>
+                  <object class="GtkStack" id="main_stack">
+                    <property name="vexpand">True</property>
+                    <property name="transition-type">crossfade</property>
+                    <property name="transition-duration">200</property>
                   </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkStack" id="main_stack">
-                <property name="vexpand">true</property>
-                <property name="transition-duration">300</property>
-                <property name="transition-type">slide-left-right</property>
               </object>
             </child>
           </object>
