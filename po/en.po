@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nile\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-15 20:29+0200\n"
+"POT-Creation-Date: 2022-09-04 13:59+0200\n"
 "PO-Revision-Date: 2022-08-13 12:41+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -33,7 +33,7 @@ msgstr ""
 msgid "Play"
 msgstr ""
 
-#: nile/gui/windows/main_window.py:97
+#: nile/gui/windows/main_window.py:108
 msgid "Welcome back"
 msgstr "Welcome back"
 
@@ -45,39 +45,47 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:114
+#: nile/gui/ui/game_details.ui:18
+msgid "Uninstall"
+msgstr ""
+
+#: nile/gui/ui/game_details.ui:36
+msgid "Game Details"
+msgstr ""
+
+#: nile/gui/ui/game_details.ui:157
 msgid "About the game"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:141
+#: nile/gui/ui/game_details.ui:184
 msgid "Overview"
 msgstr "Overview"
 
-#: nile/gui/ui/game_details.ui:153
+#: nile/gui/ui/game_details.ui:196
 msgid "Genres"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:160
+#: nile/gui/ui/game_details.ui:203
 msgid "Developer"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:167
+#: nile/gui/ui/game_details.ui:210
 msgid "Publisher"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:174
+#: nile/gui/ui/game_details.ui:217
 msgid "Game modes"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:181
+#: nile/gui/ui/game_details.ui:224
 msgid "Release date"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:204
+#: nile/gui/ui/game_details.ui:247
 msgid "Previous"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:225
+#: nile/gui/ui/game_details.ui:268
 msgid "Next"
 msgstr "Next"
 
@@ -85,11 +93,12 @@ msgstr "Next"
 msgid "Search for games"
 msgstr "Search for games"
 
-#: nile/gui/ui/library.ui:71
-msgid "No Games Found"
+#: nile/gui/ui/library.ui:80
+#, fuzzy
+msgid "Games Not Found"
 msgstr "No Games Found"
 
-#: nile/gui/ui/library.ui:72
+#: nile/gui/ui/library.ui:81
 msgid "Try another keyword"
 msgstr "Try another keyword"
 
@@ -97,16 +106,18 @@ msgstr "Try another keyword"
 msgid "Synchronizing Library..."
 msgstr "Synchronizing Library..."
 
-#: nile/gui/ui/main.ui:50
-msgid "_Preferences"
+#: nile/gui/ui/main.ui:37
+msgid "Open Menu"
+msgstr ""
+
+#: nile/gui/ui/main.ui:71
+#, fuzzy
+msgid "Preferences"
 msgstr "_Preferences"
 
-#: nile/gui/ui/main.ui:54
-msgid "_Keyboard Shortcuts"
-msgstr "_Keyboard Shortcuts"
-
-#: nile/gui/ui/main.ui:58
-msgid "_About nile"
+#: nile/gui/ui/main.ui:76
+#, fuzzy
+msgid "About Nile"
 msgstr "_About nile"
 
 #: nile/gui/ui/onboard.ui:36
@@ -153,6 +164,10 @@ msgstr "Have fun!"
 msgid "Show me my games"
 msgstr "Show me my games"
 
+#: nile/gui/ui/install_game.ui:39
+msgid "Install the game"
+msgstr ""
+
 #: nile/gui/ui/install_game.ui:55
 msgid "Cancel"
 msgstr ""
@@ -176,6 +191,9 @@ msgstr ""
 #: nile/gui/ui/install_game.ui:111
 msgid "Install size"
 msgstr ""
+
+#~ msgid "_Keyboard Shortcuts"
+#~ msgstr "_Keyboard Shortcuts"
 
 #~ msgid "Description"
 #~ msgstr "Description"
