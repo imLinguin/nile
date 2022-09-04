@@ -6,7 +6,7 @@ from gi.repository import Gtk, GdkPixbuf, GLib
 from nile.constants import *
 from nile.gui.windows.install_game import GameInstallModal
 from nile.downloading.manager import DownloadManagerEvent
-
+from nile.utils.uninstall import uninstall
 
 install_button_text = _("Install")
 play_button_text = _("Play")
@@ -24,6 +24,7 @@ class GameDetails(Gtk.Box):
     screenshots_carousel = Gtk.Template.Child()
     screenshot_previous_button = Gtk.Template.Child()
     screenshot_next_button = Gtk.Template.Child()
+    uninstall_button = Gtk.Template.Child()
 
     genre_detail_entry = Gtk.Template.Child()
     developer_detail_entry = Gtk.Template.Child()
@@ -62,6 +63,7 @@ class GameDetails(Gtk.Box):
         self.screenshot_next_button.connect("clicked", self.__next_screnshot)
         self.primary_button.connect("clicked", self.run_primary_action)
         self.back_button.connect("clicked", self.main_window.open_library_page)
+        self.uninstall_button.connect("clicked", self.__uninstall_game)
         self.screenshots_carousel.connect("page-changed", self.__handle_page_change)
 
     def load_details(self, game):
@@ -146,7 +148,7 @@ class GameDetails(Gtk.Box):
             self.install_progress.set_visible(True)
             self.primary_button.set_sensitive(False)
         if event_type == DownloadManagerEvent.INSTALL_COMPLETED:
-            Thread(target=self.main_window.library_grid.render).start()
+            Thread(target=self.main_window.library_view.render).start()
             self.install_progress.set_visible(False)
             self.get_installed()
             for installed_game in self.installed:
@@ -167,10 +169,25 @@ class GameDetails(Gtk.Box):
 
         self.primary_button.set_sensitive(True)
 
+    def __uninstall_game(self, widget):
+        uninstall(self.game["product"]["id"], self.config_manager)
+
+        self.get_installed()
+        self.is_installed = False
+        self.primary_button.set_label(install_button_text)
+        for installed_game in self.installed:
+            if installed_game["id"] == self.game["product"]["id"]:
+                self.is_installed = True
+                self.primary_button.set_label(play_button_text)
+                break
+        self.main_window.library_view.render()
+        self.main_window.library_view.library_grid.invalidate_filter()
+
     def __spawn_download_window(self):
         self.install_modal = GameInstallModal(
             self.init_download, self.game, self.download_manager
         )
+        self.install_modal.set_transient_for(self.main_window)
         self.install_modal.present()
 
     def __previous_screnshot(self, widget):

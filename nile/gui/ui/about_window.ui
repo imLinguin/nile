@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0" />
+  <requires lib="libadwaita" version="1.0" />
+  <object class="AdwAboutWindow" id="about_window">
+    <property name="modal">True</property>
+    <property name="application-icon">io.github.imLinguin.nile</property>
+    <property name="version">1.0.0</property>
+    <property name="application-name">Nile</property>
+    <property name="comments" translatable="yes">Unofficial Amazon Games launcher</property>
+    <property name="developer-name">Nile Developers</property>
+    <property name="issue-url">https://github.com/imLinguin/nile/issues</property>
+    <property name="license-type">gpl-3-0-only</property>
+    <property name="copyright" translatable="yes">© 2022 Nile Developers</property>
+    <property name="developers">Paweł Lidwin https://github.com/imLinguin
+Rodney https://github.com/derrod</property>
+    <property name="designers">Mirko Brombin https://github.com/mirkobrombin/
+Aleksander Baran https://github.com/olekbaran</property>
+  </object>
+</interface>

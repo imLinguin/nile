@@ -42,7 +42,7 @@ from nile.arguments import get_arguments
 from nile.downloading import manager
 from nile.utils.config import Config
 from nile.utils.launch import Launcher
-from nile.utils.uninstall import Uninstaller
+from nile.utils.uninstall import uninstall
 from nile.utils import download as dl_utils
 from nile.api import authorization, session, library
 from nile.models import manifest
@@ -179,10 +179,8 @@ class CLI:
 
         # Prepare array of game ids
         game_ids = dict()
-        for game in games:
-            for installed_game in installed_array:
-                if game["id"] == installed_game["id"]:
-                    game_ids.update({game["product"]["id"]: installed_game})
+        for installed_game in installed_array:
+            game_ids.update({installed_game["id"]: installed_game})
         self.logger.debug(
             f"Checking for updates for {list(game_ids.keys())}, count: {len(game_ids)}"
         )
@@ -247,8 +245,16 @@ class CLI:
         launcher.start(found["path"])
 
     def handle_uninstall(self):
-        uninstaller = Uninstaller(self.config, self.arguments)
-        uninstaller.uninstall()
+        game_id = self.arguments.id
+        library = self.config.get("library")
+        game_product_id = None
+
+        for game_l in library:
+            if game_id == game_l["id"]:
+                game_product_id = game_l["product"]["id"]
+                break
+
+        uninstall(game_product_id, self.config)
 
 
 def main():

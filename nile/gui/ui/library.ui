@@ -41,35 +41,46 @@
           </object>
         </child>
         <child>
-          <object class="GtkStack" id="results_stack">
+          <object class="AdwViewStack" id="results_stack">
             <child>
-              <object class="GtkScrolledWindow" id="scroll_window">
-                <property name="hexpand">True</property>
-                <property name="vexpand">True</property>
-                <child>
-                  <object class="GtkFlowBox" id="library_grid">
-                    <property name="vexpand">True</property>
+              <object class="AdwViewStackPage">
+                <property name="name">grid</property>
+                <property name="child">
+                  <object class="GtkScrolledWindow" id="scroll_window">
                     <property name="hexpand">True</property>
-                    <property name="homogeneous">True</property>
-                    <property name="row-spacing">10</property>
-                    <property name="column-spacing">10</property>
-                    <property name="margin-start">10</property>
-                    <property name="margin-end">10</property>
-                    <property name="margin-top">10</property>
-                    <property name="margin-bottom">20</property>
-                    <property name="selection-mode">none</property>
-                    <property name="activate-on-single-click">False</property>
-                    <property name="max-children-per-line">20</property>
+                    <property name="vexpand">True</property>
+                    <child>
+                      <object class="GtkFlowBox" id="library_grid">
+                        <property name="vexpand">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="homogeneous">True</property>
+                        <property name="row-spacing">10</property>
+                        <property name="column-spacing">10</property>
+                        <property name="margin-start">10</property>
+                        <property name="margin-end">10</property>
+                        <property name="margin-top">10</property>
+                        <property name="margin-bottom">20</property>
+                        <property name="selection-mode">none</property>
+                        <property name="activate-on-single-click">False</property>
+                        <property name="max-children-per-line">20</property>
+                      </object>
+                    </child>
                   </object>
-                </child>
+                </property>
               </object>
             </child>
             <child>
-              <object class="AdwStatusPage" id="no_results_found_page">
-                <property name="icon-name">system-search-symbolic</property>
-                <property name="visible">False</property>
-                <property name="title" translatable="yes">No Games Found</property>
-                <property name="description" translatable="yes">Try another keyword</property>
+              <object class="AdwViewStackPage">
+                <property name="name">no_results_found</property>
+                <property name="child">
+                  <object class="AdwStatusPage" id="no_results_found_page">
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
+                    <property name="icon-name">system-search-symbolic</property>
+                    <property name="title" translatable="yes">Games Not Found</property>
+                    <property name="description" translatable="yes">Try another keyword</property>
+                  </object>
+                </property>
               </object>
             </child>
           </object>

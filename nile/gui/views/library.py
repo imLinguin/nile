@@ -33,7 +33,6 @@ class Library(Adw.Bin):
         super().__init__(**kwargs)
         self.config_manager = config_manager
         self.library_manager = library_manager
-        self.search_bar.set_key_capture_widget(self)
         self.search_entry.connect("changed", self.__handle_search)
         self.library_grid.connect("child-activated", self.__open_game_details)
         self.installed_games_filter.connect("clicked", self.__switch_installed_filter)
@@ -68,11 +67,10 @@ class Library(Adw.Bin):
                 if not genre in self.available_genres:
                     self.available_genres.append(genre)
 
-    def open_search(self, widget):
-        self.search_bar.set_search_mode(not self.search_bar.get_search_mode())
-
     def get_installed_games(self):
         self.installed_games = self.config_manager.get("installed")
+        if not self.installed_games:
+            self.installed_games = []
         self.installed_ids = [game["id"] for game in self.installed_games]
 
     def __filter_func(self, widget):
@@ -114,8 +112,17 @@ class Library(Adw.Bin):
 
         return title1.lower() > title2.lower()
 
+    def __map_through_grid_children(self):
+        for card in self.grid_entries:
+            if card.get_mapped():
+                self.results_stack.set_visible_child_name("grid")
+                return
+        self.results_stack.set_visible_child_name("no_results_found")
+
     def __handle_search(self, widget):
+        self.results_stack.set_visible_child_name("grid")
         self.library_grid.invalidate_filter()
+        self.__map_through_grid_children()
 
     def __switch_installed_filter(self, widget):
         if self.installed_games_filter.has_css_class("accent"):
@@ -128,8 +135,11 @@ class Library(Adw.Bin):
             self.filters.remove(filter)
         else:
             self.installed_games_filter.add_css_class("accent")
+            self.get_installed_games()
             self.filters.append(Filter(FilterType.INSTALLED, True))
+        self.results_stack.set_visible_child_name("grid")
         self.library_grid.invalidate_filter()
+        self.__map_through_grid_children()
 
     def get_element_title(self, element):
         return (

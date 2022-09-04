@@ -6,6 +6,7 @@ windowspath = join_paths(pkgdatadir, 'nile/gui/windows')
 nile_sources = [
     '__init__.py',
     'main_window.py',
+    'about_window.py',
     'onboard.py',
     'install_game.py',
     'filepicker.py',

@@ -22,6 +22,8 @@ class OnBoard(Adw.Window):
         self.close_modal.connect("clicked", self.__close)
         self.carousel.connect("page-changed", self.handle_page_change)
 
+        self.set_transient_for(self.main_window)
+
     def handle_page_change(
         self,
         widget,

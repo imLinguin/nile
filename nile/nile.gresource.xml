@@ -8,6 +8,7 @@
     <file>gui/ui/loading.ui</file>
     <file>gui/ui/onboard.ui</file>
     <file>gui/ui/install_game.ui</file>
+    <file>gui/ui/about_window.ui</file>
     <file alias="style.css">gui/ui/style.css</file>
   </gresource>
   <gresource prefix="/io/github/imLinguin/nile/icons/scalable/actions/">

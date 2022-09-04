@@ -25,9 +25,16 @@
                       <class name="flat" />
                     </style>
                     <child type="start">
-                      <object class="GtkButton" id="search_button">
+                      <object class="GtkToggleButton" id="search_button">
                         <property name="visible">False</property>
                         <property name="icon-name">system-search-symbolic</property>
+                      </object>
+                    </child>
+                    <child type="end">
+                      <object class="GtkMenuButton">
+                        <property name="popover">menu_popover</property>
+                        <property name="icon-name">open-menu-symbolic</property>
+                        <property name="tooltip-text" translatable="yes">Open Menu</property>
                       </object>
                     </child>
                   </object>
@@ -47,20 +54,29 @@
     </child>
   </template>
 
-  <menu id="primary_menu">
-    <section>
-      <item>
-        <attribute name="label" translatable="yes">_Preferences</attribute>
-        <attribute name="action">app.preferences</attribute>
-      </item>
-      <item>
-        <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
-        <attribute name="action">win.show-help-overlay</attribute>
-      </item>
-      <item>
-        <attribute name="label" translatable="yes">_About nile</attribute>
-        <attribute name="action">app.about</attribute>
-      </item>
-    </section>
-  </menu>
+  <object class="GtkPopover" id="menu_popover">
+    <style>
+      <class name="menu" />
+    </style>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
+        <property name="margin-start">6</property>
+        <property name="margin-end">6</property>
+
+        <child>
+          <object class="GtkModelButton" id="preferences_button">
+            <property name="text" translatable="yes">Preferences</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="about_button">
+            <property name="text" translatable="yes">About Nile</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
 </interface>

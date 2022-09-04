@@ -180,7 +180,7 @@ class DownloadManager:
         # Save manifest to the file
 
         self.config.write(
-            f"manifests/{self.game['id']}", self.protobuff_manifest, raw=True
+            f"manifests/{self.game['product']['id']}", self.protobuff_manifest, raw=True
         )
 
         # Save data to installed.json file
