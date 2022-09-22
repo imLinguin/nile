@@ -47,12 +47,10 @@ msgid "Open"
 msgstr "Otwórz"
 
 #: nile/gui/ui/game_details.ui:18
-#, fuzzy
 msgid "Uninstall"
 msgstr "Odinstaluj"
 
 #: nile/gui/ui/game_details.ui:36
-#, fuzzy
 msgid "Game Details"
 msgstr "Szczegóły Gry"
 
@@ -97,7 +95,6 @@ msgid "Search for games"
 msgstr "Szukaj gier"
 
 #: nile/gui/ui/library.ui:82
-#, fuzzy
 msgid "Games Not Found"
 msgstr "Nie Znaleziono Gier"
 
@@ -110,7 +107,6 @@ msgid "Synchronizing Library..."
 msgstr "Synchronizowanie Biblioteki..."
 
 #: nile/gui/ui/main.ui:37
-#, fuzzy
 msgid "Open Menu"
 msgstr "Otwórz Menu"
 
@@ -167,7 +163,6 @@ msgid "Show me my games"
 msgstr "Pokaż moje gry"
 
 #: nile/gui/ui/install_game.ui:17
-#, fuzzy
 msgid "Install the game"
 msgstr "Instaluj grę"
 
@@ -180,7 +175,6 @@ msgid "Installation settings"
 msgstr "Ustawienia instalacji"
 
 #: nile/gui/ui/install_game.ui:89
-#, fuzzy
 msgid "Install location"
 msgstr "Lokalizacja instalacji"
 
@@ -189,12 +183,10 @@ msgid "Location doesn't exist or is inaccessible from Flatpak"
 msgstr "Lokalizacja nie istnieje lub nie jest dostępna z poziomu Flatpak"
 
 #: nile/gui/ui/install_game.ui:106
-#, fuzzy
 msgid "Install Details"
 msgstr "Szczegóły instalacji"
 
 #: nile/gui/ui/install_game.ui:113
-#, fuzzy
 msgid "Install size"
 msgstr "Rozmiar instalacji"
 
