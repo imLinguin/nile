@@ -49,6 +49,8 @@
                   <object class="GtkScrolledWindow" id="scroll_window">
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
+                    <property name="hscrollbar-policy">never</property>
+
                     <child>
                       <object class="GtkFlowBox" id="library_grid">
                         <property name="vexpand">True</property>

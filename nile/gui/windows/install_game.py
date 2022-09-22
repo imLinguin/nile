@@ -83,12 +83,12 @@ class GameInstallModal(Adw.Window):
     def handle_update(self):
         checks = [self.verify_path_correctness(), bool(self.patchmanifest)]
 
-        self.install_button.set_sensitive(False in checks)
+        self.install_button.set_sensitive(not False in checks)
 
     def verify_path_correctness(self):
         path = self.install_location.get_text()
         self.location_error_image.set_visible(not os.path.exists(path))
-        return not os.path.exists(path)
+        return os.path.exists(path)
 
     def callback(self, widget, status, path):
         if status == Gtk.ResponseType.ACCEPT:

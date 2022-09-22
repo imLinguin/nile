@@ -25,6 +25,7 @@ class GameDetails(Gtk.Box):
     screenshot_previous_button = Gtk.Template.Child()
     screenshot_next_button = Gtk.Template.Child()
     uninstall_button = Gtk.Template.Child()
+    game_menu_button = Gtk.Template.Child()
 
     genre_detail_entry = Gtk.Template.Child()
     developer_detail_entry = Gtk.Template.Child()
@@ -34,6 +35,7 @@ class GameDetails(Gtk.Box):
 
     primary_button = Gtk.Template.Child()
     install_progress = Gtk.Template.Child()
+
 
     header_bar = Gtk.Template.Child()
     page_title = Gtk.Template.Child()
@@ -74,12 +76,7 @@ class GameDetails(Gtk.Box):
 
         self.primary_button.set_label(install_button_text)
         self.install_progress.set_visible(False)
-        game_product_id = self.game["product"]["id"]
-        for installed_game in self.installed:
-            if installed_game["id"] == game_product_id:
-                self.is_installed = True
-                self.primary_button.set_label(play_button_text)
-                break
+        self.installed_update_ui()
 
         self.scrolled_view.set_vadjustment(
             self.scrolled_view.get_vadjustment().set_value(0)
@@ -139,6 +136,15 @@ class GameDetails(Gtk.Box):
         if not self.installed:
             self.installed = []
 
+    def installed_update_ui(self):
+        self.game_menu_button.set_visible(False)
+        for installed_game in self.installed:
+            if installed_game["id"] == self.game["product"]["id"]:
+                self.is_installed = True
+                self.primary_button.set_label(play_button_text)
+                self.game_menu_button.set_visible(True)
+                break
+
     def run_primary_action(self, widget):
         if not self.is_installed:
             self.__spawn_download_window()
@@ -151,11 +157,7 @@ class GameDetails(Gtk.Box):
             Thread(target=self.main_window.library_view.render).start()
             self.install_progress.set_visible(False)
             self.get_installed()
-            for installed_game in self.installed:
-                if installed_game["id"] == self.game["product"]["id"]:
-                    self.is_installed = True
-                    self.primary_button.set_label(play_button_text)
-                    break
+            self.installed_update_ui()
             self.primary_button.set_sensitive(True)
         elif event_type == DownloadManagerEvent.INSTALL_PROGRESS:
             if self.download_manager.installing[1] == self.game["product"]["id"]:
@@ -175,11 +177,8 @@ class GameDetails(Gtk.Box):
         self.get_installed()
         self.is_installed = False
         self.primary_button.set_label(install_button_text)
-        for installed_game in self.installed:
-            if installed_game["id"] == self.game["product"]["id"]:
-                self.is_installed = True
-                self.primary_button.set_label(play_button_text)
-                break
+        self.installed_update_ui()
+
         self.main_window.library_view.render()
         self.main_window.library_view.library_grid.invalidate_filter()
 
