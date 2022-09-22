@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nile\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-04 13:59+0200\n"
+"POT-Creation-Date: 2022-09-22 20:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr ""
 msgid "No description"
 msgstr ""
 
-#: nile/gui/views/game_details.py:11 nile/gui/ui/install_game.ui:60
+#: nile/gui/views/game_details.py:11 nile/gui/ui/install_game.ui:38
 msgid "Install"
 msgstr ""
 
@@ -53,39 +53,39 @@ msgstr ""
 msgid "Game Details"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:157
+#: nile/gui/ui/game_details.ui:163
 msgid "About the game"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:184
+#: nile/gui/ui/game_details.ui:190
 msgid "Overview"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:196
+#: nile/gui/ui/game_details.ui:202
 msgid "Genres"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:203
+#: nile/gui/ui/game_details.ui:209
 msgid "Developer"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:210
+#: nile/gui/ui/game_details.ui:216
 msgid "Publisher"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:217
+#: nile/gui/ui/game_details.ui:223
 msgid "Game modes"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:224
+#: nile/gui/ui/game_details.ui:230
 msgid "Release date"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:247
+#: nile/gui/ui/game_details.ui:255
 msgid "Previous"
 msgstr ""
 
-#: nile/gui/ui/game_details.ui:268
+#: nile/gui/ui/game_details.ui:276
 msgid "Next"
 msgstr ""
 
@@ -93,11 +93,11 @@ msgstr ""
 msgid "Search for games"
 msgstr ""
 
-#: nile/gui/ui/library.ui:80
+#: nile/gui/ui/library.ui:82
 msgid "Games Not Found"
 msgstr ""
 
-#: nile/gui/ui/library.ui:81
+#: nile/gui/ui/library.ui:83
 msgid "Try another keyword"
 msgstr ""
 
@@ -161,30 +161,30 @@ msgstr ""
 msgid "Show me my games"
 msgstr ""
 
-#: nile/gui/ui/install_game.ui:39
+#: nile/gui/ui/install_game.ui:17
 msgid "Install the game"
 msgstr ""
 
-#: nile/gui/ui/install_game.ui:55
+#: nile/gui/ui/install_game.ui:33
 msgid "Cancel"
 msgstr ""
 
-#: nile/gui/ui/install_game.ui:71
+#: nile/gui/ui/install_game.ui:73
 msgid "Installation settings"
 msgstr ""
 
-#: nile/gui/ui/install_game.ui:87
+#: nile/gui/ui/install_game.ui:89
 msgid "Install location"
 msgstr ""
 
-#: nile/gui/ui/install_game.ui:92
+#: nile/gui/ui/install_game.ui:94
 msgid "Location doesn't exist or is inaccessible from Flatpak"
 msgstr ""
 
-#: nile/gui/ui/install_game.ui:104
+#: nile/gui/ui/install_game.ui:106
 msgid "Install Details"
 msgstr ""
 
-#: nile/gui/ui/install_game.ui:111
+#: nile/gui/ui/install_game.ui:113
 msgid "Install size"
 msgstr ""
