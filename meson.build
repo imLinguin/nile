@@ -12,9 +12,9 @@ gnome = import('gnome')
 
 
 
-subdir('data')
-subdir('nile')
 subdir('po')
+subdir('nile')
+subdir('data')
 
 gnome.post_install(
   glib_compile_schemas: true,

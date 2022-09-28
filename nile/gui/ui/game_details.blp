@@ -1,0 +1,273 @@
+using Gtk 4.0;
+using Adw 1;
+
+Popover library_popover {
+  styles [
+    "menu",
+  ]
+
+  Box {
+    orientation: vertical;
+    margin-top: 6;
+    margin-bottom: 6;
+    margin-start: 6;
+    margin-end: 6;
+
+    .GtkModelButton uninstall_button {
+      text: _("Uninstall");
+    }
+  }
+}
+
+template GameDetails : Box {
+  orientation: vertical;
+
+  Adw.HeaderBar header_bar {
+    [start]
+    Button back_button {
+      visible: true;
+      icon-name: "go-previous-symbolic";
+    }
+    title-widget: 
+    Adw.WindowTitle page_title {
+      title: _("Game Details");
+    }
+
+    ;
+
+    [end]
+    MenuButton game_menu_button {
+      visible: false;
+      icon-name: "open-menu-symbolic";
+      popover: library_popover;
+    }
+  }
+
+  Stack stack {
+    hexpand: true;
+    transition-type: crossfade;
+    transition-duration: 200;
+
+    StackPage {
+      name: "loading";
+      child: 
+      Spinner {
+        spinning: true;
+        valign: center;
+        halign: center;
+      }
+
+      ;
+    }
+
+    StackPage {
+      name: "content";
+      child: 
+      ScrolledWindow scrolled_view {
+        hexpand: true;
+        vexpand: true;
+        hscrollbar-policy: never;
+
+        Box {
+          vexpand: true;
+          orientation: vertical;
+
+          Overlay {
+            Picture page_background {
+              height-request: 440;
+              hexpand: true;
+              content-fit: cover;
+              valign: start;
+            }
+
+            [overlay]
+            Box {
+              hexpand: true;
+              vexpand: true;
+
+              styles [
+                "game-details-gradient",
+              ]
+            }
+
+            [overlay]
+            Picture page_logo {
+              can-shrink: false;
+              halign: center;
+              valign: center;
+            }
+
+            [overlay]
+            Box {
+              orientation: vertical;
+              valign: end;
+              halign: center;
+              margin-bottom: 20;
+
+              styles [
+                "padding",
+              ]
+
+              Button primary_button {
+                label: "Install";
+
+                styles [
+                  "suggested-action",
+                  "pill",
+                ]
+              }
+
+              ProgressBar install_progress {
+                visible: false;
+                show-text: true;
+              }
+            }
+          }
+
+          Adw.Clamp {
+            vexpand: true;
+            maximum-size: 1200;
+            child: 
+            Box {
+              hexpand: true;
+              vexpand: true;
+              margin-start: 20;
+              margin-end: 20;
+              margin-bottom: 20;
+              margin-top: 20;
+              spacing: 10;
+              orientation: horizontal;
+
+              Box {
+                hexpand: true;
+                orientation: vertical;
+                spacing: 10;
+
+                Box {
+                  orientation: vertical;
+
+                  styles [
+                    "card",
+                    "padding",
+                  ]
+
+                  Label {
+                    halign: start;
+                    label: _("About the game");
+
+                    styles [
+                      "title-2",
+                    ]
+                  }
+
+                  Label game_description {
+                    halign: start;
+                    wrap: true;
+                    selectable: true;
+                  }
+                }
+              }
+
+              Box {
+                orientation: vertical;
+
+                styles [
+                  "card",
+                  "padding",
+                ]
+
+                Label {
+                  halign: start;
+                  label: _("Overview");
+
+                  styles [
+                    "title-2",
+                  ]
+                }
+
+                Box overview_box {
+                  orientation: vertical;
+                  spacing: 5;
+
+                  Adw.ActionRow genre_detail_entry {
+                    title: _("Genres");
+                    icon-name: "theater-symbolic";
+                    subtitle: "TEST";
+                  }
+
+                  Adw.ActionRow developer_detail_entry {
+                    title: _("Developer");
+                    icon-name: "build-alt-symbolic";
+                    subtitle: "TEST";
+                  }
+
+                  Adw.ActionRow publisher_detail_entry {
+                    title: _("Publisher");
+                    icon-name: "profit-symbolic";
+                    subtitle: "TEST";
+                  }
+
+                  Adw.ActionRow gamemodes_detail_entry {
+                    title: _("Game modes");
+                    icon-name: "gamepad-symbolic";
+                    subtitle: "TEST";
+                  }
+
+                  Adw.ActionRow releasedate_detail_entry {
+                    title: _("Release date");
+                    icon-name: "month-symbolic";
+                    subtitle: "TEST";
+                  }
+                }
+              }
+            }
+
+            ;
+          }
+
+          Overlay {
+            margin-top: 10;
+            margin-bottom: 10;
+
+            [overlay]
+            Button screenshot_previous_button {
+              margin-start: 12;
+              icon-name: "go-previous-symbolic";
+              halign: start;
+              valign: center;
+              visible: false;
+              tooltip-text: _("Previous");
+
+              styles [
+                "circular",
+              ]
+            }
+
+            Adw.Carousel screenshots_carousel {
+              hexpand: true;
+              interactive: true;
+              height-request: 250;
+              allow-long-swipes: true;
+              spacing: 10;
+            }
+
+            [overlay]
+            Button screenshot_next_button {
+              margin-end: 12;
+              icon-name: "go-next-symbolic";
+              halign: end;
+              valign: center;
+              tooltip-text: _("Next");
+
+              styles [
+                "circular",
+              ]
+            }
+          }
+        }
+      }
+
+      ;
+    }
+  }
+}

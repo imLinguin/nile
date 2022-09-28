@@ -1,0 +1,70 @@
+using Gtk 4.0;
+using Adw 1;
+
+template NileWindow : Adw.ApplicationWindow {
+  default-width: 1200;
+  default-height: 650;
+  icon-name: "io.github.imLinguin.nile";
+  title: "Nile";
+
+  Adw.ToastOverlay toasts {
+    Adw.Leaflet main_leaflet {
+      vexpand: true;
+      can-unfold: false;
+      can-navigate-back: true;
+      can-navigate-forward: false;
+
+      Box {
+        vexpand: true;
+        orientation: vertical;
+
+        Adw.HeaderBar header_bar {
+          styles [
+            "flat",
+          ]
+
+          [start]
+          ToggleButton search_button {
+            visible: false;
+            icon-name: "system-search-symbolic";
+          }
+
+          [end]
+          MenuButton {
+            popover: menu_popover;
+            icon-name: "open-menu-symbolic";
+            tooltip-text: _("Open Menu");
+          }
+        }
+
+        Stack main_stack {
+          vexpand: true;
+          transition-type: crossfade;
+          transition-duration: 200;
+        }
+      }
+    }
+  }
+}
+
+Popover menu_popover {
+  styles [
+    "menu",
+  ]
+
+  Box {
+    orientation: vertical;
+    margin-top: 6;
+    margin-bottom: 6;
+    margin-start: 6;
+    margin-end: 6;
+
+    .GtkModelButton preferences_button {
+      text: _("Preferences");
+    }
+
+    .GtkModelButton about_button {
+      text: _("About Nile");
+    }
+  }
+}

@@ -1,5 +1,5 @@
 id: io.github.imLinguin.nile
-runtime-version: master
+runtime-version: "43"
 runtime: org.gnome.Platform
 sdk: org.gnome.Sdk
 command: nile
@@ -22,10 +22,19 @@ cleanup:
   - "*.a"
 
 modules:
+  - name: blueprint-compiler
+    buildsystem: meson
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/jwestman/blueprint-compiler
+        branch: main
+
   - name: nile
     builddir: true
     buildsystem: meson
     sources:
       - type: dir
         path: .
+        
+
   - python3-requirements.json

@@ -1,0 +1,120 @@
+using Gtk 4.0;
+using Adw 1;
+
+template GameInstallModal : Adw.Window {
+  default-width: 350;
+  destroy-with-parent: true;
+  modal: true;
+
+  Box {
+    orientation: vertical;
+
+    Adw.HeaderBar headerbar {
+      decoration-layout: "";
+      title-widget: 
+      Adw.WindowTitle title {
+        title: _("Install the game");
+
+        ShortcutController {
+          scope: managed;
+
+          Shortcut {
+            trigger: "Escape";
+            action: "action(window.close)";
+          }
+        }
+      }
+
+      ;
+
+      [start]
+      Button cancel_button {
+        label: _("Cancel");
+      }
+
+      [end]
+      Button install_button {
+        label: _("Install");
+        sensitive: false;
+
+        styles [
+          "suggested-action",
+        ]
+      }
+    }
+
+    Stack stack_view {
+      transition-type: crossfade;
+      transition-duration: 200;
+
+      StackPage {
+        name: "loading";
+        child: 
+        Spinner {
+          valign: center;
+          halign: center;
+          spinning: true;
+        }
+
+        ;
+      }
+
+      StackPage {
+        name: "content";
+        child: 
+        Box {
+          orientation: vertical;
+
+          Adw.PreferencesGroup {
+            title: _("Installation settings");
+            margin-start: 10;
+            margin-end: 10;
+            margin-top: 10;
+            margin-bottom: 10;
+            header-suffix: 
+            Button install_location_select {
+              icon-name: "folder-open-symbolic";
+
+              styles [
+                "flat",
+                "circular",
+              ]
+            }
+
+            ;
+
+            Adw.EntryRow install_location {
+              title: _("Install location");
+
+              Image location_error_image {
+                icon-name: "dialog-warning-symbolic";
+                visible: false;
+                tooltip-text: _("Location doesn\'t exist or is inaccessible from Flatpak");
+
+                styles [
+                  "error",
+                ]
+              }
+            }
+          }
+
+          Adw.PreferencesGroup {
+            title: _("Install Details");
+            margin-start: 10;
+            margin-end: 10;
+            margin-top: 10;
+            margin-bottom: 10;
+
+            Adw.ActionRow install_size {
+              title: _("Install size");
+              icon-name: "folder-download-symbolic";
+              subtitle: "0.00 MB";
+            }
+          }
+        }
+
+        ;
+      }
+    }
+  }
+}

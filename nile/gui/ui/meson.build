@@ -1,16 +1,29 @@
 pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
 uipath = join_paths(pkgdatadir, 'nile/gui/ui')
 
+gnome = import('gnome')
 
-nile_sources = [
-    'library.ui',
-    'onboard.ui',
-    'game_details.ui',
-    'game_card.ui',
-    'loading.ui',
-    'about_window.ui',
-    'style.css'
-]
+blueprints = custom_target('blueprints',
+  input: files(
+    'about_window.blp',
+    'game_card.blp',
+    'game_details.blp',
+    'install_game.blp',
+    'library.blp',
+    'main.blp',
+    'onboard.blp',
+    'loading.blp'
+  ),
+  output: '.',
+  command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
+)
 
 
-install_data(nile_sources, install_dir: uipath)
+gnome.compile_resources('nile',
+  'nile.gresource.xml',
+  gresource_bundle: true,
+  dependencies: blueprints,
+  install: true,
+  install_dir: pkgdatadir,
+)
+

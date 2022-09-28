@@ -1,0 +1,80 @@
+using Gtk 4.0;
+using Adw 1;
+
+template NileLibrary : Adw.Bin {
+  hexpand: true;
+  vexpand: true;
+
+  Box {
+    hexpand: true;
+    vexpand: true;
+    orientation: vertical;
+
+    SearchBar search_bar {
+      SearchEntry search_entry {
+        placeholder-text: _("Search for games");
+        activates-default: false;
+      }
+    }
+
+    Box {
+      orientation: horizontal;
+      hexpand: true;
+      margin-start: 30;
+      margin-top: 15;
+      margin-bottom: 15;
+
+      Button advanced_filters_button {
+        icon-name: "funnel-outline-symbolic";
+        margin-end: 5;
+      }
+
+      Button installed_games_filter {
+        icon-name: "folder-download-symbolic";
+      }
+    }
+
+    Adw.ViewStack results_stack {
+      Adw.ViewStackPage {
+        name: "grid";
+        child: 
+        ScrolledWindow scroll_window {
+          hexpand: true;
+          vexpand: true;
+          hscrollbar-policy: never;
+
+          FlowBox library_grid {
+            vexpand: true;
+            hexpand: true;
+            homogeneous: true;
+            row-spacing: 10;
+            column-spacing: 10;
+            margin-start: 10;
+            margin-end: 10;
+            margin-top: 10;
+            margin-bottom: 20;
+            selection-mode: none;
+            activate-on-single-click: false;
+            max-children-per-line: 20;
+          }
+        }
+
+        ;
+      }
+
+      Adw.ViewStackPage {
+        name: "no_results_found";
+        child: 
+        Adw.StatusPage no_results_found_page {
+          hexpand: true;
+          vexpand: true;
+          icon-name: "system-search-symbolic";
+          title: _("Games Not Found");
+          description: _("Try another keyword");
+        }
+
+        ;
+      }
+    }
+  }
+}

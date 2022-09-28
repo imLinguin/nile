@@ -1,0 +1,38 @@
+using Gtk 4.0;
+
+template GameCard : Box {
+  orientation: vertical;
+  valign: start;
+  halign: center;
+  width-request: 190;
+  height-request: 253;
+  overflow: hidden;
+
+  styles [
+    "card",
+    "game-card",
+    "game-card-image",
+  ]
+
+  GestureClick click_gesture {
+  }
+
+  Overlay {
+    vexpand: true;
+    hexpand: true;
+
+    [overlay]
+    Picture card_image {
+    }
+
+    [overlay]
+    Box {
+      vexpand: true;
+      hexpand: true;
+
+      styles [
+        "game-card-shine",
+      ]
+    }
+  }
+}

@@ -1,0 +1,122 @@
+using Gtk 4.0;
+using Adw 1;
+
+template OnBoard : Adw.Window {
+  deletable: false;
+  resizable: false;
+  modal: true;
+  default-width: 550;
+  default-height: 550;
+
+  Box {
+    orientation: vertical;
+
+    Adw.HeaderBar {
+      title-widget:       Adw.CarouselIndicatorLines {
+        carousel: carousel;
+      }
+
+      ;
+
+      styles [
+        "flat",
+      ]
+    }
+
+    Adw.Carousel carousel {
+      vexpand: true;
+      hexpand: true;
+      interactive: false;
+
+      Adw.StatusPage {
+        vexpand: true;
+        hexpand: true;
+        title: _("Welcome to Nile!");
+        description: _("Unofficial Amazon Games launcher.");
+        icon-name: "io.github.imLinguin.nile";
+        child: 
+        Button next_page_button {
+          label: _("Start");
+          margin-start: 200;
+          margin-end: 200;
+
+          styles [
+            "suggested-action",
+            "pill",
+          ]
+        }
+
+        ;
+      }
+
+      Adw.StatusPage {
+        vexpand: true;
+        hexpand: true;
+        title: _("Let\'s log you in");
+        description: _("Your email and password won\'t be stored");
+        child: 
+        Button login_button {
+          label: _("Log in");
+          margin-start: 200;
+          margin-end: 200;
+
+          styles [
+            "suggested-action",
+            "pill",
+          ]
+        }
+
+        ;
+      }
+
+      Adw.StatusPage {
+        vexpand: true;
+        hexpand: true;
+        title: _("All set!");
+        description: _("Let\'s synchronize the library");
+        child: 
+        Box {
+          orientation: vertical;
+          vexpand: true;
+          hexpand: true;
+
+          Button sync_games_button {
+            label: _("Synchronize");
+            margin-start: 200;
+            margin-end: 200;
+
+            styles [
+              "suggested-action",
+              "pill",
+            ]
+          }
+
+          Spinner sync_spinner {
+          }
+        }
+
+        ;
+      }
+
+      Adw.StatusPage {
+        vexpand: true;
+        hexpand: true;
+        title: _("Have fun!");
+        icon-name: "selection-mode-symbolic";
+        child: 
+        Button close_modal {
+          label: _("Show me my games");
+          margin-start: 200;
+          margin-end: 200;
+
+          styles [
+            "suggested-action",
+            "pill",
+          ]
+        }
+
+        ;
+      }
+    }
+  }
+}

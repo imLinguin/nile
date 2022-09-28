@@ -1,0 +1,16 @@
+using Gtk 4.0;
+using Adw 1;
+
+template LoadingPage : Adw.Bin {
+  Adw.StatusPage {
+    icon-name: "io.github.imLinguin.nile";
+    title: _("Synchronizing Library...");
+
+    Spinner {
+      spinning: true;
+    }
+  }
+
+  vexpand: true;
+  hexpand: true;
+}
