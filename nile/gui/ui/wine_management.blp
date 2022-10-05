@@ -1,0 +1,99 @@
+using Gtk 4.0;
+using Adw 1;
+
+template NileWineMgmt : Adw.Window {
+  default-width: 700;
+  default-height: 500;
+  modal: true;
+
+  Box {
+    orientation: vertical;
+
+    Adw.HeaderBar {
+      title-widget:       Adw.WindowTitle {
+        title: _("Wine Management");
+
+        ShortcutController {
+          scope: managed;
+
+          Shortcut {
+            trigger: "Escape";
+            action: "action(window.close)";
+          }
+        }
+      }
+
+      ;
+      styles ["flat"]
+    }
+
+    ScrolledWindow {
+      vexpand: true;
+
+      Adw.Clamp {
+        Box {
+          hexpand: true;
+          orientation: vertical;
+          margin-top: 10;
+          margin-start: 10;
+          margin-end: 10;
+          margin-bottom: 10;
+
+          Adw.PreferencesGroup {
+            title: "Wine";
+
+            Adw.ExpanderRow wine_ge_row {
+              hexpand: true;
+              title: "Wine-GE";
+              subtitle: _("Wine build based on bleeding-edge proton experimental repository and additional patches. By GloriousEggroll");
+            }
+         
+            Adw.ExpanderRow soda_row {
+              hexpand: true;
+              title: "Soda";
+              subtitle: _("Wine TKG build based on bleeding-edge proton experimental repository. By BottlesDevs");
+              
+            }
+
+            Adw.ExpanderRow caffe_row {
+              hexpand: true;
+              title: "Caffe";
+              subtitle: _("Wine TKG build. By BottlesDevs");
+            }
+            
+            Adw.ExpanderRow lutris_row {
+                hexpand: true;
+                title: "Lutris";
+                subtitle: _("Wine build made for Lutris. By Lutris team");
+
+            }
+
+            Adw.ExpanderRow lutris_ge_row {
+                hexpand: true;
+                title: "Lutris-GE";
+                subtitle: _("Wine build made for Lutris. By GloriousEggroll");
+            }
+
+          }
+
+          Adw.PreferencesGroup {
+            title: _("Additional components");
+            margin-top: 20;
+
+            Adw.ExpanderRow dxvk_row {
+              hexpand: true;
+              title: "DXVK";
+              subtitle: _("DirectX to Vulkan translation layer. Supports DirectX up to 11");
+            }
+
+            Adw.ExpanderRow vkd3d_row {
+              hexpand: true;
+              title: "VKD3D";
+              subtitle: _("DirectX to Vulkan translation layer. Supports DirectX 12");
+            }
+          }
+        }
+      }
+    }
+  }
+}

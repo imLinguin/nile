@@ -9,6 +9,8 @@
     <file>onboard.ui</file>
     <file>install_game.ui</file>
     <file>about_window.ui</file>
+    <file>wine_management.ui</file>
+    <file>component_entry.ui</file>
   </gresource>
   <gresource prefix="/io/github/imLinguin/nile/">
     <file>style.css</file>

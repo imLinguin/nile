@@ -1,0 +1,43 @@
+using Gtk 4.0;
+using Adw 1;
+
+template ComponentEntry : Adw.ActionRow {
+    hexpand: true;
+    title: "Test";
+
+
+    Label percentage_label {
+      label: "0%";
+      visible: false;
+      valign: center;
+    } 
+    
+    Button delete_button {
+      valign: center;
+      visible: false;
+      icon-name: "user-trash-symbolic";
+
+      tooltip-text: _("Uninstall"); 
+      styles ["flat"]
+    }
+    
+    
+    Button browse_files {
+      valign: center;
+      
+      icon-name: "folder-open-symbolic";
+      visible: false;      
+      tooltip-text: _("Browse files");
+
+      styles ["flat"]
+    }
+    
+    Button install_button {
+      valign: center;
+      
+      icon-name: "folder-download-symbolic";
+
+      tooltip-text: _("Install");
+      styles ["flat"]
+    }
+  }

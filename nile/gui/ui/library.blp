@@ -17,23 +17,7 @@ template NileLibrary : Adw.Bin {
       }
     }
 
-    Box {
-      orientation: horizontal;
-      hexpand: true;
-      margin-start: 30;
-      margin-top: 15;
-      margin-bottom: 15;
-
-      Button advanced_filters_button {
-        icon-name: "funnel-outline-symbolic";
-        margin-end: 5;
-      }
-
-      Button installed_games_filter {
-        icon-name: "folder-download-symbolic";
-      }
-    }
-
+    
     Adw.ViewStack results_stack {
       Adw.ViewStackPage {
         name: "grid";
@@ -57,8 +41,7 @@ template NileLibrary : Adw.Bin {
             activate-on-single-click: false;
             max-children-per-line: 20;
           }
-        }
-
+       }
         ;
       }
 

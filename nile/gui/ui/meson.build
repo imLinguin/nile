@@ -12,7 +12,9 @@ blueprints = custom_target('blueprints',
     'library.blp',
     'main.blp',
     'onboard.blp',
-    'loading.blp'
+    'loading.blp',
+    'wine_management.blp',
+    'component_entry.blp'
   ),
   output: '.',
   command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],

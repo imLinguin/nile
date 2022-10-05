@@ -13,10 +13,10 @@ nile/gui/windows/webview.py
 nile/gui/windows/install_game.py
 
 
-nile/gui/ui/game_card.ui
-nile/gui/ui/game_details.ui
-nile/gui/ui/library.ui
-nile/gui/ui/loading.ui
-nile/gui/ui/main.ui
-nile/gui/ui/onboard.ui
-nile/gui/ui/install_game.ui
+nile/gui/ui/game_card.blp
+nile/gui/ui/game_details.blp
+nile/gui/ui/library.blp
+nile/gui/ui/loading.blp
+nile/gui/ui/main.blp
+nile/gui/ui/onboard.blp
+nile/gui/ui/install_game.blp

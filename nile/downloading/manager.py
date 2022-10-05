@@ -3,12 +3,14 @@ import os
 import enum
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import cpu_count
+from threading import Event
 from time import sleep
 import nile.utils.download as dl_utils
 from nile.models import manifest, hash_pairs, patch_manifest
 from nile.models.progress import ProgressState
 from nile.downloading.worker import DownloadWorker
 
+from gi.repository import GLib
 # from nile.models.progressbar import ProgressBar
 from nile import constants
 
@@ -33,6 +35,7 @@ class DownloadManager:
         self.threads = []
         self.listeners = []
         self.installing = False, None
+        self.cancelled = None
 
     def listen(self, callback):
         # Callbacks should accept 2 parameters, TYPE and MESSAGE
@@ -93,6 +96,7 @@ class DownloadManager:
         path_folder_name_only=False,
     ):
         self.game = game
+        self.cancelled = False
         game_location = base_install_path
         if not base_install_path:
             game_location = install_path
@@ -138,6 +142,7 @@ class DownloadManager:
     def download_from_patchmanifest(
         self, game_location, patchmanifest, force_verifying=False
     ):
+        self.cancelled = False
         total_size = sum(f.download_size for f in patchmanifest.files)
         progress_state = ProgressState(total_size)
         self.install_path = game_location
@@ -146,35 +151,48 @@ class DownloadManager:
                 os.path.join(game_location, directory.replace("\\", os.sep)),
                 exist_ok=True,
             )
-        self.thpool = ThreadPoolExecutor(max_workers=cpu_count())
-        self.installing = True, self.game["product"]["id"]
-        for callback in self.listeners:
-            callback(DownloadManagerEvent.INSTALL_BEGAN, True)
-        for f in patchmanifest.files:
-            worker = DownloadWorker(
-                f, game_location, self.session, progress_state.update
-            )
-            # worker.execute()
-            self.threads.append(self.thpool.submit(worker.execute))
+        with ThreadPoolExecutor(max_workers=cpu_count()) as thpool:
+            self.cancelled = Event()
+            self.installing = True, self.game["product"]["id"]
+            for callback in self.listeners:
+                callback(DownloadManagerEvent.INSTALL_BEGAN, True)
+            for f in patchmanifest.files:
+                worker = DownloadWorker(
+                    f, game_location, self.session, progress_state.update, self.cancelled
+                )
+                # worker.execute()
+                self.threads.append(thpool.submit(worker.execute))
 
-        while True:
-            is_done = False
-            for thread in self.threads:
-                is_done = thread.done()
-                if is_done == False:
+            while True:
+                is_done = False
+                for thread in self.threads:
+                    is_done = thread.done()
+                    if is_done == False:
+                        break
+                if is_done:
                     break
-            if is_done:
-                break
-            # self.progressbar.print()
-            status_data = progress_state.calc()
-            for listener in self.listeners:
-                listener(DownloadManagerEvent.INSTALL_PROGRESS, status_data)
 
-            sleep(0.2)
+                if self.cancelled.is_set():
+                    thpool.shutdown(wait=False,cancel_futures=True)
+                # self.progressbar.print()
+                status_data = progress_state.calc()
+                for listener in self.listeners:
+                    GLib.idle_add(listener,DownloadManagerEvent.INSTALL_PROGRESS, status_data)
+                
 
-        if not force_verifying:
+                sleep(0.2)
+
+        if self.cancelled.is_set():
+            for callback in self.listeners:
+                callback(DownloadManagerEvent.INSTALL_COMPLETED, False)
+        elif not force_verifying:
             self.finish()
+
+        
         self.installing = False, None
+        self.cancelled = None
+    def cancel(self):
+        self.cancelled.set()
 
     def finish(self):
         # Save manifest to the file

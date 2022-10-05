@@ -10,7 +10,7 @@ from nile.utils.uninstall import uninstall
 
 install_button_text = _("Install")
 play_button_text = _("Play")
-
+cancel_button_text = _("Cancel")
 
 @Gtk.Template(resource_path="/io/github/imLinguin/nile/gui/ui/game_details.ui")
 class GameDetails(Gtk.Box):
@@ -75,6 +75,7 @@ class GameDetails(Gtk.Box):
         self.get_installed()
 
         self.primary_button.set_label(install_button_text)
+        self.primary_button.set_css_classes(["suggested-action", "pill"])
         self.install_progress.set_visible(False)
         self.installed_update_ui()
 
@@ -85,7 +86,7 @@ class GameDetails(Gtk.Box):
         self.page_title.set_subtitle(title)
 
         # Load images if possible
-
+        
         data = self.graphql_handler.get_game_details(game["product"]["id"])
         self.game_data = data
 
@@ -121,7 +122,7 @@ class GameDetails(Gtk.Box):
         logo_path = self.__cache_image(logo_url)
 
         for screenshot in self.screenshots:
-            self.screenshots_carousel.remove(screenshot)
+            GLib.idle_add(self.screenshots_carousel.remove, screenshot)
 
         self.screenshots = []
 
@@ -146,30 +147,49 @@ class GameDetails(Gtk.Box):
                 break
 
     def run_primary_action(self, widget):
+        if self.download_manager.installing[1] == self.game["product"]["id"]:
+            self.download_manager.cancel()
+            self.primary_button.set_sensitive(False)
+            return
+
         if not self.is_installed:
             self.__spawn_download_window()
 
     def __handle_download_manager_event(self, event_type, message):
         if event_type == DownloadManagerEvent.INSTALL_BEGAN:
             self.install_progress.set_visible(True)
-            self.primary_button.set_sensitive(False)
         if event_type == DownloadManagerEvent.INSTALL_COMPLETED:
-            Thread(target=self.main_window.library_view.render).start()
+            if not message:
+                self.primary_button.set_css_classes(["suggested-action", "pill"])
+                self.primary_button.set_label(install_button_text)
+     
+                self.install_progress.set_visible(False)
+                
+                return
+            GLib.idle_add(self.main_window.library_view.render)
             self.install_progress.set_visible(False)
             self.get_installed()
             self.installed_update_ui()
+            self.primary_button.set_css_classes(["suggested-action", "pill"])
             self.primary_button.set_sensitive(True)
         elif event_type == DownloadManagerEvent.INSTALL_PROGRESS:
             if self.download_manager.installing[1] == self.game["product"]["id"]:
+                self.primary_button.set_css_classes(["destructive-action", "pill"])
+                self.primary_button.set_label(cancel_button_text)
                 self.install_progress.set_visible(True)
                 self.install_progress.set_fraction(message)
+                if not self.download_manager.cancelled.is_set():
+                    self.primary_button.set_sensitive(True)
+            else:
+                self.primary_button.set_sensitive(False)
 
     def init_download(self, path, patchmanifest):
-        self.primary_button.set_sensitive(False)
-
+        self.primary_button.set_css_classes(["destructive-action", "pill"])
+        self.primary_button.set_label(cancel_button_text)
+        
         self.download_manager.download_from_patchmanifest(path, patchmanifest)
 
-        self.primary_button.set_sensitive(True)
+        self.primary_button.set_css_classes(["suggested-action", "pill"])
 
     def __uninstall_game(self, widget):
         uninstall(self.game["product"]["id"], self.config_manager)
@@ -197,11 +217,13 @@ class GameDetails(Gtk.Box):
 
     def __fetch_screenshots(self):
         for image in self.game_data["data"]["agaGames"][0]["screenshots"]:
+            if type(self.stack.get_visible_child()) != Gtk.ScrolledWindow:
+                break
             element = Gtk.Picture()
             element.add_css_class("game-card")
             element.set_filename(self.__cache_image(image["src1x"]))
             self.screenshots.append(element)
-            self.screenshots_carousel.append(element)
+            GLib.idle_add(self.screenshots_carousel.append, element)
 
     def __next_screnshot(self, widget):
         index = int(self.screenshots_carousel.get_position())

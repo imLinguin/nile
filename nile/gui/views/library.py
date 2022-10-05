@@ -27,15 +27,12 @@ class Library(Adw.Bin):
     no_results_found_page = Gtk.Template.Child()
     results_stack = Gtk.Template.Child()
 
-    installed_games_filter = Gtk.Template.Child()
-
     def __init__(self, config_manager, library_manager, **kwargs):
         super().__init__(**kwargs)
         self.config_manager = config_manager
         self.library_manager = library_manager
         self.search_entry.connect("changed", self.__handle_search)
         self.library_grid.connect("child-activated", self.__open_game_details)
-        self.installed_games_filter.connect("clicked", self.__switch_installed_filter)
         self.library_grid.set_sort_func(self.__sort_func)
         self.library_grid.set_filter_func(self.__filter_func)
 
@@ -52,7 +49,7 @@ class Library(Adw.Bin):
         self.available_genres = []
 
         for card in self.grid_entries:
-            self.library_grid.remove(card)
+            GLib.idle_add(self.library_grid.remove, card)
 
         for game in games:
             image_path = self.library_manager.get_game_image_fs_path(
@@ -60,7 +57,7 @@ class Library(Adw.Bin):
             )
 
             card = GameCard(game, image_path)
-            self.library_grid.append(card)
+            GLib.idle_add(self.library_grid.append, card)
             self.grid_entries.append(card)
 
             for genre in game["product"]["productDetail"]["details"]["genres"]:
@@ -124,9 +121,8 @@ class Library(Adw.Bin):
         self.library_grid.invalidate_filter()
         self.__map_through_grid_children()
 
-    def __switch_installed_filter(self, widget):
-        if self.installed_games_filter.has_css_class("accent"):
-            self.installed_games_filter.remove_css_class("accent")
+    def switch_installed_filter(self, widget):
+        if not widget.get_active():
             filter = None
             for f in self.filters:
                 if f.type == FilterType.INSTALLED:
@@ -134,7 +130,6 @@ class Library(Adw.Bin):
                     break
             self.filters.remove(filter)
         else:
-            self.installed_games_filter.add_css_class("accent")
             self.get_installed_games()
             self.filters.append(Filter(FilterType.INSTALLED, True))
         self.results_stack.set_visible_child_name("grid")

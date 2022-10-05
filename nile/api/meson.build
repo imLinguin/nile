@@ -5,7 +5,8 @@ nile_sources = [
     'authorization.py',
     'graphql.py',
     'library.py',
-    'session.py'
+    'session.py',
+    'wine.py'
 ]
 
 

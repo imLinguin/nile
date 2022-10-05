@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nile\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-22 20:41+0200\n"
+"POT-Creation-Date: 2022-10-05 20:02+0200\n"
 "PO-Revision-Date: 2022-08-13 12:41+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -26,7 +26,7 @@ msgstr ""
 msgid "No description"
 msgstr ""
 
-#: nile/gui/views/game_details.py:11 nile/gui/ui/install_game.ui:38
+#: nile/gui/views/game_details.py:11 nile/gui/ui/install_game.blp:37
 msgid "Install"
 msgstr "Instaluj"
 
@@ -34,7 +34,11 @@ msgstr "Instaluj"
 msgid "Play"
 msgstr "Graj"
 
-#: nile/gui/windows/main_window.py:108
+#: nile/gui/views/game_details.py:13 nile/gui/ui/install_game.blp:32
+msgid "Cancel"
+msgstr "Anuluj"
+
+#: nile/gui/windows/main_window.py:121
 msgid "Welcome back"
 msgstr "Witaj ponownie"
 
@@ -46,147 +50,151 @@ msgstr "Wybierz folder instalacji"
 msgid "Open"
 msgstr "Otwórz"
 
-#: nile/gui/ui/game_details.ui:18
+#: nile/gui/ui/game_details.blp:17
 msgid "Uninstall"
 msgstr "Odinstaluj"
 
-#: nile/gui/ui/game_details.ui:36
+#: nile/gui/ui/game_details.blp:33
 msgid "Game Details"
 msgstr "Szczegóły Gry"
 
-#: nile/gui/ui/game_details.ui:163
+#: nile/gui/ui/game_details.blp:156
 msgid "About the game"
 msgstr "O grze"
 
-#: nile/gui/ui/game_details.ui:190
+#: nile/gui/ui/game_details.blp:182
 msgid "Overview"
 msgstr "Szczegóły"
 
-#: nile/gui/ui/game_details.ui:202
+#: nile/gui/ui/game_details.blp:194
 msgid "Genres"
 msgstr "Gatunki"
 
-#: nile/gui/ui/game_details.ui:209
+#: nile/gui/ui/game_details.blp:200
 msgid "Developer"
 msgstr "Programista"
 
-#: nile/gui/ui/game_details.ui:216
+#: nile/gui/ui/game_details.blp:206
 msgid "Publisher"
 msgstr "Wydawca"
 
-#: nile/gui/ui/game_details.ui:223
+#: nile/gui/ui/game_details.blp:212
 msgid "Game modes"
 msgstr "Tryby gry"
 
-#: nile/gui/ui/game_details.ui:230
+#: nile/gui/ui/game_details.blp:218
 msgid "Release date"
 msgstr "Data wydania"
 
-#: nile/gui/ui/game_details.ui:255
+#: nile/gui/ui/game_details.blp:240
 msgid "Previous"
 msgstr "Wstecz"
 
-#: nile/gui/ui/game_details.ui:276
+#: nile/gui/ui/game_details.blp:261
 msgid "Next"
 msgstr "Dalej"
 
-#: nile/gui/ui/library.ui:17
+#: nile/gui/ui/library.blp:15
 msgid "Search for games"
 msgstr "Szukaj gier"
 
-#: nile/gui/ui/library.ui:82
+#: nile/gui/ui/library.blp:55
 msgid "Games Not Found"
 msgstr "Nie Znaleziono Gier"
 
-#: nile/gui/ui/library.ui:83
+#: nile/gui/ui/library.blp:56
 msgid "Try another keyword"
 msgstr "Spróbuj użyć innej frazy"
 
-#: nile/gui/ui/loading.ui:9
+#: nile/gui/ui/loading.blp:7
 msgid "Synchronizing Library..."
 msgstr "Synchronizowanie Biblioteki..."
 
-#: nile/gui/ui/main.ui:37
+#: nile/gui/ui/main.blp:36
+msgid "Show installed titles"
+msgstr "Pokaż zainstalowane tytuły"
+
+#: nile/gui/ui/main.blp:43
 msgid "Open Menu"
 msgstr "Otwórz Menu"
 
-#: nile/gui/ui/main.ui:71
+#: nile/gui/ui/main.blp:70
 msgid "Preferences"
 msgstr "Preferencje"
 
-#: nile/gui/ui/main.ui:76
+#: nile/gui/ui/main.blp:74
+msgid "Wine Management"
+msgstr "Zarządzanie Wine"
+
+#: nile/gui/ui/main.blp:77
 msgid "About Nile"
 msgstr "O Nile"
 
-#: nile/gui/ui/onboard.ui:36
+#: nile/gui/ui/onboard.blp:34
 msgid "Welcome to Nile!"
 msgstr "Witaj w Nile!"
 
-#: nile/gui/ui/onboard.ui:37
+#: nile/gui/ui/onboard.blp:35
 msgid "Unofficial Amazon Games launcher."
 msgstr "Nieoficjalny launcher Amazon Games"
 
-#: nile/gui/ui/onboard.ui:41
+#: nile/gui/ui/onboard.blp:39
 msgid "Start"
 msgstr "Start"
 
-#: nile/gui/ui/onboard.ui:56
+#: nile/gui/ui/onboard.blp:55
 msgid "Let's log you in"
 msgstr "Zaloguj się"
 
-#: nile/gui/ui/onboard.ui:57
+#: nile/gui/ui/onboard.blp:56
 msgid "Your email and password won't be stored"
 msgstr "Twój email i hasło nie będą przechowywane"
 
-#: nile/gui/ui/onboard.ui:60
+#: nile/gui/ui/onboard.blp:59
 msgid "Log in"
 msgstr "Zaloguj"
 
-#: nile/gui/ui/onboard.ui:75
+#: nile/gui/ui/onboard.blp:75
 msgid "All set!"
 msgstr "Wszystko gotowe!"
 
-#: nile/gui/ui/onboard.ui:76
+#: nile/gui/ui/onboard.blp:76
 msgid "Let's synchronize the library"
 msgstr "Zsynchronizujmy bibliotekę"
 
-#: nile/gui/ui/onboard.ui:84
+#: nile/gui/ui/onboard.blp:84
 msgid "Synchronize"
 msgstr "Synchronizuj"
 
-#: nile/gui/ui/onboard.ui:104
+#: nile/gui/ui/onboard.blp:104
 msgid "Have fun!"
 msgstr "Baw się dobrze!"
 
-#: nile/gui/ui/onboard.ui:108
+#: nile/gui/ui/onboard.blp:108
 msgid "Show me my games"
 msgstr "Pokaż moje gry"
 
-#: nile/gui/ui/install_game.ui:17
+#: nile/gui/ui/install_game.blp:16
 msgid "Install the game"
 msgstr "Instaluj grę"
 
-#: nile/gui/ui/install_game.ui:33
-msgid "Cancel"
-msgstr "Anuluj"
-
-#: nile/gui/ui/install_game.ui:73
+#: nile/gui/ui/install_game.blp:69
 msgid "Installation settings"
 msgstr "Ustawienia instalacji"
 
-#: nile/gui/ui/install_game.ui:89
+#: nile/gui/ui/install_game.blp:87
 msgid "Install location"
 msgstr "Lokalizacja instalacji"
 
-#: nile/gui/ui/install_game.ui:94
+#: nile/gui/ui/install_game.blp:92
 msgid "Location doesn't exist or is inaccessible from Flatpak"
 msgstr "Lokalizacja nie istnieje lub nie jest dostępna z poziomu Flatpak"
 
-#: nile/gui/ui/install_game.ui:106
+#: nile/gui/ui/install_game.blp:102
 msgid "Install Details"
 msgstr "Szczegóły instalacji"
 
-#: nile/gui/ui/install_game.ui:113
+#: nile/gui/ui/install_game.blp:109
 msgid "Install size"
 msgstr "Rozmiar instalacji"
 

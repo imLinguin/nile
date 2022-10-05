@@ -10,7 +10,8 @@ nile_sources = [
     'onboard.py',
     'install_game.py',
     'filepicker.py',
-    'webview.py'
+    'webview.py',
+    'wine_management.py'
 ]
 
 

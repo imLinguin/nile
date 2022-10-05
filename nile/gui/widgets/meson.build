@@ -5,7 +5,8 @@ widgetspath = join_paths(pkgdatadir, 'nile/gui/widgets')
 
 nile_sources = [
     '__init__.py',
-    'game_card.py'
+    'game_card.py',
+    'component_entry.py'
 ]
 
 

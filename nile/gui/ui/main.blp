@@ -29,6 +29,13 @@ template NileWindow : Adw.ApplicationWindow {
             icon-name: "system-search-symbolic";
           }
 
+          [start]
+          ToggleButton installed_filter_button {
+            visible: false;
+            icon-name: "folder-download-symbolic";
+            tooltip-text: _("Show installed titles");
+          }
+
           [end]
           MenuButton {
             popover: menu_popover;
@@ -39,7 +46,7 @@ template NileWindow : Adw.ApplicationWindow {
 
         Stack main_stack {
           vexpand: true;
-          transition-type: crossfade;
+          transition-type: slide_left;
           transition-duration: 200;
         }
       }
@@ -63,8 +70,12 @@ Popover menu_popover {
       text: _("Preferences");
     }
 
+    .GtkModelButton wine_management_button {
+      text: _("Wine Management");
+    }
     .GtkModelButton about_button {
       text: _("About Nile");
     }
+
   }
 }

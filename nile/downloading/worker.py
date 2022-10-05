@@ -1,17 +1,16 @@
-import requests
 import os
-import hashlib
 import shutil
 from nile.utils.download import calculate_checksum, get_hashing_function
 from nile.models.patcher import Patcher
 
 
 class DownloadWorker:
-    def __init__(self, file_data, path, session_manager, report_progress):
+    def __init__(self, file_data, path, session_manager, report_progress, cancelled):
         self.data = file_data
         self.path = path
         self.session = session_manager.session
         self.report_progress = report_progress
+        self.cancelled = cancelled
 
         self.retried = False
 
@@ -22,7 +21,14 @@ class DownloadWorker:
         if os.path.exists(file_path):
             if self.verify_downloaded_file(file_path):
                 return
+        if self.cancelled.is_set():
+            return
+        
         self.get_file(file_path)
+        
+        if self.cancelled.is_set():
+            return
+
         if not self.verify_downloaded_file(file_path):
             print(f"Checksum error for {file_path}")
             if not self.retried:
@@ -50,6 +56,9 @@ class DownloadWorker:
                 for data in response.iter_content(
                     chunk_size=max(int(total / 1000), 1024 * 1024)
                 ):
+                    if self.cancelled.is_set():
+                        response.close()
+                        return
                     f.write(data)
                     self.report_progress(len(data))
             f.close()

@@ -2,3 +2,4 @@ requests
 protobuf
 pycryptodome
 zstandard
+pyyaml
