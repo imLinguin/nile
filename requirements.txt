@@ -1,6 +1,6 @@
-requests==2.27.1
-PyQt5==5.15.6
-PyQtWebEngine==5.15.5
-protobuf==3.19.4
-pycryptodome==3.14.1
-zstandard==0.17.0
+requests
+PyQt5
+PyQtWebEngine
+protobuf
+pycryptodome
+zstandard
