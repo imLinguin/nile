@@ -3,16 +3,12 @@
 import sys
 import logging
 import json
-from PyQt5.QtWidgets import QApplication
 from nile.arguments import get_arguments
 from nile.downloading import manager
 from nile.utils.config import Config
 from nile.utils.launch import Launcher
-from nile.utils.search import calculate_distance
 from nile.utils.uninstall import Uninstaller
 from nile.api import authorization, session, library
-from nile.gui import webview
-from nile.models import manifest
 from nile import constants, version, codename
 
 
@@ -165,7 +161,7 @@ class CLI:
         self.logger.debug(f"Found {matching_game['product']['title']}")
 
         self.logger.debug(
-            f"Checking if game {game['product']['title']} id: {matching_game['id']} is installed"
+            f"Checking if game {matching_game['product']['title']} id: {matching_game['id']} is installed"
         )
         installed_games = self.config.get("installed")
 
@@ -193,7 +189,6 @@ class CLI:
 
 
 def main():
-    qApp = QApplication(sys.argv)
     (arguments, unknown_arguments), parser = get_arguments()
     if arguments.version:
         print(version, codename)
@@ -217,14 +212,8 @@ def main():
 
     command = arguments.command
 
-    # Always use return qApp.exec()
-    # If you spawn gui stuff
-    # When running in CLI this can be ignored
-
     if command == "auth":
-        # If spawned a gui method use qApplication exec to wait
-        if cli.handle_auth():
-            return qApp.exec()
+        cli.handle_auth()
 
     elif command == "library":
         cli.handle_library()

@@ -1,9 +1,8 @@
+import webbrowser
 from urllib.parse import urlencode, urlparse, parse_qs
 import nile.constants as constants
-from nile.gui import webview
 import logging
 import hashlib
-import json
 import time
 import secrets
 import base64
@@ -165,18 +164,16 @@ class AuthenticationManager:
         client_id = self.generate_client_id(serial)
 
         url = self.get_auth_url(client_id, challenge)
-        self.loginWebView = webview.LoginWindow(url)
-        self.logger.info("Spawning login window")
-        self.loginWebView.show(self.handle_page_load)
-
-    def handle_page_load(self):
-        page_url = self.loginWebView.window.url().url()
-        if page_url.find("openid.oa2.authorization_code") > 0:
+        print(
+            "The login URL will be opened in your browser, after you login paste the amazon.com url you were redirected to here")
+        input("Press ENTER to proceed")
+        webbrowser.open(url)
+        redirect = input("Paste amazon.com url you got redirected to: ")
+        if redirect.find("openid.oa2.authorization_code") > 0:
             self.logger.info("Got authorization code")
-            self.loginWebView.stop()
 
             # Parse auth code
-            parsed = urlparse(page_url)
+            parsed = urlparse(redirect)
             query = parse_qs(parsed.query)
             code = query["openid.oa2.authorization_code"][0]
             self.register_device(code)

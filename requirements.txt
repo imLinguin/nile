@@ -1,6 +1,4 @@
 requests
-PyQt5
-PyQtWebEngine
 protobuf
 pycryptodome
 zstandard
