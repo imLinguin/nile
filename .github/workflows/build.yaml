@@ -1,0 +1,39 @@
+name: Build binaries
+on: [push]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        os: [ubuntu-20.04, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install pyinstaller and dependencies
+      run: pip3 install --upgrade pyinstaller requests protobuf pycryptodome zstandard
+
+    - name: Set strip on Linux and Mac
+      id: strip
+      run: echo "option=--strip" >> $GITHUB_OUTPUT
+      if: runner.os != 'Windows'
+
+    - name: Build
+      run: pyinstaller
+        --onefile
+        --name nile 
+        ${{ steps.strip.outputs.option }}
+        nile/cli.py
+      env:
+        PYTHONOPTIMIZE: 1
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: nile-${{ runner.os }}
+        path: dist/*
