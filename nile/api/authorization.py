@@ -164,10 +164,14 @@ class AuthenticationManager:
         client_id = self.generate_client_id(serial)
 
         url = self.get_auth_url(client_id, challenge)
+        print("Login URL: ", url)
         print(
             "The login URL will be opened in your browser, after you login paste the amazon.com url you were redirected to here")
         input("Press ENTER to proceed")
-        webbrowser.open(url)
+        try:
+            webbrowser.open(url)
+        except:
+            pass
         redirect = input("Paste amazon.com url you got redirected to: ")
         if redirect.find("openid.oa2.authorization_code") > 0:
             self.logger.info("Got authorization code")
