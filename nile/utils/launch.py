@@ -23,7 +23,7 @@ class LaunchInstruction:
         stream.close()
         instruction.version = json_data["SchemaVersion"]
         instruction.command = os.path.join(game_path, json_data["Main"]["Command"])
-        instruction.arguments = json_data["Main"]["Args"]
+        instruction.arguments = json_data["Main"].get("Args") or list()
         instruction.arguments.extend(unknown_arguments)
         return instruction
 
