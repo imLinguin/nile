@@ -30,13 +30,17 @@ Nile aims to be CLI and GUI tool for managing and playing games from Amazon.
 This is my attempt to make Amazon Games useful for Linux users, who want to play titles obtained thanks to [Prime](https://prime.amazon.com) membership.
 
 # Dependencies
-## Arch, Manjaro etc..
-`sudo pacman -Sy python-pycryptodome python-zstandard python-requests python-protobuf`
-## Ubuntu
-`sudo apt install python3-pycryptodome python3-requests python3-zstd python3-protobuf`
+## Arch and derivatives (Manjaro, Garuda, EndeavourOS)
+`sudo pacman -S python-pycryptodome python-zstandard python-requests python-protobuf`
+## Debian and derivatives (Ubuntu, Pop!_OS)
+`sudo apt install python3-pycryptodome python3-requests python3-zstandard python3-protobuf`
+
 ## With pip
 > Do this after cloning the repo and cd into the directory
-> Do not install if you installed dependencies through your package manager
+> Do not install if you installed dependencies through your package manager  
+
+This is **NOT** recommended as it can potentially collide with distribution packages [source](https://peps.python.org/pep-0668/)  
+new versions of `pip` will prevent you from doing it outside of virtual environment
 
 `pip3 install -r requirements.txt`
 
