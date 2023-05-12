@@ -1,10 +1,17 @@
 from nile.proto import sds_proto2_pb2 as sds
 import struct
 import lzma
-from Crypto.PublicKey import RSA
-from Crypto.Signature import PKCS1_v1_5
-from Crypto.Hash import SHA256
 
+try:
+    from Crypto.PublicKey import RSA
+    from Crypto.Signature import PKCS1_v1_5
+    from Crypto.Hash import SHA256
+except ModuleNotFoundError:
+    print("Module Crypto not found, trying to use newer Cryptodome")
+    from Cryptodome.PublicKey import RSA
+    from Cryptodome.Signature import PKCS1_v1_5
+    from Cryptodome.Hash import SHA256
+    pass
 # Handles only V3 manifests
 
 
@@ -88,13 +95,11 @@ class Manifest:
             raise ValueError("Unknown compression algorithm!")
 
 
-class ManifestComparison():
-    
+class ManifestComparison:
     def __init__(self):
         self.new = []
         self.removed = []
         self.updated = []
-
 
     @classmethod
     def compare(cls, manifest, old_manifest=None):
@@ -120,5 +125,5 @@ class ManifestComparison():
         else:
             # In this case there are just new files
             comparison.new = [f for f in manifest.packages[0].files]
-        
+
         return comparison
