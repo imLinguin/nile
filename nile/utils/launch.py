@@ -19,7 +19,7 @@ class LaunchInstruction:
         instruction = cls()
         stream = open(path, "r")
         raw_data = stream.read()
-        json_data = json.loads(raw_data)
+        json_data = json5.loads(raw_data)
         stream.close()
         instruction.version = json_data["SchemaVersion"]
         instruction.command = os.path.join(game_path, json_data["Main"]["Command"])
