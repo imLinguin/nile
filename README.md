@@ -31,9 +31,9 @@ This is my attempt to make Amazon Games useful for Linux users, who want to play
 
 # Dependencies
 ## Arch and derivatives (Manjaro, Garuda, EndeavourOS)
-`sudo pacman -S python-pycryptodome python-zstandard python-requests python-protobuf`
+`sudo pacman -S python-pycryptodome python-zstandard python-requests python-protobuf python-json5`
 ## Debian and derivatives (Ubuntu, Pop!_OS)
-`sudo apt install python3-pycryptodome python3-requests python3-zstandard python3-protobuf`
+`sudo apt install python3-pycryptodome python3-requests python3-zstandard python3-protobuf python3-json5`
 
 ## With pip
 > Do this after cloning the repo and cd into the directory

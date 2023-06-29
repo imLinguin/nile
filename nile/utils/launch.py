@@ -4,7 +4,7 @@ import shutil
 import shlex
 import subprocess
 import logging
-import json
+import json5
 from nile.utils.search import calculate_distance
 
 
