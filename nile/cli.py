@@ -31,7 +31,7 @@ class CLI:
     def handle_auth(self):
         if self.arguments.login:
             if not self.auth_manager.is_logged_in():
-                self.auth_manager.login()
+                self.auth_manager.login(self.arguments.non_interactive)
                 return True
             else:
                 self.logger.error("You are already logged in")
@@ -40,6 +40,32 @@ class CLI:
             self.auth_manager.logout()
             return False
         self.logger.error("Specify auth action, use --help")
+    
+    def handle_register(self):
+        if self.auth_manager.is_logged_in():
+            self.logger.error("You are already logged in")
+            return False
+
+        code = self.arguments.code
+        client_id = self.arguments.client_id
+        code_verifier = self.arguments.code_verifier
+        serial = self.arguments.serial
+
+        if not code:
+            self.logger.error("--code is required, use --help")
+            return False
+        if not client_id:
+            self.logger.error("--client-id is required, use --help")
+            return False
+        if not code_verifier:
+            self.logger.error("--code-verifier is required, use --help")
+            return False
+        if not serial:
+            self.logger.error("--serial is required, use --help")
+            return False
+
+        self.auth_manager.handle_login(code, client_id, code_verifier, serial)
+        return True
 
     def sort_by_title(self, element):
         return (
@@ -214,7 +240,8 @@ def main():
 
     if command == "auth":
         cli.handle_auth()
-
+    elif command == "register":
+        cli.handle_register()
     elif command == "library":
         cli.handle_library()
     elif command in ["install", "verify", "update"]:
