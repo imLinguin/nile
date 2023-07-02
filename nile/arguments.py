@@ -12,9 +12,16 @@ def get_arguments():
 
     auth_parser = sub_parsers.add_parser("auth", help="Authorization related things")
     auth_parser.add_argument("--login", "-l", action="store_true", help="Login action")
+    auth_parser.add_argument("--non-interactive", action="store_true", help="Display login data as JSON. Use `nile register` to finish login")
     auth_parser.add_argument(
         "--logout", action="store_true", help="Logout from the accout and deregister"
     )
+
+    register_parser = sub_parsers.add_parser("register", help="Register device after web login")
+    register_parser.add_argument("--code", help="The authorization code from web login")
+    register_parser.add_argument("--client-id", help="The client id to register")
+    register_parser.add_argument("--code-verifier", help="The code verifier used to generate login URL")
+    register_parser.add_argument("--serial", help="The device serial to register")
 
     library_parser = sub_parsers.add_parser(
         "library", help="Your games library is in this place"

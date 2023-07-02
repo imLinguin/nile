@@ -7,6 +7,7 @@ import time
 import secrets
 import base64
 import uuid
+import json
 
 
 class AuthenticationManager:
@@ -70,15 +71,15 @@ class AuthenticationManager:
         }
         return base_url + urlencode(arguments)
 
-    def register_device(self, code):
-        self.logger.info(f"Registerring a device. ID: {self.client_id}")
+    def register_device(self, code, client_id, verifier_str, serial):
+        self.logger.info(f"Registerring a device. ID: {client_id}")
         data = {
             "auth_data": {
                 "authorization_code": code,
                 "client_domain": "DeviceLegacy",
-                "client_id": self.client_id,
+                "client_id": client_id,
                 "code_algorithm": "SHA-256",
-                "code_verifier": self.verifier.decode("utf-8"),
+                "code_verifier": verifier_str,
                 "use_global_authentication": False,
             },
             "registration_data": {
@@ -86,7 +87,7 @@ class AuthenticationManager:
                 "app_version": "1.0.0",
                 "device_model": "Windows",
                 "device_name": None,
-                "device_serial": self.serial,
+                "device_serial": serial,
                 "device_type": "A2UMVHOX7UP4V7",
                 "domain": "Device",
                 "os_version": "10.0.19044.0",
@@ -156,7 +157,30 @@ class AuthenticationManager:
         tokens = self.config.get("user", "tokens")
         return bool(tokens)
 
-    def login(self):
+    def handle_redirect(self, redirect):
+        """Handles login through a redirect URL"""
+        if redirect.find("openid.oa2.authorization_code") > 0:
+            self.logger.info("Got authorization code")
+
+            # Parse auth code
+            parsed = urlparse(redirect)
+            query = parse_qs(parsed.query)
+            code = query["openid.oa2.authorization_code"][0]
+            self.register_device(code,
+                                 self.client_id,
+                                 self.verifier.decode("utf-8"),
+                                 self.serial)
+            self.library_manager.sync()
+
+    def handle_login(self, code, client_id, code_verifier, serial):
+        """Handles login through individual args"""
+        self.register_device(code,
+                             client_id,
+                             code_verifier,
+                             serial)
+        self.library_manager.sync()
+
+    def login(self, non_interactive=False):
         code_verifier = self.generate_code_verifier()
         challenge = self.generate_challange(code_verifier)
 
@@ -164,6 +188,16 @@ class AuthenticationManager:
         client_id = self.generate_client_id(serial)
 
         url = self.get_auth_url(client_id, challenge)
+        if non_interactive:
+            data = {
+                'client_id': client_id,
+                'code_verifier': code_verifier.decode("utf-8"),
+                'serial': serial,
+                'url': url
+            }
+            print(json.dumps(data))
+            return
+            
         print("Login URL: ", url)
         print(
             "The login URL will be opened in your browser, after you login paste the amazon.com url you were redirected to here")
@@ -173,15 +207,7 @@ class AuthenticationManager:
         except:
             pass
         redirect = input("Paste amazon.com url you got redirected to: ")
-        if redirect.find("openid.oa2.authorization_code") > 0:
-            self.logger.info("Got authorization code")
-
-            # Parse auth code
-            parsed = urlparse(redirect)
-            query = parse_qs(parsed.query)
-            code = query["openid.oa2.authorization_code"][0]
-            self.register_device(code)
-            self.library_manager.sync()
+        self.handle_redirect(redirect)
 
     def logout(self):
         if not self.is_logged_in():
