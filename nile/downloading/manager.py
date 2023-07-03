@@ -118,6 +118,7 @@ class DownloadManager:
             self.logger.error("Not enough space available")
             return
 
+        readable_size = dl_utils.get_readable_size(total_size)
         self.progress_bar = ProgressBar(total_size, f"{round(readable_size[0],2)}{readable_size[1]}")
         self.progress_bar.start()
 
