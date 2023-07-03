@@ -7,10 +7,11 @@ from nile.models.patcher import Patcher
 
 
 class DownloadWorker:
-    def __init__(self, file_data, path, session_manager):
+    def __init__(self, file_data, path, session_manager, progress):
         self.data = file_data
         self.path = path
         self.session = session_manager.session
+        self.progress = progress
 
     def execute(self):
         file_path = os.path.join(
@@ -36,13 +37,17 @@ class DownloadWorker:
             )
             total = response.headers.get("Content-Length")
             if total is None:
-                f.write(response.content)
+                self.progress.update_download_speed(len(response.content))
+                written = f.write(response.content)
+                self.progress.update_bytes_written(written)
             else:
                 total = int(total)
                 for data in response.iter_content(
                     chunk_size=max(int(total / 1000), 1024 * 1024)
                 ):
-                    f.write(data)
+                    self.progress.update_download_speed(len(data))
+                    written = f.write(data)
+                    self.progress.update_bytes_written(written)
             f.close()
 
         if self.data.patch_hash:
