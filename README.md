@@ -44,13 +44,21 @@ new versions of `pip` will prevent you from doing it outside of virtual environm
 
 `pip3 install -r requirements.txt`
 
-# Installation
-Currently app is not packaged in any way so here are a few steps to download it:
+## Building PyInstaller executable
 
-- Clone repo using git or download the ZIP `git clone https://github.com/imLinguin/nile`
-- CD into the directory `cd nile`
-- Login `./bin/nile auth --login`
-- Have fun
+If you wish to test nile in Heroic flatpak you likely need to build the `nile` executable using pyinstaller
+
+- Get pyinstaller
+
+```
+pip install pyinstaller
+```
+
+- Build the binary (assuming you are in the nile directory)
+
+```
+pyinstaller --onefile --name nile nile/cli.py
+```
 
 # Contributing
 
