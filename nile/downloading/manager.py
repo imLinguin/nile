@@ -4,11 +4,10 @@ from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import cpu_count
 from time import sleep
 import nile.utils.download as dl_utils
-from nile.models import manifest, hash_pairs, patch_manifest
+from nile.models import manifest, hash_pairs, patch_manifest, progress
 from nile.downloading.worker import DownloadWorker
 # from nile.models.progressbar import ProgressBar
 from nile import constants
-
 
 class DownloadManager:
     def __init__(self, config_manager, library_manager, session_manager, game):
@@ -16,6 +15,7 @@ class DownloadManager:
         self.library_manager = library_manager
         self.session = session_manager
         self.game = game
+        self.progress_bar = None
         self.logger = logging.getLogger("DOWNLOAD")
         self.logger.debug("Initialized Download Manager")
 
@@ -120,6 +120,8 @@ class DownloadManager:
             return
 
         # self.progressbar = ProgressBar(total_size)
+        self.progress_bar = progress.ProgressBar(total_size, f"{round(readable_size[0],2)}{readable_size[1]}")
+        self.progress_bar.start()
 
         for directory in patchmanifest.dirs:
             os.makedirs(
@@ -128,7 +130,7 @@ class DownloadManager:
             )
         self.thpool = ThreadPoolExecutor(max_workers=cpu_count())
         for f in patchmanifest.files:
-            worker = DownloadWorker(f, game_location, self.session)
+            worker = DownloadWorker(f, game_location, self.session, self.progress_bar)
             # worker.execute()
             self.threads.append(self.thpool.submit(worker.execute))
 
@@ -143,6 +145,7 @@ class DownloadManager:
             # self.progressbar.print()
             sleep(0.5)
 
+        self.progress_bar.completed = True
         if not force_verifying:
             self.finish()
 
