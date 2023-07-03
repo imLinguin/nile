@@ -4,9 +4,9 @@ from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import cpu_count
 from time import sleep
 import nile.utils.download as dl_utils
-from nile.models import manifest, hash_pairs, patch_manifest, progress
+from nile.models import manifest, hash_pairs, patch_manifest
+from nile.downloading.progress import ProgressBar
 from nile.downloading.worker import DownloadWorker
-# from nile.models.progressbar import ProgressBar
 from nile import constants
 
 class DownloadManager:
@@ -119,8 +119,7 @@ class DownloadManager:
             self.logger.error("Not enough space available")
             return
 
-        # self.progressbar = ProgressBar(total_size)
-        self.progress_bar = progress.ProgressBar(total_size, f"{round(readable_size[0],2)}{readable_size[1]}")
+        self.progress_bar = ProgressBar(total_size, f"{round(readable_size[0],2)}{readable_size[1]}")
         self.progress_bar.start()
 
         for directory in patchmanifest.dirs:
