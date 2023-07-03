@@ -7,6 +7,8 @@ from time import sleep
 import nile.utils.download as dl_utils
 from nile.models import manifest, hash_pairs, patch_manifest
 from nile.downloading.worker import DownloadWorker
+from nile.utils.config import ConfigType
+
 # from nile.models.progressbar import ProgressBar
 from nile import constants
 
@@ -55,12 +57,12 @@ class DownloadManager:
         installed_games = self.config.get("installed")
         if installed_games:
             for game in installed_games:
-                if self.game["id"] == game["id"]:
+                if self.game["product"]["id"] == game["id"]:
                     return game["version"]
         return None
 
     def load_installed_manifest(self):
-        old_manifest_pb = self.config.get(f"manifests/{self.game['id']}", raw=True)
+        old_manifest_pb = self.config.get(f"manifests/{self.game['product']['id']}", cfg_type=ConfigType.RAW)
         old_manifest = None
         if old_manifest_pb:
             old_manifest = manifest.Manifest()
@@ -165,7 +167,7 @@ class DownloadManager:
         # Save manifest to the file
 
         self.config.write(
-            f"manifests/{self.game['id']}", self.protobuff_manifest, raw=True
+            f"manifests/{self.game['product']['id']}", self.protobuff_manifest, cfg_type=ConfigType.RAW
         )
 
         # Save data to installed.json file
@@ -175,12 +177,12 @@ class DownloadManager:
             installed_array = list()
 
         installed_game_data = dict(
-            id=self.game["id"], version=self.version, path=self.install_path
+            id=self.game["product"]["id"], version=self.version, path=self.install_path
         )
         updated = False
         # Swap existing entry in case of updating etc..
         for i, game in enumerate(installed_array):
-            if game["id"] == self.game["id"]:
+            if game["id"] == self.game["product"]["id"]:
                 installed_array[i] = installed_game_data
                 updated = True
                 break

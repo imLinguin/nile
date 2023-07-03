@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import os
 import logging
 import json
 from nile.arguments import get_arguments
@@ -27,6 +28,25 @@ class CLI:
         self.unknown_arguments = unknown_arguments
         if self.auth_manager.is_logged_in() and self.auth_manager.is_token_expired():
             self.auth_manager.refresh_token()
+
+        self.__migrate_old_ids()
+
+    # Function that migrates installed and manifests from old id to product.id
+    def __migrate_old_ids(self):
+        installed = self.config.get("installed")
+        library = self.config.get("library")
+        if installed:
+            for installed_game in installed:
+                old_id = installed_game['id']
+                for game in library:
+                    if game['id'] == old_id:
+                        installed_game['id'] = game['product']['id']
+                        manifest_path = os.path.join(constants.CONFIG_PATH, 'manifests', game['id']+'.json')
+                        if os.path.exists(manifest_path):
+                            os.rename(manifest_path, os.path.join(constants.CONFIG_PATH, 'manifests', game["product"]["id"]+".raw"))
+                        break
+        self.config.write("installed", installed)
+
 
     def handle_auth(self):
         if self.arguments.login:
@@ -88,7 +108,7 @@ class CLI:
             games.sort(key=self.sort_by_title)
             displayed_count = 0
             for game in games:
-                if self.arguments.installed and not installed_dict.get(game["id"]):
+                if self.arguments.installed and not installed_dict.get(game["product"]["id"]):
                     continue
                 genres = (
                     (f'GENRES: {game["product"]["productDetail"]["details"]["genres"]}')
@@ -96,9 +116,9 @@ class CLI:
                     else ""
                 )
                 if not constants.SUPPORTS_COLORS:
-                    games_list += f'{"(INSTALLED) " if installed_dict.get(game["id"]) and not self.arguments.installed else ""}{game["product"].get("title")} ID: {game["id"]} {genres}\n'
+                    games_list += f'{"(INSTALLED) " if installed_dict.get(game["product"]["id"]) and not self.arguments.installed else ""}{game["product"].get("title")} ID: {game["product"]["id"]} {genres}\n'
                 else:
-                    games_list += f'{constants.SHCOLORS["green"]}{"(INSTALLED) " if installed_dict.get(game["id"]) and not self.arguments.installed else ""}{constants.SHCOLORS["clear"]}{game["product"].get("title")} {constants.SHCOLORS["red"]}ID: {game["id"]}{constants.SHCOLORS["clear"]} {genres}\n'
+                    games_list += f'{constants.SHCOLORS["green"]}{"(INSTALLED) " if installed_dict.get(game["product"]["id"]) and not self.arguments.installed else ""}{constants.SHCOLORS["clear"]}{game["product"].get("title")} {constants.SHCOLORS["red"]}ID: {game["product"]["id"]}{constants.SHCOLORS["clear"]} {genres}\n'
 
                 displayed_count += 1
             games_list += f"\n*** TOTAL {displayed_count} ***\n"
@@ -115,7 +135,7 @@ class CLI:
         games.sort(key=self.sort_by_title)
         matching_game = None
         for game in games:
-            if game["id"] == self.arguments.id:
+            if game["product"]["id"] == self.arguments.id:
                 matching_game = game
                 break
         if not matching_game:
@@ -147,7 +167,7 @@ class CLI:
         game_ids = dict()
         for game in games:
             for installed_game in installed_array:
-                if game["id"] == installed_game["id"]:
+                if game["product"]["id"] == installed_game["id"]:
                     game_ids.update({game["product"]["id"]: installed_game})
         self.logger.debug(
             f"Checking for updates for {list(game_ids.keys())}, count: {len(game_ids)}"
@@ -181,7 +201,7 @@ class CLI:
         matching_game = None
         self.logger.info(f"Searching for {self.arguments.id}")
         for game in games:
-            if game["id"] == self.arguments.id:
+            if game["product"]["id"] == self.arguments.id:
                 matching_game = game
                 break
         if not matching_game:

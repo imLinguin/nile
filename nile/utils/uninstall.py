@@ -1,6 +1,7 @@
 import os
 import logging
-from nile.models import manifest, hash_pairs, patch_manifest
+from nile.models import manifest
+from nile.utils.config import ConfigType
 
 
 class Uninstaller:
@@ -34,7 +35,7 @@ class Uninstaller:
         self.logger.info("Game removed successfully")
 
     def load_installed_manifest(self, game_id):
-        old_manifest_pb = self.config.get(f"manifests/{game_id}", raw=True)
+        old_manifest_pb = self.config.get(f"manifests/{game_id}", cfg_type=ConfigType.RAW)
         old_manifest = None
         if old_manifest_pb:
             old_manifest = manifest.Manifest()
