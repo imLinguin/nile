@@ -1,5 +1,6 @@
 import os
 import sys
+from platformdirs import user_config_dir
 
 MARKETPLACEID = "ATVPDKIKX0DER"
 AMAZON_API = "https://api.amazon.com"
@@ -13,7 +14,7 @@ DEFAULT_INSTALL_PATH = os.path.join(
 )
 
 CONFIG_PATH = os.path.join(
-    os.getenv("XDG_CONFIG_HOME", os.path.expanduser("~/.config")), "nile"
+    os.getenv("XDG_CONFIG_HOME", user_config_dir()), "nile"
 )
 if sys.platform == "win32":
     CONFIG_PATH = os.path.join(os.getenv("APPDATA"), "nile")
