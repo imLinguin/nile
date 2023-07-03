@@ -109,7 +109,7 @@ class Launcher:
                 )
             elif self.wrapper and self.dont_use_wine:
                 splited_wrapper = shlex.split(self.wrapper)
-                command.extend(splitted_wrapper)
+                command.extend(splited_wrapper)
                 command.append(instruction.command)
                 command.extend(instruction.arguments)
         self.logger.info("Launching")

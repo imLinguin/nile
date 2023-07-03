@@ -220,7 +220,7 @@ class CLI:
 
         found = None
         for installed_game in installed_games:
-            if installed_game["id"] == matching_game["id"]:
+            if installed_game["id"] == matching_game["product"]["id"]:
                 found = installed_game
                 break
 
