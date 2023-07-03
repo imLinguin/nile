@@ -43,6 +43,9 @@ def get_arguments():
     install_parser.add_argument(
         "--path", dest="exact_path", help="Specify exact install location"
     )
+    install_parser.add_argument(
+        '--info', '-i', action="store_true", help="Print game install info instead of downloading" 
+    )
 
     check_for_updates_parser = sub_parsers.add_parser("list-updates")
     check_for_updates_parser.add_argument(

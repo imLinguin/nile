@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor
@@ -145,6 +146,20 @@ class DownloadManager:
 
         if not force_verifying:
             self.finish()
+
+    def info(self):
+        self.manifest = self.get_manifest()
+
+        if not self.manifest:
+            self.logger.error("Unable to load manifest")
+            return
+        self.logger.debug(f"Number of packages: {len(self.manifest.packages)}")
+
+        total_size = sum(f.size for f in self.manifest.packages[0].files)
+        output = {
+            'download_size': total_size
+        }
+        print(json.dumps(output))
 
     def finish(self):
         # Save manifest to the file
