@@ -20,6 +20,7 @@ class Uninstaller:
             if game["id"] == game_id:
                 installed_info = game
                 installed_games.pop(i)
+                break
         if not installed_info:
             self.logger.error("Game isn't installed")
             return
@@ -31,7 +32,7 @@ class Uninstaller:
             os.remove(os.path.join(installed_info["path"], f.path.replace("\\", "/")))
 
         self.config.write("installed", installed_games)
-        self.config.remove(f"manifests/{game_id}")
+        self.config.remove(f"manifests/{game_id}", cfg_type=ConfigType.RAW)
         self.logger.info("Game removed successfully")
 
     def load_installed_manifest(self, game_id):

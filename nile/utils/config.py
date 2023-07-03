@@ -42,7 +42,7 @@ class Config:
         if not os.path.exists(constants.CONFIG_PATH):
             os.makedirs(constants.CONFIG_PATH)
 
-    def remove(self, store, cfg_type):
+    def remove(self, store, cfg_type=ConfigType.JSON):
         """
         Remove file
         """
