@@ -37,7 +37,8 @@ dependencies = [
   "protobuf",
   "pycryptodome",
   "zstandard",
-  "json5"
+  "json5",
+  "platformdirs"
 ]
 dynamic = ["version"]
 
