@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor
@@ -112,10 +113,7 @@ class DownloadManager:
             self.logger.info("Game is up to date")
             return
         total_size = sum(f.download_size for f in patchmanifest.files)
-        readable_size = dl_utils.get_readable_size(total_size)
-        self.logger.info(
-            f"Download size: {round(readable_size[0],2)}{readable_size[1]}"
-        )
+        self.info()
 
         if not dl_utils.check_available_space(total_size, game_location):
             self.logger.error("Not enough space available")
@@ -147,6 +145,26 @@ class DownloadManager:
 
         if not force_verifying:
             self.finish()
+
+    def info(self, json_format=False):
+        self.manifest = self.get_manifest()
+
+        if not self.manifest:
+            self.logger.error("Unable to load manifest")
+            return
+        self.logger.debug(f"Number of packages: {len(self.manifest.packages)}")
+
+        total_size = sum(f.size for f in self.manifest.packages[0].files)
+        if json_format:
+            output = {
+                'download_size': total_size
+            }
+            print(json.dumps(output))
+        else:
+            readable_size = dl_utils.get_readable_size(total_size)
+            self.logger.info(
+                f"Download size: {round(readable_size[0],2)}{readable_size[1]}"
+            )
 
     def finish(self):
         # Save manifest to the file

@@ -145,12 +145,15 @@ class CLI:
         self.download_manager = manager.DownloadManager(
             self.config, self.library_manager, self.session, matching_game
         )
-        self.download_manager.download(
-            force_verifying=bool(self.arguments.command == "verify"),
-            base_install_path=self.arguments.base_path,
-            install_path=self.arguments.exact_path,
-        )
-        self.logger.info("Download complete")
+        if not self.arguments.info:
+            self.download_manager.download(
+                force_verifying=bool(self.arguments.command == "verify"),
+                base_install_path=self.arguments.base_path,
+                install_path=self.arguments.exact_path,
+            )
+            self.logger.info("Download complete")
+        else:
+            self.download_manager.info(self.arguments.json)
 
     def list_updates(self):
         installed_array = self.config.get("installed")
@@ -232,8 +235,7 @@ class CLI:
     def handle_uninstall(self):
         uninstaller = Uninstaller(self.config, self.arguments)
         uninstaller.uninstall()
-
-
+    
 def main():
     (arguments, unknown_arguments), parser = get_arguments()
     if arguments.version:
