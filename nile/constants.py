@@ -14,12 +14,8 @@ DEFAULT_INSTALL_PATH = os.path.join(
 )
 
 CONFIG_PATH = os.path.join(
-    os.getenv("XDG_CONFIG_HOME", user_config_dir()), "nile"
+    os.getenv("XDG_CONFIG_HOME", user_config_dir(roaming=True)), "nile"
 )
-if sys.platform == "win32":
-    CONFIG_PATH = os.path.join(os.getenv("APPDATA"), "nile")
-    DEFAULT_INSTALL_PATH = os.path.join(os.getenv("USERPROFILE"), "nile")
-
 
 ILLEGAL_FNAME_CHARS = ["?", ":", '"', "*", "<", ">", "|"]
 
