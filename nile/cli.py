@@ -153,7 +153,7 @@ class CLI:
             )
             self.logger.info("Download complete")
         else:
-            self.download_manager.info()
+            self.download_manager.info(self.arguments.json)
 
     def list_updates(self):
         installed_array = self.config.get("installed")

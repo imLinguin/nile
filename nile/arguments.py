@@ -46,6 +46,9 @@ def get_arguments():
     install_parser.add_argument(
         '--info', '-i', action="store_true", help="Print game install info instead of downloading" 
     )
+    install_parser.add_argument(
+        '--json', '-j', action="store_true", help="Print info in JSON format"
+    )
 
     check_for_updates_parser = sub_parsers.add_parser("list-updates")
     check_for_updates_parser.add_argument(
