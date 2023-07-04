@@ -17,7 +17,7 @@ jobs:
         python-version: '3.9'
 
     - name: Install pyinstaller and dependencies
-      run: pip3 install --upgrade pyinstaller requests protobuf pycryptodome zstandard
+      run: pip3 install --upgrade pyinstaller -r requirements.txt
 
     - name: Set strip on Linux and Mac
       id: strip
