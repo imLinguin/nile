@@ -276,9 +276,9 @@ class CLI:
             self.config, self.library_manager, self.session, matching_game
         )
         importer = Importer(
-            path, self.config, self.library_manager, self.session, self.download_manager
+            game, path, self.config, self.library_manager, self.session, self.download_manager
         )
-        importer.import_game(game)
+        importer.import_game()
  
 def main():
     (arguments, unknown_arguments), parser = get_arguments()

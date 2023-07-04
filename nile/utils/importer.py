@@ -1,11 +1,15 @@
 import os
 import logging
+from time import sleep
 from nile.models import manifest
 from nile.downloading.worker import DownloadWorker
 from nile.utils.config import ConfigType
+from multiprocessing import cpu_count
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 class Importer:
-    def __init__(self, folder_path, config, library_manager, session_manager, download_manager):
+    def __init__(self, game, folder_path, config, library_manager, session_manager, download_manager):
+        self.game = game
         self.folder_path = folder_path
         self.config = config
         self.library_manager = library_manager
@@ -13,8 +17,10 @@ class Importer:
         self.download_manager = download_manager
         self.logger = logging.getLogger("IMPORT")
 
-    def verify_integrity(self, game, fuel_path):
-        game_manifest = self.library_manager.get_game_manifest(game['id'])
+        self.threads = []
+
+    def get_patchmanifest(self):
+        game_manifest = self.library_manager.get_game_manifest(self.game['id'])
 
         download_url = game_manifest["downloadUrls"][0]
         self.logger.debug("Getting protobuff manifest")
@@ -29,53 +35,60 @@ class Importer:
         comparison = manifest.ManifestComparison.compare(
             r_manifest
         )
-        patchmanifest = self.download_manager.get_patchmanifest(comparison)
+        return self.download_manager.get_patchmanifest(comparison)
 
-        fuel_json = None
+    def stop_threads(self):
+        self.thpool.shutdown(wait=False, cancel_futures=True)
+
+    def verify_integrity(self):
+        patchmanifest = self.get_patchmanifest()
+        self.thpool = ThreadPoolExecutor(max_workers=cpu_count())
+
         for file in patchmanifest.files:
-            self.logger.debug(f"File: {file.filename}")
-            if file.filename == "fuel.json":
-                fuel_json = file
-                break
+            local_path = os.path.join(self.folder_path, file.path.replace("\\", os.sep), file.filename)
+            self.logger.debug(f"Verifying: {local_path}")
+            if not os.path.isfile(local_path):
+                self.stop_threads()
+                self.logger.error(f"{local_path} is missing or corrupted")
+                return False
 
-        if not fuel_json:
-            self.logger.error("Could not find fuel.json in manifest")
-            return
+            worker = DownloadWorker(
+                file,
+                local_path,
+                self.session_manager,
+                None
+            )
+            self.threads.append(self.thpool.submit(worker.verify_downloaded_file, local_path))
 
-        worker = DownloadWorker(
-            fuel_json,
-            fuel_path,
-            self.session_manager,
-            None
-        )
-        return worker.verify_downloaded_file(fuel_path)
+        for thread in as_completed(self.threads):
+            if thread.cancelled() or not thread.result():
+                self.stop_threads()
+                return False
 
-    def import_game(self, game):
+        return True
+
+    def import_game(self):
         if not os.path.isdir(self.folder_path):
             self.logger.error(f"{self.folder_path} is not a directory")
             return
 
-        fuel_path = os.path.join(self.folder_path, "fuel.json")
-        if not os.path.isfile(os.path.join(self.folder_path, "fuel.json")):
-            self.logger.error(f"{fuel_path} is not a file")
-            return
-
-        if not self.verify_integrity(game, fuel_path):
+        self.logger.info(f"\tVerifying local files")
+        if not self.verify_integrity():
             self.logger.error(
-                f"{fuel_path} does not match the signature for {game['product']['title']} ({game['product']['id']})"
+                f"There are missing or corrupted files for {self.game['product']['title']}. Failed import."
             )
             return
 
-        self.logger.info(f"\tImporting {game['product']['title']} ({game['product']['id']})")
-        self.finish(game)
-        self.logger.info(f"Imported {game['product']['title']}")
+        self.logger.info(f"\tImporting {self.game['product']['title']}")
+        self.finish()
+        self.logger.info(f"Imported {self.game['product']['title']}")
 
 
-    def finish(self, game):
+    def finish(self):
         # Save manifest to the file
 
         self.config.write(
-            f"manifests/{game['product']['id']}", self.protobuff_manifest, cfg_type=ConfigType.RAW
+            f"manifests/{self.game['product']['id']}", self.protobuff_manifest, cfg_type=ConfigType.RAW
         )
 
         # Save data to installed.json file
@@ -85,7 +98,7 @@ class Importer:
             installed_array = list()
 
         installed_game_data = dict(
-            id=game["product"]["id"], version=self.version, path=self.folder_path
+            id=self.game["product"]["id"], version=self.version, path=self.folder_path
         )
 
         installed_array.append(installed_game_data)
