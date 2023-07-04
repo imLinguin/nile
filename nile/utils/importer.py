@@ -2,8 +2,6 @@ import os
 import logging
 from nile.models import manifest
 from nile.downloading.worker import DownloadWorker
-from nile.downloading.progress import ProgressBar
-import nile.utils.download as dl_utils
 
 class Importer:
     def __init__(self, folder_path, config, library_manager, session_manager, download_manager):
@@ -50,7 +48,6 @@ class Importer:
             self.logger.error("Could not find fuel.json in manifest")
             return
 
-        readable_size = dl_utils.get_readable_size(fuel_json.download_size)
         worker = DownloadWorker(
             fuel_json,
             fuel_path,
