@@ -9,6 +9,7 @@ from nile.downloading import manager
 from nile.utils.config import Config
 from nile.utils.launch import Launcher
 from nile.utils.uninstall import Uninstaller
+from nile.utils.importer import Importer
 from nile.api import authorization, session, library
 from nile import constants, version, codename
 
@@ -236,6 +237,49 @@ class CLI:
         uninstaller = Uninstaller(self.config, self.arguments)
         uninstaller.uninstall()
     
+    def handle_import(self):
+        id = self.arguments.id
+        if not id:
+            self.logger.error("id is required")
+            return
+
+        path = self.arguments.path
+        if not path:
+            self.logger.error("--path is required")
+            return
+        
+        games = self.config.get("library")
+        matching_game = None
+        self.logger.info(f"Searching for {self.arguments.id}")
+        for game in games:
+            if game["product"]["id"] == self.arguments.id:
+                matching_game = game
+                break
+        if not matching_game:
+            self.logger.error("No game match")
+            return
+        self.logger.debug(f"Found {matching_game['product']['title']}")
+
+        self.logger.debug(
+            f"Checking if game {matching_game['product']['title']} id: {matching_game['id']} is already installed"
+        )
+        installed_games = self.config.get("installed")
+
+        if installed_games:
+            for installed_game in installed_games:
+                if installed_game["id"] == matching_game["product"]["id"]:
+                    self.logger.error(
+                        f"{matching_game['product']['title']} is already installed"
+                    )
+                    return
+        self.download_manager = manager.DownloadManager(
+            self.config, self.library_manager, self.session, matching_game
+        )
+        importer = Importer(
+            game, path, self.config, self.library_manager, self.session, self.download_manager
+        )
+        importer.import_game()
+ 
 def main():
     (arguments, unknown_arguments), parser = get_arguments()
     if arguments.version:
@@ -274,6 +318,8 @@ def main():
         cli.handle_launch()
     elif command == "uninstall":
         cli.handle_uninstall()
+    elif command == "import":
+        cli.handle_import()
     else:
         print(
             "You didn't provide any argument, GUI will be there someday, for now here is help"
