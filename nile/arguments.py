@@ -1,3 +1,5 @@
+from os import path
+
 def get_arguments():
     import argparse
 
@@ -78,5 +80,8 @@ def get_arguments():
         "uninstall", help="Uninstall game - deletes game files specified in manifest"
     )
     uninstall_parser.add_argument("id", help="Game id")
+    import_parser = sub_parsers.add_parser("import", help="Import games installed outside nile")
+    import_parser.add_argument("--path", help="Path to the game's installation folder", type=path.abspath)
+    import_parser.add_argument("id", help="The id of the game to import")
 
     return parser.parse_known_args(), parser
