@@ -9,7 +9,7 @@ class Uninstaller:
         self.config = config_manager
         self.arguments = arguments
         self.manifest = None
-        self.logger = logging.getLogger("UNISNTALL")
+        self.logger = logging.getLogger("UNINSTALL")
 
     def uninstall(self):
         game_id = self.arguments.id
