@@ -47,10 +47,30 @@ class Launcher:
         self.logger = logging.getLogger("LAUNCHER")
         self.unknown_arguments = unknown_arguments
 
+
+        self.env = self.sanitize_environment()
         self.bottles_bin = self._get_bottles_bin()
 
     def _get_installed_data(self):
         return self.config.get("installed")
+
+    def sanitize_environment(self) -> dict:
+        # For pyinstaller environment - avoid shadowing libraries for subprocesses
+        # /tmp/hash/nile/utils/launch.py -> /tmp/hash/nile/utils -> /tmp/hash
+        bundle_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+        env = os.environ.copy()
+
+        ld_library = env.get("LD_LIBRARY_PATH")
+        if ld_library:
+            splitted = ld_library.split(":")
+            try:
+                splitted.remove(bundle_dir)
+            except ValueError:
+                pass
+            env.update({"LD_LIBRARY_PATH": ":".join(splitted)})
+        
+        return env
+
 
     def _get_bottles_bin(self):
         os_path = shutil.which("bottles-cli")
@@ -59,7 +79,7 @@ class Launcher:
             return [os_path, "run"]
         elif flatpak_path:
             process = subprocess.run(
-                ["flatpak", "info", "com.usebottles.bottles"], stdout=subprocess.DEVNULL
+                ["flatpak", "info", "com.usebottles.bottles"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=self.env
             )
 
             if process.returncode != 1:
@@ -98,7 +118,6 @@ class Launcher:
         )
 
         command = list()
-        environment = os.environ.copy()
         if sys.platform == "win32":
             command.append(instruction.command)
             command.extend(instruction.arguments)
@@ -108,7 +127,7 @@ class Launcher:
                 command.extend(splited_wrapper)
             if not self.dont_use_wine and not self.bottle:
                 if self.wine_prefix:
-                    environment.update({"WINEPREFIX": self.wine_prefix})
+                    self.env.update({"WINEPREFIX": self.wine_prefix})
                 command.append(self.wine_bin)
                 command.append(instruction.command)
                 command.extend(instruction.arguments)
@@ -128,7 +147,7 @@ class Launcher:
             if result == -1:
                 print("PR_SET_CHILD_SUBREAPER is not supported by your kernel (Linux 3.4 and above)")
 
-            process = subprocess.Popen(command, cwd=game_path, env=environment)
+            process = subprocess.Popen(command, cwd=game_path, env=self.env)
             process_pid = process.pid
 
             def iterate_processes():
@@ -194,7 +213,7 @@ class Launcher:
 
 
         else:
-            process = subprocess.Popen(command, cwd=game_path, env=environment)
+            process = subprocess.Popen(command, cwd=game_path, env=self.env)
             status = process.wait()
 
         sys.exit(status)
