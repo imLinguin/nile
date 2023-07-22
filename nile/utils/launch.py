@@ -55,10 +55,12 @@ class Launcher:
         return self.config.get("installed")
 
     def sanitize_environment(self) -> dict:
+        env = os.environ.copy()
         # For pyinstaller environment - avoid shadowing libraries for subprocesses
         # /tmp/hash/nile/utils/launch.py -> /tmp/hash/nile/utils -> /tmp/hash
-        bundle_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
-        env = os.environ.copy()
+        if not getattr(sys, 'frozen', False) and not hasattr(sys, '_MEIPASS'):
+            return env
+        bundle_dir = sys._MEIPASS
 
         ld_library = env.get("LD_LIBRARY_PATH")
         if ld_library:
