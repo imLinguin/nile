@@ -27,8 +27,6 @@ class CLI:
         self.arguments = arguments
         self.logger = logger
         self.unknown_arguments = unknown_arguments
-        if self.auth_manager.is_logged_in() and self.auth_manager.is_token_expired():
-            self.auth_manager.refresh_token()
 
         self.__migrate_old_ids()
 
@@ -58,6 +56,8 @@ class CLI:
                 self.logger.error("You are already logged in")
                 return False
         elif self.arguments.logout:
+            if self.auth_manager.is_logged_in() and self.auth_manager.is_token_expired():
+                self.auth_manager.refresh_token()
             self.auth_manager.logout()
             return False
         self.logger.error("Specify auth action, use --help")
@@ -129,6 +129,8 @@ class CLI:
             if not self.auth_manager.is_logged_in():
                 self.logger.error("User not logged in")
                 sys.exit(1)
+            if self.auth_manager.is_logged_in() and self.auth_manager.is_token_expired():
+                self.auth_manager.refresh_token()
             self.library_manager.sync()
 
     def handle_install(self):
@@ -142,6 +144,8 @@ class CLI:
         if not matching_game:
             self.logger.error("Couldn't find what you are looking for")
             return
+        if self.auth_manager.is_logged_in() and self.auth_manager.is_token_expired():
+            self.auth_manager.refresh_token()
         self.logger.info(f"Found: {matching_game['product']['title']}")
         self.download_manager = manager.DownloadManager(
             self.config, self.library_manager, self.session, matching_game
@@ -164,6 +168,9 @@ class CLI:
             self.logger.error("No games installed")
             return
 
+        if self.auth_manager.is_logged_in() and self.auth_manager.is_token_expired():
+            self.auth_manager.refresh_token()
+
         # Prepare array of game ids
         game_ids = dict()
         for game in games:
@@ -173,7 +180,7 @@ class CLI:
         self.logger.debug(
             f"Checking for updates for {list(game_ids.keys())}, count: {len(game_ids)}"
         )
-        versions = self.library_manager.get_versions(list(game_ids.keys()))
+        versions = self.library_manager.get_versions(list(game_ids.keys())) or []
 
         updateable = list()
 
@@ -248,6 +255,9 @@ class CLI:
             self.logger.error("--path is required")
             return
         
+        if self.auth_manager.is_logged_in() and self.auth_manager.is_token_expired():
+            self.auth_manager.refresh_token()
+
         games = self.config.get("library")
         matching_game = None
         self.logger.info(f"Searching for {self.arguments.id}")
@@ -276,7 +286,7 @@ class CLI:
             self.config, self.library_manager, self.session, matching_game
         )
         importer = Importer(
-            game, path, self.config, self.library_manager, self.session, self.download_manager
+            matching_game, path, self.config, self.library_manager, self.session, self.download_manager
         )
         importer.import_game()
  

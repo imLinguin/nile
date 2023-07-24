@@ -1,4 +1,5 @@
 import webbrowser
+import requests
 from urllib.parse import urlencode, urlparse, parse_qs
 import nile.constants as constants
 import logging
@@ -127,10 +128,16 @@ class AuthenticationManager:
             "app_name": "AGSLauncher for Windows",
             "app_version": "1.0.0",
         }
-        response = self.session_manager.session.post(url, json=request_data)
+        try:
+
+            response = self.session_manager.session.post(url, json=request_data)
+        except requests.exceptions.ConnectionError as e:
+            self.logger.error(f"Failed to refresh the token {e}")
+            pass
+            return None
 
         if not response.ok:
-            self.logger.error("Failed to refresh the token")
+            self.logger.error(f"Failed to refresh the token {response}")
             return None
 
         res_json = response.json()
