@@ -28,7 +28,7 @@ class LaunchInstruction:
         json_data = json5.loads(raw_data)
         stream.close()
         instruction.version = json_data["SchemaVersion"]
-        instruction.command = os.path.join(game_path, json_data["Main"]["Command"])
+        instruction.command = os.path.join(game_path, json_data["Main"]["Command"].replace("\\", os.sep))
         instruction.arguments = json_data["Main"].get("Args") or list()
         instruction.arguments.extend(unknown_arguments)
         return instruction
@@ -72,6 +72,19 @@ class Launcher:
             env.update({"LD_LIBRARY_PATH": ":".join(splitted)})
         
         return env
+
+
+    def get_scummvm_command(self):
+        os_path = shutil.which("scummvm")
+        output_command = []
+        if not os_path:
+            flatpak_exists = subprocess.run(
+                ["flatpak", "info", "org.scummvm.ScummVM"], stdout=subprocess.DEVNULL, env=self.env).returncode == 0
+            if flatpak_exists:
+                output_command = ["flatpak", "run", "org.scummvm.ScummVM"]
+        else:
+            output_command = [os_path]
+        return output_command
 
 
     def _get_bottles_bin(self):
@@ -120,23 +133,29 @@ class Launcher:
         )
 
         command = list()
+        if self.wrapper:
+            splited_wrapper = shlex.split(self.wrapper)
+            command.extend(splited_wrapper)
         if sys.platform == "win32":
             command.append(instruction.command)
             command.extend(instruction.arguments)
         else:
-            if self.wrapper:
-                splited_wrapper = shlex.split(self.wrapper)
-                command.extend(splited_wrapper)
-            if not self.dont_use_wine and not self.bottle:
-                if self.wine_prefix:
-                    self.env.update({"WINEPREFIX": self.wine_prefix})
-                command.append(self.wine_bin)
-                command.append(instruction.command)
+            scummvm_command = self.get_scummvm_command()
+            if instruction.command.lower().endswith("scummvm.exe") and len(scummvm_command) > 0:
+                self.logger.info(f"Using native scummvm {scummvm_command}")
+                command.extend(scummvm_command)
                 command.extend(instruction.arguments)
-            elif self.bottle and self.bottles_bin:
-                command = self.create_bottles_command(
-                    instruction.command, arguments=instruction.arguments
-                )
+            else:
+                if not self.dont_use_wine and not self.bottle:
+                    if self.wine_prefix:
+                        self.env.update({"WINEPREFIX": self.wine_prefix})
+                    command.append(self.wine_bin)
+                    command.append(instruction.command)
+                    command.extend(instruction.arguments)
+                elif self.bottle and self.bottles_bin:
+                    command = self.create_bottles_command(
+                        instruction.command, arguments=instruction.arguments
+                    )
         self.logger.info("Launching")
         
         status = 0
