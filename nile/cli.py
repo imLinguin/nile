@@ -32,8 +32,8 @@ class CLI:
 
     # Function that migrates installed and manifests from old id to product.id
     def __migrate_old_ids(self):
-        installed = self.config.get("installed")
-        library = self.config.get("library")
+        installed = self.config.get("installed") or []
+        library = self.config.get("library") or []
         if installed:
             for installed_game in installed:
                 old_id = installed_game['id']
