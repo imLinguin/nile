@@ -46,6 +46,7 @@ class Launcher:
         self.dont_use_wine = arguments.dont_use_wine
         self.logger = logging.getLogger("LAUNCHER")
         self.unknown_arguments = unknown_arguments
+        self.flatpak_installed = shutil.which("flatpak")
 
 
         self.env = self.sanitize_environment()
@@ -77,29 +78,28 @@ class Launcher:
     def get_scummvm_command(self):
         os_path = shutil.which("scummvm")
         output_command = []
-        if not os_path:
+        if not os_path and self.flatpak_installed:
             flatpak_exists = subprocess.run(
                 ["flatpak", "info", "org.scummvm.ScummVM"], stdout=subprocess.DEVNULL, env=self.env).returncode == 0
             if flatpak_exists:
                 output_command = ["flatpak", "run", "org.scummvm.ScummVM"]
-        else:
+        elif os_path:
             output_command = [os_path]
         return output_command
 
 
     def _get_bottles_bin(self):
         os_path = shutil.which("bottles-cli")
-        flatpak_path = shutil.which("flatpak")
         if os_path:
             return [os_path, "run"]
-        elif flatpak_path:
+        elif self.flatpak_installed:
             process = subprocess.run(
                 ["flatpak", "info", "com.usebottles.bottles"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=self.env
             )
 
             if process.returncode != 1:
                 return [
-                    flatpak_path,
+                    self.flatpak_installed,
                     "run",
                     "--command=bottles-cli",
                     "com.usebottles.bottles",
