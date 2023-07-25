@@ -146,8 +146,7 @@ class DownloadManager:
             sleep(0.5)
 
         self.progress_bar.completed = True
-        if not force_verifying:
-            self.finish()
+        self.finish(force_verifying)
 
     def info(self, json_format=False):
         self.manifest = self.get_manifest()
@@ -169,7 +168,7 @@ class DownloadManager:
                 f"Download size: {round(readable_size[0],2)}{readable_size[1]}"
             )
 
-    def finish(self):
+    def finish(self, verifying):
         # Save manifest to the file
 
         self.config.write(
@@ -182,8 +181,19 @@ class DownloadManager:
         if not installed_array:
             installed_array = list()
 
+        total_size = sum(f.size for f in self.manifest.packages[0].files)
+
+        # If we verify we don't want to overwrite version or path
+        if verifying:
+            for game in installed_array:
+                if game["id"] == self.game["product"]["id"]:
+                    game.update({"size": total_size})
+                    break
+
+            self.config.write("installed", installed_array)
+            return
         installed_game_data = dict(
-            id=self.game["product"]["id"], version=self.version, path=self.install_path
+            id=self.game["product"]["id"], version=self.version, path=self.install_path, size=total_size
         )
         updated = False
         # Swap existing entry in case of updating etc..
