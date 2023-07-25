@@ -1,6 +1,4 @@
-import requests
 import os
-import hashlib
 import shutil
 from nile.utils.download import calculate_checksum, get_hashing_function
 from nile.models.patcher import Patcher
