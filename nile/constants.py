@@ -17,7 +17,7 @@ CONFIG_PATH = os.path.join(
     os.getenv("XDG_CONFIG_HOME", user_config_dir(roaming=True)), "nile"
 )
 
-ILLEGAL_FNAME_CHARS = ["?", ":", '"', "*", "<", ">", "|", '\\', '/']
+ILLEGAL_FNAME_CHARS = [":","/","*","?","<",">","\\","&","|","%","$","@","`","!","™","'","\"","®"]
 
 SHCOLORS = {
     "clear": "\033[0m",
