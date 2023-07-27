@@ -156,6 +156,10 @@ class Launcher:
                     command = self.create_bottles_command(
                         instruction.command, arguments=instruction.arguments
                     )
+                else: 
+                    command.append(instruction.command)
+                    command.extend(instruction.arguments)
+
         self.logger.info("Launching")
         
         status = 0
