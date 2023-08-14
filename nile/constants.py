@@ -14,7 +14,7 @@ DEFAULT_INSTALL_PATH = os.path.join(
 )
 
 CONFIG_PATH = os.path.join(
-    os.getenv("XDG_CONFIG_HOME", user_config_dir(roaming=True)), "nile"
+    os.getenv("NILE_CONFIG_PATH", os.getenv("XDG_CONFIG_HOME", user_config_dir(roaming=True))), "nile"
 )
 
 ILLEGAL_FNAME_CHARS = ["?", ":", '"', "*", "<", ">", "|"]
