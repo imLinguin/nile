@@ -165,6 +165,10 @@ class CLI:
         games = self.config.get("library")
 
         if not installed_array:
+            if self.arguments.json:
+                # An empty string is not valid JSON, so create an empty but
+                # valid JSON string instead.
+                print(json.dumps(list()))
             self.logger.error("No games installed")
             return
 
