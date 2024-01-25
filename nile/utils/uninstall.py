@@ -27,10 +27,13 @@ class Uninstaller:
         # Load manifest
         self.manifest = self.load_installed_manifest(game_id)
 
-        files = self.manifest.packages[0].files
-        for f in files:
+        for f in self.manifest.packages[0].files:
             # Manifest can contain both kind of slash as a separator on the same entry
-            os.remove(os.path.join(installed_info["path"], f.path.replace("\\", os.sep).replace("/", os.sep)))
+            filepath = os.path.join(installed_info["path"], f.path.replace("\\", os.sep).replace("/", os.sep))
+            try:
+                os.remove(filepath)
+            except FileNotFoundError:
+                self.logger.warning(f'Missing file "{filepath}" - skipping')
 
         # Remove empty directories under the installation directory
         for dirpath, dirnames, filenames in os.walk(installed_info["path"], topdown=False):
