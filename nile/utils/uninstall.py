@@ -32,6 +32,17 @@ class Uninstaller:
             # Manifest can contain both kind of slash as a separator on the same entry
             os.remove(os.path.join(installed_info["path"], f.path.replace("\\", os.sep).replace("/", os.sep)))
 
+        # Remove empty directories under the installation directory
+        for dirpath, dirnames, filenames in os.walk(installed_info["path"], topdown=False):
+            for dirname in dirnames:
+                full_path = os.path.join(dirpath, dirname)
+                if not os.listdir(full_path):
+                    os.rmdir(full_path)
+
+        # Remove installation directory if it's empty
+        if not os.listdir(installed_info["path"]):
+            os.rmdir(installed_info["path"])
+
         self.config.write("installed", installed_games)
         self.config.remove(f"manifests/{game_id}", cfg_type=ConfigType.RAW)
         self.logger.info("Game removed successfully")
