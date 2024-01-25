@@ -29,7 +29,8 @@ class Uninstaller:
 
         files = self.manifest.packages[0].files
         for f in files:
-            os.remove(os.path.join(installed_info["path"], f.path.replace("\\", "/")))
+            # Manifest can contain both kind of slash as a separator on the same entry
+            os.remove(os.path.join(installed_info["path"], f.path.replace("\\", os.sep).replace("/", os.sep)))
 
         self.config.write("installed", installed_games)
         self.config.remove(f"manifests/{game_id}", cfg_type=ConfigType.RAW)
