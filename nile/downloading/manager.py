@@ -110,6 +110,7 @@ class DownloadManager:
         self.logger.debug(f"Number of files {len(patchmanifest.files)}")
         if len(patchmanifest.files) == 0:
             self.logger.info("Game is up to date")
+            self.finish(False)
             return
         total_size = sum(f.download_size for f in patchmanifest.files)
         self.info()
