@@ -75,13 +75,13 @@ class Importer:
         self.logger.info(f"\tVerifying local files")
         if not self.verify_integrity():
             self.logger.error(
-                f"There are missing or corrupted files for {self.game['product']['title']}. Failed import."
+                f"There are missing or corrupted files for {self.game['product'].get('title')}. Failed import."
             )
             return
 
-        self.logger.info(f"\tImporting {self.game['product']['title']}")
+        self.logger.info(f"\tImporting {self.game['product'].get('title')}")
         self.finish()
-        self.logger.info(f"Imported {self.game['product']['title']}")
+        self.logger.info(f"Imported {self.game['product'].get('title')}")
 
 
     def finish(self):

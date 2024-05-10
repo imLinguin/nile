@@ -146,7 +146,7 @@ class CLI:
             return
         if self.auth_manager.is_logged_in() and self.auth_manager.is_token_expired():
             self.auth_manager.refresh_token()
-        self.logger.info(f"Found: {matching_game['product']['title']}")
+        self.logger.info(f"Found: {matching_game['product'].get('title')}")
         self.download_manager = manager.DownloadManager(
             self.config, self.library_manager, self.session, matching_game
         )
@@ -205,7 +205,7 @@ class CLI:
         print("Games with updates:")
         for game in games:
             if game["product"]["id"] in updateable:
-                print(game["product"]["title"])
+                print(game["product"].get("title"), game["product"]["id"])
         print(f"NUMBER OF GAMES: {len(updateable)}")
 
     def handle_launch(self):
@@ -219,10 +219,10 @@ class CLI:
         if not matching_game:
             self.logger.error("No game match")
             return
-        self.logger.debug(f"Found {matching_game['product']['title']}")
+        self.logger.debug(f"Found {matching_game['product'].get('title')}")
 
         self.logger.debug(
-            f"Checking if game {matching_game['product']['title']} id: {matching_game['id']} is installed"
+            f"Checking if game {matching_game['product'].get('title')} id: {matching_game['id']} is installed"
         )
         installed_games = self.config.get("installed")
 
@@ -272,10 +272,10 @@ class CLI:
         if not matching_game:
             self.logger.error("No game match")
             return
-        self.logger.debug(f"Found {matching_game['product']['title']}")
+        self.logger.debug(f"Found {matching_game['product'].get('title')}")
 
         self.logger.debug(
-            f"Checking if game {matching_game['product']['title']} id: {matching_game['id']} is already installed"
+            f"Checking if game {matching_game['product'].get('title')} id: {matching_game['id']} is already installed"
         )
         installed_games = self.config.get("installed")
 
@@ -283,7 +283,7 @@ class CLI:
             for installed_game in installed_games:
                 if installed_game["id"] == matching_game["product"]["id"]:
                     self.logger.error(
-                        f"{matching_game['product']['title']} is already installed"
+                        f"{matching_game['product'].get('title')} is already installed"
                     )
                     return
         self.download_manager = manager.DownloadManager(

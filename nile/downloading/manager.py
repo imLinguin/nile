@@ -75,12 +75,12 @@ class DownloadManager:
         else:
             game_location = os.path.join(
                 base_install_path,
-                dl_utils.save_directory_name(self.game["product"]["title"]),
+                self.game["product"]["id"],
             )
         if not base_install_path and not install_path:
             game_location = os.path.join(
                 constants.DEFAULT_INSTALL_PATH,
-                dl_utils.save_directory_name(self.game["product"]["title"]),
+                self.game["product"]["id"],
             )
         saved_location = self.library_manager.get_installed_game_info(
             self.game["id"]
