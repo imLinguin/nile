@@ -140,10 +140,6 @@ class Launcher:
         fuel_dir = os.path.join(sdk_path, 'Legacy')
         amazon_sdk = os.path.join(sdk_path, 'AmazonGamesSDK')
 
-        if sys.platform != 'win32':
-            fuel_dir = 'Z:' + fuel_dir
-            amazon_sdk = 'Z:' + amazon_sdk 
-
         self.env.update({
             'FUEL_DIR': fuel_dir,
             'AMAZON_GAMES_SDK_PATH': amazon_sdk,
