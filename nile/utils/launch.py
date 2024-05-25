@@ -8,6 +8,7 @@ import json5
 import time
 import signal
 import ctypes
+from nile.constants import CONFIG_PATH
 from nile.utils.process import Process
 
 class NoMoreChildren(Exception):
@@ -35,8 +36,9 @@ class LaunchInstruction:
 
 
 class Launcher:
-    def __init__(self, config_manager, arguments, unknown_arguments):
+    def __init__(self, config_manager, arguments, unknown_arguments, game):
         self.config = config_manager
+        self.game = game
         self.bottle = arguments.bottle
         self.wrapper = arguments.wrapper
         self.wine_prefix = arguments.wine_prefix
@@ -131,6 +133,26 @@ class Launcher:
         instruction = LaunchInstruction.parse(
             game_path, fuel_path, self.unknown_arguments
         )
+
+        display_name = self.config.get('user', 'extensions//customer_info//given_name') or ''
+        
+        sdk_path = os.path.join(CONFIG_PATH, 'SDK', 'Amazon Games Services')
+        fuel_dir = os.path.join(sdk_path, 'Legacy')
+        amazon_sdk = os.path.join(sdk_path, 'AmazonGamesSDK')
+
+        if sys.platform != 'win32':
+            fuel_dir = 'Z:' + fuel_dir
+            amazon_sdk = 'Z:' + amazon_sdk 
+
+        self.env.update({
+            'FUEL_DIR': fuel_dir,
+            'AMAZON_GAMES_SDK_PATH': amazon_sdk,
+            'AMAZON_GAMES_FUEL_ENTITLEMENT_ID': self.game['id'],
+            'AMAZON_GAMES_FUEL_PRODUCT_SKU': self.game['product']['sku'],
+            'AMAZON_GAMES_FUEL_DISPLAY_NAME': display_name
+            })
+
+        print(self.env)
 
         command = list()
         if self.wrapper:

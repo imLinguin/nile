@@ -10,7 +10,7 @@ from nile.utils.config import Config
 from nile.utils.launch import Launcher
 from nile.utils.uninstall import Uninstaller
 from nile.utils.importer import Importer
-from nile.api import authorization, session, library
+from nile.api import authorization, session, library, self_update
 from nile import constants, version, codename
 
 
@@ -28,6 +28,8 @@ class CLI:
         self.logger = logger
         self.unknown_arguments = unknown_arguments
 
+        self.self_update = self_update.SelfUpdateHandler(self.session, self.library_manager)
+        self.self_update.get_sdk()
         self.__migrate_old_ids()
 
     # Function that migrates installed and manifests from old id to product.id
@@ -240,7 +242,7 @@ class CLI:
             self.logger.error("Game is not installed")
             return
 
-        launcher = Launcher(self.config, self.arguments, self.unknown_arguments)
+        launcher = Launcher(self.config, self.arguments, self.unknown_arguments, matching_game)
 
         launcher.start(found["path"])
 
