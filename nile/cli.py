@@ -29,7 +29,11 @@ class CLI:
         self.unknown_arguments = unknown_arguments
 
         self.self_update = self_update.SelfUpdateHandler(self.session, self.library_manager)
-        self.self_update.get_sdk()
+        try:
+            self.self_update.get_sdk()
+        except Exception:
+            self.logger.warning("There was an error getting sdk")
+
         self.__migrate_old_ids()
 
     # Function that migrates installed and manifests from old id to product.id

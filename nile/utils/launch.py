@@ -148,7 +148,6 @@ class Launcher:
             'AMAZON_GAMES_FUEL_DISPLAY_NAME': display_name
             })
 
-        print(self.env)
 
         command = list()
         if self.wrapper:
