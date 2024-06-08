@@ -7,5 +7,5 @@
 # ##   ###   mm##mm   ##mmmmmm  ##mmmmmm 
 # ""   """   """"""   """"""""  """""""" 
 
-version = "1.0.3"
-codename = "Jonathan Joestar"
+version = "1.1.0"
+codename = "Will A. Zeppeli"
