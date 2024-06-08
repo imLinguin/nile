@@ -116,7 +116,7 @@ class ManifestComparison:
                     continue
 
                 if f.hash.value != old_files[f.path].hash.value:
-                    comparison.updated.append((old_files[f.path], f))
+                    comparison.new.append(f)
                 # delete files that are in old_files and new manifest from this dict
                 del old_files[f.path]
 

@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import urllib.parse
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import cpu_count
 from time import sleep
@@ -29,9 +30,14 @@ class DownloadManager:
         game_manifest = self.library_manager.get_game_manifest(self.game["id"])
         self.logger.debug("Got download manifest")
         self.version = game_manifest["versionId"]
-        downloadUrl = game_manifest["downloadUrls"][0]
+        self.downloadUrl = game_manifest["downloadUrl"]
+
+        url = urllib.parse.urlparse(self.downloadUrl)
+        url = url._replace(path=url.path + '/manifest.proto')
+
+        url = urllib.parse.urlunparse(url)
         self.logger.debug("Getting protobuff manifest")
-        response = self.session.session.get(downloadUrl)
+        response = self.session.session.get(url)
         r_manifest = manifest.Manifest()
         self.logger.debug("Parsing manifest data")
         r_manifest.parse(response.content)
@@ -70,17 +76,19 @@ class DownloadManager:
 
     def download(self, force_verifying=False, base_install_path="", install_path=""):
         game_location = base_install_path
+        directory_name = self.game['product'].get("title") or self.game['product']['id']
+        directory_name = dl_utils.save_directory_name(directory_name)
         if not base_install_path:
             game_location = install_path
         else:
             game_location = os.path.join(
                 base_install_path,
-                self.game["product"]["id"],
+                directory_name,
             )
         if not base_install_path and not install_path:
             game_location = os.path.join(
                 constants.DEFAULT_INSTALL_PATH,
-                self.game["product"]["id"],
+                directory_name,
             )
         saved_location = self.library_manager.get_installed_game_info(
             self.game["id"]
@@ -106,13 +114,11 @@ class DownloadManager:
             self.manifest, self.old_manifest
         )
 
-        patchmanifest = self.get_patchmanifest(comparison)
-        self.logger.debug(f"Number of files {len(patchmanifest.files)}")
-        if len(patchmanifest.files) == 0:
+        if len(comparison.new) == 0:
             self.logger.info("Game is up to date")
             self.finish(False)
             return
-        total_size = sum(f.download_size for f in patchmanifest.files)
+        total_size = sum(f.size for f in comparison.new)
         self.info()
 
         if not dl_utils.check_available_space(total_size, game_location):
@@ -124,14 +130,18 @@ class DownloadManager:
         self.progress_bar = ProgressBar(total_size, f"{round(readable_size[0],2)}{readable_size[1]}")
         self.progress_bar.start()
 
-        for directory in patchmanifest.dirs:
-            os.makedirs(
-                os.path.join(game_location, directory.replace("\\", os.sep)),
-                exist_ok=True,
+        self.thpool = ThreadPoolExecutor(max_workers=6)
+        for f in comparison.new:
+            file_path = os.path.join(
+                game_location, f.path.replace("\\", "/")
             )
-        self.thpool = ThreadPoolExecutor(max_workers=cpu_count())
-        for f in patchmanifest.files:
-            worker = DownloadWorker(f, game_location, self.session, self.progress_bar)
+            dir, _ = os.path.split(file_path)
+            if not os.path.exists(dir):
+                os.makedirs(dir)
+            url = urllib.parse.urlparse(self.downloadUrl)
+            url = url._replace(path=url.path + '/files/' + f.hash.value)
+            url = urllib.parse.urlunparse(url)
+            worker = DownloadWorker(url, f, game_location, self.session, self.progress_bar)
             # worker.execute()
             self.threads.append(self.thpool.submit(worker.execute))
 
@@ -145,6 +155,11 @@ class DownloadManager:
                 break
             # self.progressbar.print()
             sleep(0.5)
+
+        for f in comparison.removed:
+            file_path = os.path.join(game_location, f.path.replace("\\", "/"))
+            if os.path.exists(file_path):
+                os.remove(file_path)
 
         self.progress_bar.completed = True
         self.finish(force_verifying)

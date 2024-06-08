@@ -3,7 +3,10 @@ from nile.proto import sds_proto2_pb2
 import logging
 import uuid
 import json
+import time
 import hashlib
+
+from nile.utils.config import ConfigType
 
 
 class Library:
@@ -16,8 +19,7 @@ class Library:
         headers = {
             "X-Amz-Target": target,
             "x-amzn-token": token,
-            "User-Agent": "com.amazon.agslauncher.win/2.1.7437.6",
-            "UserAgent": "com.amazon.agslauncher.win/2.1.7437.6",
+            "UserAgent": "com.amazon.agslauncher.win/3.0.9202.1",
             "Content-Type": "application/json",
             "Content-Encoding": "amz-1.0",
         }
@@ -29,12 +31,29 @@ class Library:
 
         return response
 
-    def _get_sync_request_data(self, serial, nextToken=None):
+    def request_distribution(self, target, token, body):
+        headers = {
+            "X-Amz-Target": target,
+            "x-amzn-token": token,
+            "UserAgent": "com.amazon.agslauncher.win/3.0.9202.1",
+            "Content-Type": "application/json",
+            "Content-Encoding": "amz-1.0",
+        }
+        response = self.session_manager.session.post(
+            constants.AMAZON_GAMING_DISTRIBUTION,
+            headers=headers,
+            json=body,
+        )
+
+        return response
+
+
+    def _get_sync_request_data(self, serial, next_token=None, sync_point=None):
         request_data = {
             "Operation": "GetEntitlementsV2",
             "clientId": "Sonic",
-            "syncPoint": None,
-            "nextToken": nextToken,
+            "syncPoint": sync_point,
+            "nextToken": next_token,
             "maxResults": 50,
             "productIdFilter": None,
             "keyId": "d5dc8b8b-86c8-4fc4-ae93-18c0def5314d",
@@ -46,6 +65,15 @@ class Library:
     def sync(self):
         self.logger.info("Synchronizing library")
 
+        sync_point = self.config.get("syncpoint", cfg_type=ConfigType.RAW)
+
+        if sync_point is not None:
+            if not sync_point:
+                sync_point = None
+            else:
+                sync_point = float(sync_point.decode())
+                self.logger.debug(f"Using sync_point {sync_point}")
+
         token, serial = self.config.get(
             "user",
             [
@@ -54,9 +82,24 @@ class Library:
             ],
         )
         games = list()
-        nextToken = None
+        if sync_point:
+            cached_games = self.config.get('library')
+            if cached_games:
+                games.extend(cached_games)
+            if len(games) == 0:
+                sync_point = None
+            else:
+                # If there are games without titles refresh all metadata
+                for game in games:
+                    if not game['product'].get('title'):
+                        sync_point = None
+                        games = []
+                        self.logger.warning("Found game without title locally, ignoring sync_point")
+                        break
+
+        next_token = None
         while True:
-            request_data = self._get_sync_request_data(serial, nextToken)
+            request_data = self._get_sync_request_data(serial, next_token, sync_point)
 
             response = self.request_sds(
                 "com.amazonaws.gearbox.softwaredistribution.service.model.SoftwareDistributionService.GetEntitlementsV2",
@@ -70,7 +113,7 @@ class Library:
                 break
             else:
                 self.logger.info("Got next token in response, making next request")
-                nextToken = json_data["nextToken"]
+                next_token = json_data["nextToken"]
 
             if not response.ok:
                 self.logger.error("There was an error syncing library")
@@ -83,20 +126,19 @@ class Library:
                 games_dict[game["product"]["id"]] = game
 
         self.config.write("library", list(games_dict.values()))
+        self.config.write("syncpoint", str(time.time()).encode(), cfg_type=ConfigType.RAW)
         self.logger.info("Successfully synced the library")
 
     def get_game_manifest(self, id: str):
         token = self.config.get("user", "tokens//bearer//access_token")
 
         request_data = {
-            "adgGoodId": id,
-            "previousVersionId": None,
-            "keyId": "d5dc8b8b-86c8-4fc4-ae93-18c0def5314d",
-            "Operation": "GetDownloadManifestV3",
+            "entitlementId": id,
+            "Operation": "GetGameDownload",
         }
 
-        response = self.request_sds(
-            "com.amazonaws.gearbox.softwaredistribution.service.model.SoftwareDistributionService.GetDownloadManifestV3",
+        response = self.request_distribution(
+            "com.amazon.animusdistributionservice.external.AnimusDistributionService.GetGameDownload",
             token,
             request_data,
         )
@@ -139,10 +181,10 @@ class Library:
     def get_versions(self, game_ids):
         token = self.config.get("user", "tokens//bearer//access_token")
 
-        request_data = {"adgProductIds": game_ids, "Operation": "GetVersions"}
+        request_data = {"adgProductIds": game_ids, "Operation": "GetLiveVersions"}
 
-        response = self.request_sds(
-            "com.amazonaws.gearbox.softwaredistribution.service.model.SoftwareDistributionService.GetVersions",
+        response = self.request_distribution(
+            "com.amazon.animusdistributionservice.external.AnimusDistributionService.GetLiveVersionIds",
             token,
             request_data,
         )
@@ -154,7 +196,7 @@ class Library:
 
         response_json = response.json()
 
-        return response_json["versions"]
+        return response_json["adgProductIdToVersionIdMap"]
 
     def get_installed_game_info(self, id):
         installed_array = self.config.get("installed")

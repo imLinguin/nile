@@ -194,9 +194,10 @@ class CLI:
 
         updateable = list()
 
-        for version in versions:
-            if version["versionId"] != game_ids[version["adgProductId"]]["version"]:
-                updateable.append(version["adgProductId"])
+        for product_id, game in game_ids.items():
+            version = versions[product_id]
+            if version != game["version"]:
+                updateable.append(product_id)
         self.logger.debug(f"Updateable games: {updateable}")
         if self.arguments.json:
             print(json.dumps(updateable))

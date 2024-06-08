@@ -1,19 +1,21 @@
 import os
 import shutil
 from nile.utils.download import calculate_checksum, get_hashing_function
-from nile.models.patcher import Patcher
+#from nile.models.patcher import Patcher
+from nile.models.manifest import File
 
 
 class DownloadWorker:
-    def __init__(self, file_data, path, session_manager, progress):
-        self.data = file_data
+    def __init__(self, download_url, file_data, path, session_manager, progress):
+        self.download_url = download_url
+        self.data: File  = file_data
         self.path = path
         self.session = session_manager.session
         self.progress = progress
 
     def execute(self):
         file_path = os.path.join(
-            self.path, self.data.path.replace("\\", os.sep), self.data.filename
+            self.path, self.data.path.replace("\\", os.sep)
         )
         if os.path.exists(file_path):
             if self.verify_downloaded_file(file_path):
@@ -23,7 +25,7 @@ class DownloadWorker:
             print(f"Checksum error for {file_path}")
 
     def verify_downloaded_file(self, path) -> bool:
-        return self.data.target_hash == calculate_checksum(get_hashing_function(self.data.target_hash_type), path)
+        return self.data.hash.value == calculate_checksum(get_hashing_function(self.data.hash.algorithm), path)
 
     def get_file(self, path):
         if os.path.exists(path + ".patch"):
@@ -31,7 +33,7 @@ class DownloadWorker:
 
         with open(path + ".patch", "ab") as f:
             response = self.session.get(
-                self.data.urls[0], stream=True, allow_redirects=True
+                self.download_url, stream=True, allow_redirects=True
             )
             total = response.headers.get("Content-Length")
             if total is None:
@@ -48,6 +50,8 @@ class DownloadWorker:
                     self.progress.update_bytes_written(written)
             f.close()
 
+        shutil.move(path + ".patch", path)
+        """
         if self.data.patch_hash:
             patch_sum = calculate_checksum(
                 get_hashing_function(self.data.patch_hash_type), path + ".patch"
@@ -69,4 +73,4 @@ class DownloadWorker:
             ):
                 shutil.move(path + ".new", path)
         else:
-            shutil.move(path + ".patch", path)
+        """
