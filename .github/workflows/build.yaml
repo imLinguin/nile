@@ -7,7 +7,7 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix:
-        os: [ubuntu-20.04, macos-latest, windows-latest]
+        os: [ubuntu-20.04, macos-12, macos-14, windows-2022]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -35,5 +35,5 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: nile-${{ runner.os }}
+        name: nile-${{ matrix.os }}
         path: dist/*
