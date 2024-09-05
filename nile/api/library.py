@@ -39,8 +39,11 @@ class Library:
             "Content-Type": "application/json",
             "Content-Encoding": "amz-1.0",
         }
+        url = (constants.AMAZON_GAMING_DISTRIBUTION_ENTITLEMENTS 
+               if target.endswith(".GetEntitlements") 
+               else constants.AMAZON_GAMING_DISTRIBUTION)
         response = self.session_manager.session.post(
-            constants.AMAZON_GAMING_DISTRIBUTION,
+            url,
             headers=headers,
             json=body,
         )
@@ -50,7 +53,7 @@ class Library:
 
     def _get_sync_request_data(self, serial, next_token=None, sync_point=None):
         request_data = {
-            "Operation": "GetEntitlementsV2",
+            "Operation": "GetEntitlements",
             "clientId": "Sonic",
             "syncPoint": sync_point,
             "nextToken": next_token,
@@ -101,8 +104,8 @@ class Library:
         while True:
             request_data = self._get_sync_request_data(serial, next_token, sync_point)
 
-            response = self.request_sds(
-                "com.amazonaws.gearbox.softwaredistribution.service.model.SoftwareDistributionService.GetEntitlementsV2",
+            response = self.request_distribution(
+                "com.amazon.animusdistributionservice.entitlement.AnimusEntitlementsService.GetEntitlements",
                 token,
                 request_data,
             )

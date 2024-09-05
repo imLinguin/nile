@@ -165,7 +165,7 @@ class Launcher:
             scummvm_command = self.get_scummvm_command()
             if instruction.command.lower().endswith("scummvm.exe") and len(scummvm_command) > 0:
                 self.logger.info(f"Using native scummvm {scummvm_command}")
-                command.extend(scummvm_command)
+                command = scummvm_command
                 command.extend(instruction.arguments)
             else:
                 if not self.dont_use_wine and not self.bottle:

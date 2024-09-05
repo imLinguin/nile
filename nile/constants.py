@@ -7,6 +7,7 @@ AMAZON_API = "https://api.amazon.com"
 AMAZON_SDS = "https://sds.amazon.com"
 AMAZON_GAMING_GRAPHQL = "https://gaming.amazon.com/graphql"
 AMAZON_GAMING_DISTRIBUTION = "https://gaming.amazon.com/api/distribution/v2/public"
+AMAZON_GAMING_DISTRIBUTION_ENTITLEMENTS = "https://gaming.amazon.com/api/distribution/entitlements"
 
 FUZZY_SEARCH_RATIO = 0.7
 
