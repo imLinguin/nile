@@ -13,7 +13,7 @@
 </p>
 
 # Nile
-Linux native Amazon Games client, based on [this research](https://github.com/Lariaa/GameLauncherResearch/wiki/Amazon-Games)
+Cross platform Amazon Games client, based on [this research](https://github.com/Lariaa/GameLauncherResearch/wiki/Amazon-Games)
 
 Nile aims to be CLI and GUI tool for managing and playing games from Amazon. 
 
@@ -26,16 +26,28 @@ Nile aims to be CLI and GUI tool for managing and playing games from Amazon.
 ## Might not work
 - Online games, that use `FuelPump` (I don't have any game like that to test)
 
-# Purpose
+## Purpose
 This is my attempt to make Amazon Games useful for Linux users, who want to play titles obtained thanks to [Prime](https://prime.amazon.com) membership.
 
-# Dependencies
-## Arch and derivatives (Manjaro, Garuda, EndeavourOS)
+## Usage
+
+At the moment, Nile is a command line application. If you are looking for graphical user interface, make sure to checkout
+
+- [Heroic Games Launcher](https://heroicgameslauncher.com) - uses Nile as a backend for Amazon Games
+- [Lutris](https://lutris.net) - has implementation really similar to what Nile provides
+
+(Recommended) The bundled program is available on the [releases page](https://github.com/imLinguin/nile/releases/latest)  
+
+If you wish to run nile from source, see instructions below.
+
+
+## Dependencies
+### Arch and derivatives (Manjaro, Garuda, EndeavourOS)
 `sudo pacman -S python-pycryptodome python-zstandard python-requests python-protobuf python-json5`
-## Debian and derivatives (Ubuntu, Pop!_OS)
+### Debian and derivatives (Ubuntu, Pop!_OS)
 `sudo apt install python3-pycryptodome python3-requests python3-zstandard python3-protobuf python3-json5`
 
-## With pip
+### With pip
 > Do this after cloning the repo and cd into the directory
 > Do not install if you installed dependencies through your package manager  
 
@@ -60,7 +72,7 @@ pip install pyinstaller
 pyinstaller --onefile --name nile nile/cli.py
 ```
 
-# Contributing
+## Contributing
 
 I'm always open for contributors
 
@@ -74,7 +86,7 @@ black is used for code formatting
 - Run nile `./bin/nile`
 
 
-# Prior work
+## Prior work
 
 This is based on Rodney's work here: https://github.com/derrod/twl.py
 Some of his code is implemented in nile, since nothing changed since then in terms of downloading and patching
