@@ -177,7 +177,7 @@ class AuthenticationManager:
                                  self.client_id,
                                  self.verifier.decode("utf-8"),
                                  self.serial)
-            self.library_manager.sync()
+            self.library_manager.sync(force=True)
 
     def handle_login(self, code, client_id, code_verifier, serial):
         """Handles login through individual args"""

@@ -137,7 +137,7 @@ class CLI:
                 sys.exit(1)
             if self.auth_manager.is_logged_in() and self.auth_manager.is_token_expired():
                 self.auth_manager.refresh_token()
-            self.library_manager.sync()
+            self.library_manager.sync(force=self.arguments.force)
 
     def handle_install(self):
         games = self.config.get("library")

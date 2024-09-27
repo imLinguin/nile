@@ -29,6 +29,7 @@ def get_arguments():
         "library", help="Your games library is in this place"
     )
     library_parser.add_argument("sub_command", choices=["list", "sync"])
+    library_parser.add_argument("--force", "-f", action="store_true", help="Force the action")
     library_parser.add_argument(
         "--installed", "-i", action="store_true", help="List only installed games"
     )

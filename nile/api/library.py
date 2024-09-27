@@ -65,7 +65,7 @@ class Library:
 
         return request_data
 
-    def sync(self):
+    def sync(self, force=False):
         self.logger.info("Synchronizing library")
 
         sync_point = self.config.get("syncpoint", cfg_type=ConfigType.RAW)
@@ -76,6 +76,10 @@ class Library:
             else:
                 sync_point = float(sync_point.decode())
                 self.logger.debug(f"Using sync_point {sync_point}")
+
+        if force:
+            self.logger.warning("Forcefully refreshing the library")
+            sync_point = None
 
         token, serial = self.config.get(
             "user",
@@ -110,7 +114,10 @@ class Library:
                 request_data,
             )
             json_data = response.json()
-            games.extend(json_data["entitlements"])
+            new_games = json_data["entitlements"]
+            if not new_games and sync_point:
+                self.logger.info("No new games found")
+            games.extend(new_games)
 
             if not "nextToken" in json_data:
                 break
