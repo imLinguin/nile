@@ -66,6 +66,13 @@ class CLI:
                 self.auth_manager.refresh_token()
             self.auth_manager.logout()
             return False
+        elif self.arguments.status:
+            account = '<not logged in>'
+            if self.auth_manager.is_logged_in():
+                account = self.auth_manager.config.get("user").get("extensions").get("customer_info").get("name")              
+            logged_in = account != '<not logged in>'
+            print(json.dumps({'Username': account, 'LoggedIn': logged_in}))
+            return False
         self.logger.error("Specify auth action, use --help")
     
     def handle_register(self):
