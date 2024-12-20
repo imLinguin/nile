@@ -26,15 +26,21 @@ def get_arguments():
     register_parser.add_argument("--serial", help="The device serial to register")
 
     library_parser = sub_parsers.add_parser(
-        "library", help="Your games library is in this place"
+        "library", help="Your games library is in this place..."
     )
     library_parser.add_argument("sub_command", choices=["list", "sync"])
+    library_parser.add_argument(
+         "--json", "-j", action="store_true", help="Print info in JSON format"
+    )
     library_parser.add_argument("--force", "-f", action="store_true", help="Force the action")
     library_parser.add_argument(
-        "--installed", "-i", action="store_true", help="List only installed games"
+        "--installed", "-i", action="store_true", help="List only installed games..."
+        
     )
+   
     install_parser = sub_parsers.add_parser(
         "install", aliases=["update", "verify"], help="Install a game"
+        
     )
     install_parser.add_argument("id", help="Specify a ID of the game to be installed")
     install_parser.add_argument("--max-workers", help="Specify max threads to be used")

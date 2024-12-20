@@ -114,22 +114,25 @@ class CLI:
                     installed_dict[game["id"]] = game
             games.sort(key=self.sort_by_title)
             displayed_count = 0
-            for game in games:
-                if self.arguments.installed and not installed_dict.get(game["product"]["id"]):
-                    continue
-                genres = (
-                    (f'GENRES: {game["product"]["productDetail"]["details"]["genres"]}')
-                    if game["product"]["productDetail"]["details"].get("genres")
-                    else ""
-                )
-                if not constants.SUPPORTS_COLORS:
-                    games_list += f'{"(INSTALLED) " if installed_dict.get(game["product"]["id"]) and not self.arguments.installed else ""}{game["product"].get("title")} ID: {game["product"]["id"]} {genres}\n'
-                else:
-                    games_list += f'{constants.SHCOLORS["green"]}{"(INSTALLED) " if installed_dict.get(game["product"]["id"]) and not self.arguments.installed else ""}{constants.SHCOLORS["clear"]}{game["product"].get("title")} {constants.SHCOLORS["red"]}ID: {game["product"]["id"]}{constants.SHCOLORS["clear"]} {genres}\n'
+            if self.arguments.json:
+                print(json.dumps(games))
+            else:
+                for game in games:
+                    if self.arguments.installed and not installed_dict.get(game["product"]["id"]):
+                        continue
+                    genres = (
+                        (f'GENRES: {game["product"]["productDetail"]["details"]["genres"]}')
+                        if game["product"]["productDetail"]["details"].get("genres")
+                        else ""
+                    )
+                    if not constants.SUPPORTS_COLORS:
+                        games_list += f'{"(INSTALLED) " if installed_dict.get(game["product"]["id"]) and not self.arguments.installed else ""}{game["product"].get("title")} ID: {game["product"]["id"]} {genres}\n'
+                    else:
+                        games_list += f'{constants.SHCOLORS["green"]}{"(INSTALLED) " if installed_dict.get(game["product"]["id"]) and not self.arguments.installed else ""}{constants.SHCOLORS["clear"]}{game["product"].get("title")} {constants.SHCOLORS["red"]}ID: {game["product"]["id"]}{constants.SHCOLORS["clear"]} {genres}\n'
 
-                displayed_count += 1
-            games_list += f"\n*** TOTAL {displayed_count} ***\n"
-            print(games_list)
+                    displayed_count += 1
+                games_list += f"\n*** TOTAL {displayed_count} ***\n"
+                print(games_list)
 
         elif cmd == "sync":
             if not self.auth_manager.is_logged_in():
