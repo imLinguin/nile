@@ -76,6 +76,13 @@ def get_arguments():
     )
     launch_parser.add_argument("--wine", help="Specify wine binary")
     launch_parser.add_argument(
+        "--json",
+        "-j",
+      
+        action="store_true",
+        help="Output data in json format",
+    )
+    launch_parser.add_argument(
         "--no-wine",
         dest="dont_use_wine",
         action="store_true",
