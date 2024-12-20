@@ -56,7 +56,7 @@ class CLI:
     def handle_auth(self):
         if self.arguments.login:
             if not self.auth_manager.is_logged_in():
-                self.auth_manager.login(self.arguments.non_interactive)
+                self.auth_manager.login(self.arguments.non_interactive, self.arguments.gui)
                 return True
             else:
                 self.logger.error("You are already logged in")

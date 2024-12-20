@@ -14,6 +14,7 @@ def get_arguments():
 
     auth_parser = sub_parsers.add_parser("auth", help="Authorization related things")
     auth_parser.add_argument("--login", "-l", action="store_true", help="Login action")
+    auth_parser.add_argument("--gui", "-g", action="store_true", help="Use GUI for login")
     auth_parser.add_argument("--non-interactive", action="store_true", help="Display login data as JSON. Use `nile register` to finish login")
     auth_parser.add_argument(
         "--logout", action="store_true", help="Logout from the accout and deregister"
@@ -34,7 +35,7 @@ def get_arguments():
     )
     library_parser.add_argument("--force", "-f", action="store_true", help="Force the action")
     library_parser.add_argument(
-        "--installed", "-i", action="store_true", help="List only installed games..."
+        "--installed", "-i", action="store_true", help="List only installed games...    "
         
     )
    
