@@ -43,7 +43,7 @@ class Uninstaller:
                     os.rmdir(full_path)
 
         # Remove installation directory if it's empty
-        if not os.listdir(installed_info["path"]):
+        if os.path.isdir(installed_info["path"]) and not os.listdir(installed_info["path"]):
             os.rmdir(installed_info["path"])
 
         self.config.write("installed", installed_games)

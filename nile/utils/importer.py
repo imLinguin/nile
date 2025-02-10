@@ -1,6 +1,6 @@
 import os
 import logging
-from time import sleep
+import urllib.parse
 from nile.models import manifest
 from nile.downloading.worker import DownloadWorker
 from nile.utils.config import ConfigType
@@ -19,40 +19,33 @@ class Importer:
 
         self.threads = []
 
-    def get_patchmanifest(self):
-        game_manifest = self.library_manager.get_game_manifest(self.game['id'])
-
-        download_url = game_manifest["downloadUrls"][0]
-        self.logger.debug("Getting protobuff manifest")
-        response = self.session_manager.session.get(download_url)
-        r_manifest = manifest.Manifest()
-        self.logger.debug("Parsing manifest data")
-        r_manifest.parse(response.content)
-        self.protobuff_manifest = response.content
-
-        self.version = game_manifest["versionId"]
-        self.download_manager.version = self.version
-        comparison = manifest.ManifestComparison.compare(
-            r_manifest
-        )
-        return self.download_manager.get_patchmanifest(comparison)
+    def get_manifest(self):
+        return self.download_manager.get_manifest()
 
     def stop_threads(self):
         self.thpool.shutdown(wait=False, cancel_futures=True)
 
     def verify_integrity(self):
-        patchmanifest = self.get_patchmanifest()
+        manifest_data = self.get_manifest()
         self.thpool = ThreadPoolExecutor(max_workers=cpu_count())
 
-        for file in patchmanifest.files:
-            local_path = os.path.join(self.folder_path, file.path.replace("\\", os.sep), file.filename)
+        comparison = manifest.ManifestComparison.compare(
+            manifest_data, None 
+        )
+
+        for file in comparison.new:
+            local_path = os.path.join(self.folder_path, file.path.replace("\\", os.sep))
             self.logger.debug(f"Verifying: {local_path}")
             if not os.path.isfile(local_path):
                 self.stop_threads()
                 self.logger.error(f"{local_path} is missing or corrupted")
                 return False
 
+            url = urllib.parse.urlparse(self.download_manager.downloadUrl)
+            url = url._replace(path=url.path + '/files/' + file.hash.value)
+            url = urllib.parse.urlunparse(url)
             worker = DownloadWorker(
+                url,
                 file,
                 local_path,
                 self.session_manager,
@@ -88,7 +81,7 @@ class Importer:
         # Save manifest to the file
 
         self.config.write(
-            f"manifests/{self.game['product']['id']}", self.protobuff_manifest, cfg_type=ConfigType.RAW
+            f"manifests/{self.game['product']['id']}", self.download_manager.protobuff_manifest, cfg_type=ConfigType.RAW
         )
 
         # Save data to installed.json file
@@ -98,7 +91,7 @@ class Importer:
             installed_array = list()
 
         installed_game_data = dict(
-            id=self.game["product"]["id"], version=self.version, path=self.folder_path
+            id=self.game["product"]["id"], version=self.download_manager.version, path=self.folder_path
         )
 
         installed_array.append(installed_game_data)
