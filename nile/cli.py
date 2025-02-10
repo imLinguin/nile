@@ -99,7 +99,7 @@ class CLI:
             element["product"].get("title")
             if element["product"].get("title") is not None
             else ""
-        )
+        ).lower()
 
     def handle_library(self):
         cmd = self.arguments.sub_command
