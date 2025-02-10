@@ -10,6 +10,8 @@ import base64
 import uuid
 import json
 
+from nile.utils import weblogin
+
 
 class AuthenticationManager:
     def __init__(self, session, config_manager, library_manager):
@@ -187,7 +189,7 @@ class AuthenticationManager:
                              serial)
         self.library_manager.sync()
 
-    def login(self, non_interactive=False):
+    def login(self, non_interactive=False, gui=False):
         code_verifier = self.generate_code_verifier()
         challenge = self.generate_challange(code_verifier)
 
@@ -195,26 +197,29 @@ class AuthenticationManager:
         client_id = self.generate_client_id(serial)
 
         url = self.get_auth_url(client_id, challenge)
-        if non_interactive:
-            data = {
-                'client_id': client_id,
-                'code_verifier': code_verifier.decode("utf-8"),
-                'serial': serial,
-                'url': url
-            }
-            print(json.dumps(data))
-            return
-            
-        print("Login URL: ", url)
-        print(
-            "The login URL will be opened in your browser, after you login paste the amazon.com url you were redirected to here")
-        input("Press ENTER to proceed")
-        try:
-            webbrowser.open(url)
-        except:
-            pass
-        redirect = input("Paste amazon.com url you got redirected to: ")
-        self.handle_redirect(redirect)
+        if gui:
+            weblogin.web_login(url, self.handle_redirect)
+        else:
+            if non_interactive:
+                data = {
+                    'client_id': client_id,
+                    'code_verifier': code_verifier.decode("utf-8"),
+                    'serial': serial,
+                    'url': url
+                }
+                print(json.dumps(data))
+                return
+                
+            print("Login URL: ", url)
+            print(
+                "The login URL will be opened in your browser, after you login paste the amazon.com url you were redirected to here")
+            input("Press ENTER to proceed")
+            try:
+                webbrowser.open(url)
+            except:
+                pass
+            redirect = input("Paste amazon.com url you got redirected to: ")
+            self.handle_redirect(redirect)
 
     def logout(self):
         if not self.is_logged_in():

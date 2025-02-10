@@ -1,3 +1,4 @@
+import json
 import sys
 import os
 import shutil
@@ -21,6 +22,7 @@ class LaunchInstruction:
         self.command = str()
         self.arguments = list()
         self.cwd = str()
+        self.dryrun = False
 
     @classmethod
     def parse(cls, game_path, path, unknown_arguments):
@@ -46,6 +48,7 @@ class Launcher:
         self.game = game
         self.bottle = arguments.bottle
         self.wrapper = arguments.wrapper
+        self.dryrun = arguments.json
         self.wine_prefix = arguments.wine_prefix
         self.wine_bin = arguments.wine
         if not self.wine_bin:
@@ -181,6 +184,18 @@ class Launcher:
                 else: 
                     command.append(instruction.command)
                     command.extend(instruction.arguments)
+
+        if self.dryrun:
+            print(json.dumps({"command": {"instruction":instruction.command, "arguments": instruction.arguments},
+                              "game_directory": game_path,
+                              "env": {
+            'FUEL_DIR': fuel_dir,
+            'AMAZON_GAMES_SDK_PATH': amazon_sdk,
+            'AMAZON_GAMES_FUEL_ENTITLEMENT_ID': self.game['id'],
+            'AMAZON_GAMES_FUEL_PRODUCT_SKU': self.game['product']['sku'],
+            'AMAZON_GAMES_FUEL_DISPLAY_NAME': display_name
+            }}))
+            return
 
         self.logger.info("Launching")
         
