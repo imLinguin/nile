@@ -1,4 +1,5 @@
 import os
+import base64
 import json
 # YAML ready (currently not needed though)
 # import yaml
@@ -6,6 +7,7 @@ import logging
 from typing import Union
 from enum import Enum
 import nile.constants as constants
+from nile.arguments import get_arguments
 
 
 class ConfigType(Enum):
@@ -79,41 +81,47 @@ class Config:
         e.g tokens//bearer//access_token
         If no key provided returns whole file
         """
+        parsed = None
         file_path = self._join_path_name(store, cfg_type)
-        if os.path.exists(file_path) and os.path.isfile(file_path):
-            if not self.cache.get(store):
-                if cfg_type == ConfigType.RAW:
-                    stream = open(file_path, "rb")
-                    data = stream.read()
-                    stream.close()
-                    return data
-                elif cfg_type == ConfigType.JSON:
-                    stream = open(file_path, "r")
-                    data = stream.read()
-                    parsed = json.loads(data)
+        if self.cache.get(store):
+            parsed = self.cache[store]
+        elif os.path.exists(file_path) and os.path.isfile(file_path):
+            if cfg_type == ConfigType.RAW:
+                with open(file_path, "rb") as stream:
+                    return stream.read()
+            elif cfg_type == ConfigType.JSON:
+                with open(file_path, "r") as stream:
+                    parsed = json.loads(stream.read())
                     self.cache.update({store: parsed})
-                    stream.close()
-                # elif cfg_type == ConfigType.YAML:
-                #     stream = open(file_path, "r")
-                #     parsed = yaml.safe_load(stream)
-                #     stream.close()
+            # elif cfg_type == ConfigType.YAML:
+            #     with open(file_path, "r") as stream:
+            #       parsed = yaml.safe_load(stream)
+        elif store == "user":
+            (arguments, unknown_arguments), parser = get_arguments()
+            if arguments.secret_user_data:
+                secret_user_data_json = base64.b64decode(arguments.secret_user_data).decode("utf-8")
+                secret_user_data_json = json.loads(secret_user_data_json)
+                parsed = secret_user_data_json
+                self.cache.update({store: parsed})
 
-            else:
-                parsed = self.cache[store]
-            if not key:
-                return parsed
-            if type(key) is str:
-                keys = key.split("//")
-                return self._get_value_based_on_keys(parsed, keys)
-            elif type(key) is list:
-                array = list()
-                for option in key:
-                    keys = option.split("//")
-                    array.append(self._get_value_based_on_keys(parsed, keys))
-                return array
+        if parsed is None:
+            if type(key) is list:
+                return [None for i in key]
+            return None
+
+        if not key:
+            return parsed
+
+        if type(key) is str:
+            keys = key.split("//")
+            return self._get_value_based_on_keys(parsed, keys)
 
         if type(key) is list:
-            return [None for i in key]
+            array = list()
+            for option in key:
+                keys = option.split("//")
+                array.append(self._get_value_based_on_keys(parsed, keys))
+            return array
         return None
 
     def _get_value_based_on_keys(self, parsed, keys):

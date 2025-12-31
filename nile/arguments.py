@@ -1,3 +1,4 @@
+from os import environ
 from os import path
 
 def get_arguments():
@@ -10,6 +11,7 @@ def get_arguments():
         action="store_true",
         help="Display nile version",
     )
+    parser.add_argument("--secret-user-data", dest="secret_user_data", help="Provide userdata in base64 encoded json format", type=str, default=environ.get("NILE_SECRET_USER_DATA"))
     sub_parsers = parser.add_subparsers(dest="command")
 
     auth_parser = sub_parsers.add_parser("auth", help="Authorization related things")
