@@ -9,6 +9,7 @@ import secrets
 import base64
 import uuid
 import json
+from nile.arguments import get_arguments
 
 
 class AuthenticationManager:
@@ -117,6 +118,10 @@ class AuthenticationManager:
         self.logger.info("Written data to the config")
 
     def refresh_token(self):
+        (arguments, unknown_arguments), parser = get_arguments()
+        if arguments.secret_user_data:
+            self.logger.error("Token expired, you need to refresh it manually.")
+            return None
         url = f"{constants.AMAZON_API}/auth/token"
         self.logger.info("Refreshing token")
         user_conf_content = self.config.get("user")
