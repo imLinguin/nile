@@ -75,11 +75,13 @@ class Config:
         elif cfg_type == ConfigType.JSONENC:
             assert enc_key is not None
             assert len(enc_key) in [16, 24, 32]
+            ivcipher = AES.new(enc_key, AES.MODE_ECB)
             cipher = AES.new(enc_key, AES.MODE_CBC)
             input_data = json.dumps(data)
             input_data = input_data.encode('utf-8')
             encrypted = cipher.encrypt(pad(input_data, AES.block_size))
-            parsed = cipher.iv + encrypted
+            enc_iv = ivcipher.encrypt(cipher.iv)
+            parsed = enc_iv + encrypted
             mode += "b"
         stream = open(file_path, mode)
 
@@ -113,7 +115,9 @@ class Config:
                 elif cfg_type == ConfigType.JSONENC:
                     assert enc_key is not None
                     stream = open(file_path, "rb")
-                    iv = stream.read(16)
+                    ivenc = stream.read(16)
+                    ivcipher = AES.new(enc_key, AES.MODE_ECB)
+                    iv = ivcipher.decrypt(ivenc)
                     cipher = AES.new(enc_key, AES.MODE_CBC, iv)
                     encrypted_data = stream.read()
                     decrypted = cipher.decrypt(encrypted_data)
