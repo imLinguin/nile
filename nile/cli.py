@@ -56,7 +56,7 @@ class CLI:
     def handle_auth(self):
         if self.arguments.login:
             if not self.auth_manager.is_logged_in():
-                self.auth_manager.login(self.arguments.non_interactive)
+                self.auth_manager.login(self.arguments.non_interactive, self.arguments.gui)
                 return True
             else:
                 self.logger.error("You are already logged in")
@@ -65,6 +65,13 @@ class CLI:
             if self.auth_manager.is_logged_in() and self.auth_manager.is_token_expired():
                 self.auth_manager.refresh_token()
             self.auth_manager.logout()
+            return False
+        elif self.arguments.status:
+            account = '<not logged in>'
+            if self.auth_manager.is_logged_in():
+                account = self.auth_manager.config.get("user").get("extensions").get("customer_info").get("name")              
+            logged_in = account != '<not logged in>'
+            print(json.dumps({'Username': account, 'LoggedIn': logged_in}))
             return False
         self.logger.error("Specify auth action, use --help")
     
@@ -114,22 +121,25 @@ class CLI:
                     installed_dict[game["id"]] = game
             games.sort(key=self.sort_by_title)
             displayed_count = 0
-            for game in games:
-                if self.arguments.installed and not installed_dict.get(game["product"]["id"]):
-                    continue
-                genres = (
-                    (f'GENRES: {game["product"]["productDetail"]["details"]["genres"]}')
-                    if game["product"]["productDetail"]["details"].get("genres")
-                    else ""
-                )
-                if not constants.SUPPORTS_COLORS:
-                    games_list += f'{"(INSTALLED) " if installed_dict.get(game["product"]["id"]) and not self.arguments.installed else ""}{game["product"].get("title")} ID: {game["product"]["id"]} {genres}\n'
-                else:
-                    games_list += f'{constants.SHCOLORS["green"]}{"(INSTALLED) " if installed_dict.get(game["product"]["id"]) and not self.arguments.installed else ""}{constants.SHCOLORS["clear"]}{game["product"].get("title")} {constants.SHCOLORS["red"]}ID: {game["product"]["id"]}{constants.SHCOLORS["clear"]} {genres}\n'
+            if self.arguments.json:
+                print(json.dumps(games))
+            else:
+                for game in games:
+                    if self.arguments.installed and not installed_dict.get(game["product"]["id"]):
+                        continue
+                    genres = (
+                        (f'GENRES: {game["product"]["productDetail"]["details"]["genres"]}')
+                        if game["product"]["productDetail"]["details"].get("genres")
+                        else ""
+                    )
+                    if not constants.SUPPORTS_COLORS:
+                        games_list += f'{"(INSTALLED) " if installed_dict.get(game["product"]["id"]) and not self.arguments.installed else ""}{game["product"].get("title")} ID: {game["product"]["id"]} {genres}\n'
+                    else:
+                        games_list += f'{constants.SHCOLORS["green"]}{"(INSTALLED) " if installed_dict.get(game["product"]["id"]) and not self.arguments.installed else ""}{constants.SHCOLORS["clear"]}{game["product"].get("title")} {constants.SHCOLORS["red"]}ID: {game["product"]["id"]}{constants.SHCOLORS["clear"]} {genres}\n'
 
-                displayed_count += 1
-            games_list += f"\n*** TOTAL {displayed_count} ***\n"
-            print(games_list)
+                    displayed_count += 1
+                games_list += f"\n*** TOTAL {displayed_count} ***\n"
+                print(games_list)
 
         elif cmd == "sync":
             if not self.auth_manager.is_logged_in():
