@@ -1,12 +1,13 @@
-import datetime
-import json
-import ssl
-from urllib import error, request
-from urllib.parse import urlparse, parse_qs
+import logging
 
-import webview
-import os
+webview_available = True
 
+try:
+    import webview
+except Exception:
+    log = logging.getLogger('webview')
+    log.debug('Webview unavailable')
+    webview_available = False
 
   
 def web_login(url, callback):

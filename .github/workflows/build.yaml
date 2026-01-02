@@ -19,6 +19,10 @@ jobs:
     - name: Install pyinstaller and dependencies
       run: pip3 install --upgrade pyinstaller -r requirements.txt
 
+    - name: Optional dependencies (WebView)
+      run: pip3 install --upgrade pywebview
+      if: runner.os != 'macOS'
+
     - name: Set strip on Linux and Mac
       id: strip
       run: echo "option=--strip" >> $GITHUB_OUTPUT

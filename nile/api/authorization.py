@@ -10,9 +10,6 @@ import base64
 import uuid
 import json
 
-from nile.utils import weblogin
-
-
 class AuthenticationManager:
     def __init__(self, session, config_manager, library_manager):
         self.logger = logging.getLogger("AUTH_MANAGER")
@@ -190,6 +187,8 @@ class AuthenticationManager:
         self.library_manager.sync()
 
     def login(self, non_interactive=False, gui=False):
+        from nile.utils import weblogin
+
         code_verifier = self.generate_code_verifier()
         challenge = self.generate_challange(code_verifier)
 
@@ -197,7 +196,7 @@ class AuthenticationManager:
         client_id = self.generate_client_id(serial)
 
         url = self.get_auth_url(client_id, challenge)
-        if gui:
+        if weblogin.webview_available and gui:
             weblogin.web_login(url, self.handle_redirect)
         else:
             if non_interactive:
