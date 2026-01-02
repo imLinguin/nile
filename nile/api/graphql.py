@@ -1,8 +1,8 @@
 import requests
-import logging
 import locale
-import os
 import nile.constants as constants
+from nile.utils.config import ConfigType
+import hashlib
 
 
 class GraphQLHandler:
@@ -23,7 +23,11 @@ class GraphQLHandler:
         )
 
     def make_graphql_request(self, data):
-        token = self.config.get("user", "tokens//bearer//access_token")
+        uid = self.config.get('current_user', 'user_id').encode('utf-8')
+        store_name = hashlib.md5(uid).hexdigest()
+        enc_key = hashlib.sha256(uid).digest()
+        token = self.config.get(store_name, "tokens//bearer//access_token", cfg_type=ConfigType.JSONENC, enc_key=enc_key)
+
         response = self.session.post(
             constants.AMAZON_GAMING_GRAPHQL,
             data=data,

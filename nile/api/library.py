@@ -80,13 +80,17 @@ class Library:
         if force:
             self.logger.warning("Forcefully refreshing the library")
             sync_point = None
-
+        uid = self.config.get('current_user', 'user_id').encode('utf-8')
+        store_name = hashlib.md5(uid).hexdigest()
+        enc_key = hashlib.sha256(uid).digest()
         token, serial = self.config.get(
-            "user",
+            store_name,
             [
                 "tokens//bearer//access_token",
                 "extensions//device_info//device_serial_number",
             ],
+            cfg_type=ConfigType.JSONENC,
+            enc_key=enc_key
         )
         games = list()
         if sync_point:
@@ -140,7 +144,10 @@ class Library:
         self.logger.info("Successfully synced the library")
 
     def get_game_manifest(self, id: str):
-        token = self.config.get("user", "tokens//bearer//access_token")
+        uid = self.config.get('current_user', 'user_id').encode('utf-8')
+        store_name = hashlib.md5(uid).hexdigest()
+        enc_key = hashlib.sha256(uid).digest()
+        token = self.config.get(store_name, "tokens//bearer//access_token", cfg_type=ConfigType.JSONENC, enc_key=enc_key)
 
         request_data = {
             "entitlementId": id,
@@ -163,7 +170,10 @@ class Library:
         return response_json
 
     def get_patches(self, id, version, file_list):
-        token = self.config.get("user", "tokens//bearer//access_token")
+        uid = self.config.get('current_user', 'user_id').encode('utf-8')
+        store_name = hashlib.md5(uid).hexdigest()
+        enc_key = hashlib.sha256(uid).digest()
+        token = self.config.get(store_name, "tokens//bearer//access_token", cfg_type=ConfigType.JSONENC, enc_key=enc_key)
 
         request_data = {
             "Operation": "GetPatches",
@@ -189,7 +199,10 @@ class Library:
         return response_json["patches"]
 
     def get_versions(self, game_ids):
-        token = self.config.get("user", "tokens//bearer//access_token")
+        uid = self.config.get('current_user', 'user_id').encode('utf-8')
+        store_name = hashlib.md5(uid).hexdigest()
+        enc_key = hashlib.sha256(uid).digest()
+        token = self.config.get(store_name, "tokens//bearer//access_token", cfg_type=ConfigType.JSONENC, enc_key=enc_key)
 
         request_data = {"adgProductIds": game_ids, "Operation": "GetLiveVersions"}
 

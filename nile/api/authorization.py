@@ -2,6 +2,7 @@ import webbrowser
 import requests
 from urllib.parse import urlencode, urlparse, parse_qs
 import nile.constants as constants
+from nile.utils.config import ConfigType
 import logging
 import hashlib
 import time
@@ -111,14 +112,28 @@ class AuthenticationManager:
         config_data = res_json["response"]["success"]
         config_data["NILE"] = {"token_obtain_time": time.time()}
 
-        self.config.write("user", config_data)
+        name = config_data['extensions']['customer_info']['given_name']
+        uid = config_data['extensions']['customer_info']['user_id']
+        current_user = {
+            'name': name, 'user_id': uid
+        }
+        self.config.write("current_user", current_user)
+        uid = uid.encode('utf-8')
+        h = hashlib.md5(uid)
+        enc_key = hashlib.sha256(uid).digest()
+        self.config.write(h.hexdigest(), config_data, cfg_type=ConfigType.JSONENC, enc_key=enc_key)
 
         self.logger.info("Written data to the config")
 
     def refresh_token(self):
         url = f"{constants.AMAZON_API}/auth/token"
         self.logger.info("Refreshing token")
-        user_conf_content = self.config.get("user")
+
+        uid = self.config.get('current_user', 'user_id').encode('utf-8')
+        store_name = hashlib.md5(uid).hexdigest()
+        enc_key = hashlib.sha256(uid).digest()
+        user_conf_content = self.config.get(store_name, cfg_type=ConfigType.JSONENC, enc_key=enc_key)
+        
         refresh_token = user_conf_content["tokens"]["bearer"]["refresh_token"]
         request_data = {
             "source_token": refresh_token,
@@ -141,27 +156,37 @@ class AuthenticationManager:
 
         res_json = response.json()
 
-        user_conf_content = self.config.get("user")
         user_conf_content["tokens"]["bearer"]["access_token"] = res_json["access_token"]
         user_conf_content["tokens"]["bearer"]["expires_in"] = res_json["expires_in"]
         user_conf_content["NILE"]["token_obtain_time"] = time.time()
-        self.config.write("user", user_conf_content)
+        self.config.write(store_name, user_conf_content, cfg_type=ConfigType.JSONENC, enc_key=enc_key)
 
     def is_token_expired(self):
+        uid = self.config.get('current_user', 'user_id')
+        if not uid:
+            return False
+        uid = uid.encode('utf-8')
+        store_name = hashlib.md5(uid).hexdigest()
+        enc_key = hashlib.sha256(uid).digest()
         token_obtain_time, expires_in = self.config.get(
-            "user", ["NILE//token_obtain_time", "tokens//bearer//expires_in"]
+            store_name, ["NILE//token_obtain_time", "tokens//bearer//expires_in"],
+            cfg_type=ConfigType.JSONENC,
+            enc_key=enc_key
         )
         if not token_obtain_time or not expires_in:
             return False
         return time.time() > token_obtain_time + int(expires_in)
 
     def get_authorization_header(self) -> str:
-        return f'bearer {self.config.get("user", "tokens//bearer//access_token")}'
+        uid = self.config.get('current_user', 'user_id').encode('utf-8')
+        store_name = hashlib.md5(uid).hexdigest()
+        enc_key = hashlib.sha256(uid).digest()
+        return f'bearer {self.config.get(store_name, "tokens//bearer//access_token", cfg_type=ConfigType.JSONENC, enc_key=enc_key)}'
 
     def is_logged_in(self) -> bool:
         self.logger.debug("Checking stored credentials")
-        tokens = self.config.get("user", "tokens")
-        return bool(tokens)
+        uid = self.config.get("current_user", "user_id")
+        return bool(uid)
 
     def handle_redirect(self, redirect):
         """Handles login through a redirect URL"""
@@ -224,7 +249,10 @@ class AuthenticationManager:
         if not self.is_logged_in():
             self.logger.error("You are not logged in")
             return
-        token = self.config.get("user", "tokens//bearer//access_token")
+        uid = self.config.get('current_user', 'user_id').encode('utf-8')
+        store_name = hashlib.md5(uid).hexdigest()
+        enc_key = hashlib.sha256(uid).digest()
+        token = self.config.get(store_name, "tokens//bearer//access_token", cfg_type=ConfigType.JSONENC, enc_key=enc_key)
         response = self.session_manager.session.post(
             f"{constants.AMAZON_API}/auth/deregister",
             headers={"Authorization": f"bearer {token}"},
@@ -238,4 +266,5 @@ class AuthenticationManager:
 
         if response.ok:
             self.logger.info("Successfully deregistered a device")
-            self.config.write("user", {})
+            self.config.remove(store_name, cfg_type=ConfigType.JSONENC)
+            self.config.remove('current_user')

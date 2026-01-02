@@ -6,12 +6,14 @@ import logging
 from typing import Union
 from enum import Enum
 import nile.constants as constants
-
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
 
 class ConfigType(Enum):
     RAW = 0
     JSON = 1
-    # YAML = 2
+    JSONENC = 2
+    # YAML = 3
 
 
 class Config:
@@ -32,6 +34,8 @@ class Config:
         #     extension = "yaml"
         elif cfg_type == ConfigType.JSON:
             extension = "json"
+        elif cfg_type == ConfigType.JSONENC:
+            extension = "enc"
         return os.path.join(constants.CONFIG_PATH, f"{name}.{extension}")
 
     def check_if_config_dir_exists(self):
@@ -50,7 +54,7 @@ class Config:
         if os.path.exists(path):
             os.remove(path)
 
-    def write(self, store: str, data: any, cfg_type=ConfigType.JSON):
+    def write(self, store: str, data: any, cfg_type=ConfigType.JSON, enc_key=None):
         """
         Stringifies data to json and overrides file contents
         """
@@ -68,11 +72,20 @@ class Config:
         #     parsed = yaml.safe_dump(data)
         elif cfg_type == ConfigType.JSON:
             parsed = json.dumps(data)
+        elif cfg_type == ConfigType.JSONENC:
+            assert enc_key is not None
+            assert len(enc_key) in [16, 24, 32]
+            cipher = AES.new(enc_key, AES.MODE_CBC)
+            input_data = json.dumps(data)
+            input_data = input_data.encode('utf-8')
+            encrypted = cipher.encrypt(pad(input_data, AES.block_size))
+            parsed = cipher.iv + encrypted
+            mode += "b"
         stream = open(file_path, mode)
 
         stream.write(parsed)
 
-    def get(self, store: str, key: Union[str, list] = None, cfg_type=ConfigType.JSON) -> any or None:
+    def get(self, store: str, key: Union[str, list] = None, cfg_type=ConfigType.JSON, enc_key=None) -> any or None:
         """
         Get value of provided key from store
         Double slash separated keys can access object values
@@ -97,7 +110,17 @@ class Config:
                 #     stream = open(file_path, "r")
                 #     parsed = yaml.safe_load(stream)
                 #     stream.close()
-
+                elif cfg_type == ConfigType.JSONENC:
+                    assert enc_key is not None
+                    stream = open(file_path, "rb")
+                    iv = stream.read(16)
+                    cipher = AES.new(enc_key, AES.MODE_CBC, iv)
+                    encrypted_data = stream.read()
+                    decrypted = cipher.decrypt(encrypted_data)
+                    unpadded = unpad(decrypted, AES.block_size)
+                    parsed = json.loads(unpadded.decode('utf-8'))
+                    self.cache.update({store: parsed})
+                    stream.close()
             else:
                 parsed = self.cache[store]
             if not key:
