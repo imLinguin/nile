@@ -5,6 +5,7 @@ import json
 import logging
 from typing import Union
 from enum import Enum
+import hashlib
 import nile.constants as constants
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
@@ -21,10 +22,35 @@ class Config:
     Handles writing and reading from config with automatic in memory caching
     TODO: Make memory caching opt out in some cases
     """
+    migrations_ran = False
 
     def __init__(self):
         self.logger = logging.getLogger("CONFIG")
         self.cache = {}
+        try:
+            self.migrate()
+        except:
+            self.logger.error("Failed to run config migrations")
+
+    def migrate(self):
+        if Config.migrations_ran:
+            return
+        Config.migrations_ran = True
+        
+        # Encrypted config
+        user_data = self.get('user')
+        if user_data:
+            name = user_data['extensions']['customer_info']['given_name']
+            uid = user_data['extensions']['customer_info']['user_id']
+            current_user = {
+                'name': name, 'user_id': uid
+            }
+            uid = uid.encode('utf-8')
+            self.write("current_user", current_user)
+            store = hashlib.md5(uid).hexdigest()
+            enc_key = hashlib.sha256(uid).digest()
+            self.write(store, user_data, cfg_type=ConfigType.JSONENC, enc_key=enc_key)
+            self.remove('user')
 
     def _join_path_name(self, name: str, cfg_type: ConfigType) -> str:
         extension = "json"
@@ -53,6 +79,8 @@ class Config:
         path = self._join_path_name(store, cfg_type)
         if os.path.exists(path):
             os.remove(path)
+        if store in self.cache:
+            del self.cache[store]
 
     def write(self, store: str, data: any, cfg_type=ConfigType.JSON, enc_key=None):
         """
