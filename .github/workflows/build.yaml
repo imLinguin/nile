@@ -5,9 +5,8 @@ jobs:
   build:
     strategy:
       fail-fast: false
-      max-parallel: 3
       matrix:
-        os: [ubuntu-22.04, ubuntu-22.04-arm, macos-latest-intel, macos-latest, windows-latest]
+        os: [ubuntu-22.04, ubuntu-22.04-arm, macos-15-intel, macos-15, windows-2025]
     runs-on: ${{ matrix.os }}
 
     steps:
