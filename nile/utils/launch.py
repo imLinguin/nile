@@ -142,7 +142,7 @@ class Launcher:
             game_path, fuel_path, self.unknown_arguments
         )
 
-        display_name = self.config.get('user', 'extensions//customer_info//given_name') or ''
+        display_name = self.config.get('current_user', 'name') or ''
         
         sdk_path = os.path.join(CONFIG_PATH, 'SDK', 'Amazon Games Services')
         fuel_dir = os.path.join(sdk_path, 'Legacy')
