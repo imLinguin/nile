@@ -47,5 +47,11 @@ nile = "nile.cli:main"
 [project.urls]
 Issues = "https://github.com/imLinguin/nile/issues"
 
+[tool.setuptools.packages.find]
+exclude = ["assets", "assets.*"]
+
+
 [tool.setuptools.dynamic]
 version = {attr = "nile.version"}
+
+
