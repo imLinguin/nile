@@ -1,6 +1,0 @@
-requests
-protobuf
-pycryptodome
-zstandard
-json5
-platformdirs

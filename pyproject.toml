@@ -39,6 +39,11 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+
+[project.optional-dependencies]
+webview = ["pywebview>=3.4"]
+pyinstaller_build = ["pyinstaller"]
+
 [project.scripts]
 nile = "nile.cli:main"
 

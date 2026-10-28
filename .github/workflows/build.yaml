@@ -13,13 +13,18 @@ jobs:
     - uses: actions/checkout@v6
     - uses: actions/setup-python@v6
       with:
-        python-version: '3.8'
+        python-version-file: 'pyproject.toml'
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+      with:
+        enable-cache: true 
 
     - name: Install pyinstaller and dependencies
-      run: pip3 install --upgrade pyinstaller -r requirements.txt
+      run: uv sync --extra pyinstaller_build --no-install-local
 
     - name: Optional dependencies (WebView)
-      run: pip3 install --upgrade pywebview
+      run: uv sync --extra webview --no-install-local --inexact
       if: runner.os != 'macOS'
 
     - name: Set strip on Linux and Mac
@@ -28,7 +33,7 @@ jobs:
       if: runner.os != 'Windows'
 
     - name: Build
-      run: pyinstaller
+      run: uv run --module PyInstaller
         --onefile
         --name nile 
         ${{ steps.strip.outputs.option }}
@@ -36,7 +41,7 @@ jobs:
       env:
         PYTHONOPTIMIZE: 1
 
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       with:
         name: nile-${{ matrix.os }}
         path: dist/*
