@@ -6,7 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import cpu_count
 from time import sleep
 import nile.utils.download as dl_utils
-from nile.models import manifest, hash_pairs, patch_manifest
+from nile.models import manifest
 from nile.downloading.progress import ProgressBar
 from nile.downloading.worker import DownloadWorker
 from nile.utils.config import ConfigType
@@ -43,20 +43,6 @@ class DownloadManager:
         r_manifest.parse(response.content)
         self.protobuff_manifest = response.content
         return r_manifest
-
-    def get_patchmanifest(self, comparison: manifest.ManifestComparison):
-        self.logger.info("Generating patches, this might take a second...")
-        hash_pair_builder = hash_pairs.PatchBuilder(comparison)
-        hash_pair_builder.build_hashpairs()
-        patches = []
-        for hash_pair in hash_pair_builder.get_next_hashes():
-            patches.extend(
-                self.library_manager.get_patches(
-                    self.game["id"], self.version, hash_pair
-                )
-            )
-
-        return patch_manifest.PatchManifest.build_patch_manifest(comparison, patches)
 
     def get_installed_version(self):
         installed_games = self.config.get("installed")

@@ -1,7 +1,6 @@
 import os
 import shutil
 from nile.utils.download import calculate_checksum, get_hashing_function
-#from nile.models.patcher import Patcher
 from nile.models.manifest import File
 
 
@@ -51,26 +50,3 @@ class DownloadWorker:
             f.close()
 
         shutil.move(path + ".patch", path)
-        """
-        if self.data.patch_hash:
-            patch_sum = calculate_checksum(
-                get_hashing_function(self.data.patch_hash_type), path + ".patch"
-            )
-            if self.data.patch_hash != patch_sum:
-                return self.get_file(path)
-            # Patch the file here
-            patcher = Patcher(
-                open(path, "rb"), open(path + ".patch", "rb"), open(path + ".new", "wb")
-            )
-
-            patcher.run()
-
-            if (
-                calculate_checksum(
-                    get_hashing_function(self.data.target_hash_type), path + ".new"
-                )
-                == self.data.target_hash
-            ):
-                shutil.move(path + ".new", path)
-        else:
-        """

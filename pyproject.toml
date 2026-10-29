@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "nile"
 description = "Unofficial Amazon Games client"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 keywords = ["Amazon", "Amazon Games", "Games"]
 license = { text = "GPL-3" }
 authors = [
@@ -33,15 +33,14 @@ dependencies = [
   "requests",
   "protobuf",
   "pycryptodome",
-  "zstandard",
   "json5",
-  "platformdirs"
+  "platformdirs",
+  "filelock"
 ]
 dynamic = ["version"]
 
 
 [project.optional-dependencies]
-webview = ["pywebview>=3.4"]
 pyinstaller_build = ["pyinstaller"]
 
 [project.scripts]
