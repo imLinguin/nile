@@ -111,7 +111,10 @@ class Config:
             enc_iv = ivcipher.encrypt(cipher.iv)
             parsed = enc_iv + encrypted
             mode += "b"
-        stream = open(file_path, mode)
+        if "b" in mode:
+            stream = open(file_path, mode, encoding=None)
+        else:
+            stream = open(file_path, mode, encoding="UTF-8")
 
         stream.write(parsed)
 
@@ -131,7 +134,7 @@ class Config:
                     stream.close()
                     return data
                 elif cfg_type == ConfigType.JSON:
-                    stream = open(file_path, "r")
+                    stream = open(file_path, "r", encoding="UTF-8")
                     data = stream.read()
                     parsed = json.loads(data)
                     self.cache.update({store: parsed})
