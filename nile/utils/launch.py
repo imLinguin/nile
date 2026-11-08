@@ -27,7 +27,7 @@ class LaunchInstruction:
     @classmethod
     def parse(cls, game_path, path, unknown_arguments):
         instruction = cls()
-        stream = open(path, "r")
+        stream = open(path, "r", encoding="UTF-8")
         raw_data = stream.read()
         json_data = json5.loads(raw_data)
         stream.close()
