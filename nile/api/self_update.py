@@ -2,7 +2,6 @@ import urllib.parse
 import os
 from nile.models import manifest
 from nile.constants import CONFIG_PATH
-from nile.models.hash_pairs import PatchBuilder
 
 class SelfUpdateHandler:
     def __init__(self, session, library):

@@ -72,6 +72,27 @@ pip install pyinstaller
 pyinstaller --onefile --name nile nile/cli.py
 ```
 
+## Portable mode
+
+By default nile stores its config in the user config directory
+(`%APPDATA%\nile` on Windows, `~/.config/nile` on Linux,
+`~/Library/Application Support/nile` on macOS).
+
+To keep everything next to the executable instead, create an empty file named
+`portable` in the same folder as the bundled `nile` executable:
+
+```
+nile_windows_x86_64.exe
+portable
+```
+
+On startup nile creates a `config` directory beside the executable and stores
+all of its data there (account tokens, library, manifests, SDK). In this mode
+`NILE_CONFIG_PATH` is ignored.
+
+This applies to the bundled builds (PyInstaller executables and the Linux
+zipapp). Running from source always uses the user config directory.
+
 ## Contributing
 
 I'm always open for contributors
