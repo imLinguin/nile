@@ -28,6 +28,12 @@ class Config:
         self.logger = logging.getLogger("CONFIG")
         self.cache = {}
         try:
+            self.check_if_config_dir_exists()
+        except OSError:
+            self.logger.error(
+                f"Failed to create config directory at {constants.CONFIG_PATH}"
+            )
+        try:
             self.migrate()
         except:
             self.logger.error("Failed to run config migrations")
